@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>API调试</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.min.css" rel="stylesheet">
+    <style>
+        /* Syntax highlighting for JSON objects */
+        pre{
+            color: #000;
+        }
+        ul.json-dict, ol.json-array {
+            list-style-type: none;
+            margin: 0 0 0 1px;
+            border-left: 1px dotted #ccc;
+            padding-left: 2em;
+        }
+        .json-string {
+            color: #3ab54a;
+            font-weight: bold;
+        }
+        .json-literal {
+            color: #25aae2;
+            font-weight: bold;
+        }
+
+        /* Toggle button */
+        a.json-toggle {
+            position: relative;
+            color: inherit;
+            text-decoration: none;
+        }
+        a.json-toggle:focus {
+            outline: none;
+        }
+        a.json-toggle:before {
+            color: #aaa;
+            content: "\25BC"; /* down arrow */
+            position: absolute;
+            display: inline-block;
+            width: 1em;
+            left: -1em;
+        }
+        a.json-toggle.collapsed:before {
+            transform: rotate(-90deg); /* Use rotated down arrow, prevents right arrow appearing smaller than down arrow in some browsers */
+            -ms-transform: rotate(-90deg);
+            -webkit-transform: rotate(-90deg);
+        }
+
+        /* Collapsable placeholder links */
+        a.json-placeholder {
+            color: #aaa;
+            padding: 0 1em;
+            text-decoration: none;
+        }
+        a.json-placeholder:hover {
+            text-decoration: underline;
+        }
+        a{
+            color: #4d5259;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="card-header">
+                    <h4 id="apiTitle" style="float: left;cursor:pointer;margin-top: 15px;"></h4>
+                    <div style="width:100%;float: left;boder:none!important;">
+                    <input style="width: 100%; border: none; text-align: left;" type="text" id="url" value="">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5>请求头参数</h5>
+                    <div class="tab-content" style="padding: 0px;">
+                        <table class="table table-bordered" data-type="header">
+                            <thead>
+                            <tr>
+                                <th>字段</th>
+                                <th>字段值</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="DEVICE-ID" readonly></td>
+                                <td><input placeholder="输入参数设备id值" type="text" class="header-param-val" value="zhangqiquan"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-VERSION" readonly></td>
+                                <td><input placeholder="输入参数前端app版本号" type="text" class="header-param-val" value="1.0.0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-SIGN" readonly></td>
+                                <td><input placeholder="输入参数签名值" type="text" class="header-param-val"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="TOKEN" readonly></td>
+                                <td><input placeholder="输入参数TOKEN值" type="text" class="header-param-val"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-PAGE" readonly></td>
+                                <td><input placeholder="输入参数访问当前接口的APP页面" type="text" class="header-param-val" value="page/test"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="DEVICE-OS" readonly></td>
+                                <td><input placeholder="输入参数访问当前接口的设备操作系统" type="text" class="header-param-val" value="apidebug"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="DEVICE-BRAND" readonly></td>
+                                <td><input placeholder="输入参数访问当前接口的设备品牌" type="text" class="header-param-val" value="zhangqiquan"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-CHANNEL" readonly></td>
+                                <td><input placeholder="访问当前接口的app渠道" type="text" class="header-param-val" value="apidebug"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="DEVICE-NETTYPE" readonly></td>
+                                <td><input placeholder="输入参数访问当前接口的设备联网方式" type="text" class="header-param-val" value="wifi"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="IS-START-PAGE" readonly></td>
+                                <td><input placeholder="输入参数是否为APP启动页" type="text" class="header-param-val" value="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-PREPAGE" readonly></td>
+                                <td><input placeholder="输入参数上一次访问的APP页面" type="text" class="header-param-val"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="header-param-key" value="APP-PREPAGE-STAYTIME" readonly></td>
+                                <td><input placeholder="输入参数上一次访问的APP页面停留时长" type="text" class="header-param-val"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+                    <h5>请求主体参数</h5>
+                    <div class="tab-content" style="padding: 0px;">
+                        <table class="table table-bordered" data-type="body">
+                            <thead>
+                            <tr>
+                                <th>字段</th>
+                                <th>字段值</th>
+                            </tr>
+                            </thead>
+                            <tbody id="bodyParam">
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!--返回示例值-->
+                <div class="card-body">
+                    <div class="tab-content" style="padding: 0px;" >
+                        <pre id="example"></pre>
+                    </div>
+                    <div class="tab-content" style="padding: 0px; text-align: center;" >
+                        <button class="btn btn-primary btn-w-md" type="button" onclick="ondebug()">立即调试<div></div></button>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<!--消息提示-->
+<script src="/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/js/lightyear.js"></script>
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript" src="/js/jquery.json-viewer.js"></script>
+<script type="text/javascript" src="/js/tool.js"></script>
+<script>
+    console.log(navigator.userAgent);
+    $('#apiTitle').html(opener.docData.data.title+'  '+$_GET['method']);
+    rendeParam();
+    console.log(opener.docData);
+    function rendeParam(){
+        var location = window.location.href;
+        location = location.split(window.location.pathname)[0];
+        $('#url').val(location+'/'+opener.docData.data.version+opener.docData.data.uri);
+        var paramHtml = '';
+        var method = $_GET['method'];
+        var param = opener.docData.data.param[method];
+        for(var i in param){
+            if(param[i]['type'] == '{File}'){
+                paramHtml += '<tr><td><input placeholder="输入参数名称" type="text" class="body-param-key" value="'+param[i]['field']+'"></td><td><input placeholder="输入参数值" type="file" name="'+param[i]['field']+'" class="body-param-val inputfile" value=""></td></tr>';
+            }else{
+                paramHtml += '<tr><td><input placeholder="输入参数名称" type="text" class="body-param-key" value="'+param[i]['field']+'"></td><td><input placeholder="输入参数值" type="text" class="body-param-val" value=""></td></tr>';
+            }
+
+        }
+        $('#bodyParam').html(paramHtml);
+    }
+
+    function ondebug(){
+        // header是自身控制的
+        var headers = {};
+        var body = new FormData();
+        $('.header-param-key').each(function(index){
+            if(this.value){
+                headers[this.value] = $('.header-param-val').eq(index).val();
+            }
+        });
+
+        $('.body-param-key').each(function(index){
+            if(this.value){
+                body.append(this.value, $('.body-param-val').eq(index).val());
+            }
+        });
+        var inputFile = document.getElementsByClassName('inputfile');
+        for(i in inputFile){
+            var mythis = inputFile[i];
+            if(inputFile[i]['files']){
+                body.append(mythis['name'],mythis.files[0]);
+            }
+        }
+        // 使用表单上传
+
+        lightyear.loading('show');
+        var processData = false;
+        var contentType = false;
+
+        var apiUrl = $("#url").val();
+
+        if($_GET['method'] == 'GET' || $_GET['method'] == 'PUT' || $_GET['method'] == 'DELETE'){
+            apiUrl += '?';
+            $('.body-param-key').each(function(index){
+                if(this.value){
+                    apiUrl += this.value+'='+$('.body-param-val').eq(index).val()+'&';
+                }
+            });
+            body = {};
+            processData = true;
+            contentType = true;
+        }
+        console.log(headers);
+        var request = $.ajax({
+            url: apiUrl,
+            method: $_GET['method'],
+            timeout: 30000, // 超时时间设置，单位毫秒
+            headers: headers,
+            data: body,
+            processData: processData,
+            contentType: contentType,
+            //headers: headers
+        });
+
+        request.done(function(res) {
+            lightyear.loading('hide');
+            $('#example').css('display', '');
+
+            $('#example').jsonViewer(res);
+
+            // 更新成功文档
+            var requestData = {
+                'method' : 'updateDoc',
+                'uri' : opener.docData.data.uri,
+                'version' : opener.docData.data.version,
+                'http_code' : '200',
+                'result' : JSON.stringify(res),
+                'request_method' : $_GET['method'],
+            };
+            $.post("/v1.0.0/apiDoc.debug", requestData, function (){
+
+            });
+        });
+
+        request.fail(function(jqXHR) {
+            console.log(jqXHR);
+            lightyear.loading('hide');
+            $('#example').css('display', '');
+            if(jqXHR.responseJSON){
+                notifyError("请求异常");
+                $('#example').jsonViewer(jqXHR.responseJSON);
+                var requestData = {
+                    'method' : 'updateDoc',
+                    'uri' : opener.docData.data.uri,
+                    'version' : opener.docData.data.version,
+                    'http_code' : '500',
+                    'result' : jqXHR.responseText,
+                    'request_method' : $_GET['method'],
+                };
+
+                $.post("/v1.0.0/apiDoc.debug", requestData, function (){
+
+                });
+            }else{
+                notifyError(jqXHR.responseText);
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

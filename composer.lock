@@ -1,0 +1,60 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "b65255266f291e08f1b54e91d1b2cb8b",
+    "packages": [
+        {
+            "name": "zhanshop/framework",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zhangqiquan/zhanshop-framework.git",
+                "reference": "9ed690033ae0f918ab382c01d8fd1e138db843fe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zhangqiquan/zhanshop-framework/zipball/9ed690033ae0f918ab382c01d8fd1e138db843fe",
+                "reference": "9ed690033ae0f918ab382c01d8fd1e138db843fe",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "zhanshop\\": "src/zhanshop/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "张启全",
+                    "email": "768617998@qq.com"
+                }
+            ],
+            "description": "张启全研发的PHP框架",
+            "homepage": "http://www.zhanshop.cn/",
+            "keywords": [
+                "zhanshop"
+            ],
+            "support": {
+                "issues": "https://github.com/zhangqiquan/zhanshop-framework/issues",
+                "source": "https://github.com/zhangqiquan/zhanshop-framework/tree/v2.0.0"
+            },
+            "time": "2023-02-06T06:13:25+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.1.0"
+}
