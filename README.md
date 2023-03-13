@@ -23,6 +23,13 @@ type 目前支持3种收集类型
 ## 环境要求
 php8.1 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，swoole4.8 以上的扩展支持
 
+## 关于热更新
+非vendor, runtime, public目录下的php文件只要发生了变更就会触发更新
+
+注意修改了 .dev.*的配置文件和 修改了 config目录下的 app.php 请手动进行重新启动
+
+示例 php cmd.php server:http restart
+
 ## 性能表现 （供参考和对比）
 1. 本框架http服务器，在我的（本机4核，16G ubuntu22 设备上）使用ab压力测试工具 吞吐量可达10万多/s ， 在开启日志写入功能后吞吐量任然在9万多/s
 2. swoole 提供的空的http 服务器代码demo 在我的（本机4核，16G ubuntu22 设备上）使用ab压力测试工具 吞吐量达到11万多，性能损耗主要在框架代码 、路由、task、crontab上
