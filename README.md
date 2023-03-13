@@ -16,22 +16,25 @@ robot
 ## 日志收集
 config/log.php  
 type 目前支持3种收集类型
+
 1：File 写入到本地,再结合阿里云/腾讯云日志收集工具将日志收集到阿里云/腾讯云日志服务 （推荐）
+
 2：Es 将日志批量写入到Elasticsearch
-3. 写入到数据库中
+
+3： 写入到数据库中
 
 ## 环境要求
 php8.1 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，swoole4.8 以上的扩展支持
 
 ## 关于热更新
 非vendor, runtime, public目录下的php文件只要发生了变更就会触发更新
+注意修改了 .dev.*的配置文件和 修改了 config目录下的 app.php 请手动进行重新启动
+
+示例 php cmd.php server:http restart
 
 ## 提供测试数据
 在项目目录下有一个 zhanshop.sql 文件 想要把后台管理系统跑起来 需要把zhanshop.sql导入到 mysql数据库中，建议mysql使用8.0以上版本
 
-注意修改了 .dev.*的配置文件和 修改了 config目录下的 app.php 请手动进行重新启动
-
-示例 php cmd.php server:http restart
 
 ## 性能表现 （供参考和对比）
 1. 本框架http服务器，在我的（本机4核，16G ubuntu22 设备上）使用ab压力测试工具 吞吐量可达10万多/s ， 在开启日志写入功能后吞吐量任然在9万多/s
@@ -122,8 +125,8 @@ php cmd.php
 可用命令：
 
 help                                帮助 - 显示命令的帮助
-server:http                         启动后台服务 - 使用该命令可以创建一个http服务器
-server:admin                        启动api服务 - 使用该命令可以创建一个http后台管理系统
+server:http                         启动http服务 - 使用该命令可以创建一个http服务器
+server:admin                        启动后台管理系统 - 使用该命令可以创建一个http后台管理系统
 api:create                          api构建 - 一键生成http接口
 api:manager                         api管理 - 对现有的文档数据进行(修改/删除/清空/回滚/生成等功能)
 test:demo                           test - 测试用例
