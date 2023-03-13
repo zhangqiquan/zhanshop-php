@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>API详情</title>
     <meta name="author" content="张启全">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=8">
-    <meta http-equiv="Expires" content="0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Cache-control" content="no-cache">
-    <meta http-equiv="Cache" content="no-cache">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="/css/animate.css" rel="stylesheet">
-    <link href="/css/style.min.css" rel="stylesheet">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <link href="/apiDoc/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/apiDoc/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/apiDoc/css/animate.css" rel="stylesheet">
+    <link href="/apiDoc/css/style.min.css" rel="stylesheet">
     <style>
         /* Syntax highlighting for JSON objects */
         pre{
@@ -72,24 +68,28 @@
 </head>
 
 <body>
-
 <div class="container-fluid p-t-15">
 
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <!--------结果uri和标题--------->
+
                 <div class="card-header">
-                    <h4 id="apiTitle" style="float: left;cursor:pointer;margin-top: 15px;" oncontextmenu="javascript:editDoc(this);" onclick="debug(this)"></h4>
+                    <h4 id="apiTitle" style="float: left;cursor:pointer;margin-top: 15px;" onclick="debug(this)"></h4>
                     <select class="form-control" id="example-version" style="width: 120px;float: right;" name="example-select" size="1">
+
                     </select>
+
+                    <br />
+                    <div style="float: left;margin-top: 8px;text-align: left;">
+
+                    </div>
+
                 </div>
-                <!--------多个请求参数--------->
                 <div class="card-body">
-                    <h3>请求参数<br /></h3>
-                    <ul class="nav nav-tabs" style="margin-bottom:0px;" id="example-methods">
+
+                    <ul class="nav nav-tabs" style="margin-bottom:0px;" id="example-method">
                     </ul>
-                    <!--tab-->
                     <div class="tab-content" style="padding: 0px;">
                         <table class="table table-bordered">
                             <thead>
@@ -107,48 +107,19 @@
 
                 </div>
 
+                <!--返回示例值-->
                 <div class="card-body">
-                    <h3>响应说明<br /><br /></h3>
-                    <div id="response-detail">
-                        暂无说明...
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h3>响应示例<br /></h3>
-                    <ul class="nav nav-tabs" style="margin-bottom:0px;" id="response-method">
+
+                    <ul class="nav nav-tabs" style="margin-bottom:0px;">
                         <li class="active">
                             <a data-toggle="tab" href="#home-basic" onclick="exampleSuccess()">成功</a>
                         </li>
+                        <li class="nav-item">
+                            <a data-toggle="tab" href="#profile-basic" onclick="exampleFail()">失败</a>
+                        </li>
                     </ul>
-                    <pre id="example"></pre>
-                </div>
-                <!--返回示例值-->
-                <div class="card-body">
-                    <h3>异常示例<br /><br /></h3>
                     <div class="tab-content" style="padding: 0px;" >
-                        <pre id="response-error"></pre>
-                    </div>
-
-                </div>
-
-                <div class="card-body">
-                    <h3>错误码解释<br /></h3>
-                    <ul class="nav nav-tabs" style="margin-bottom:0px;">
-                    </ul>
-                    <div class="tab-content" style="padding: 0px;">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th width="15%">错误代码</th>
-                                <th>错误说明</th>
-                            </tr>
-                            </thead>
-                            <tbody id="error-explain">
-                            <tr>
-                            <tr><th scope="row">暂无</th><td>暂无</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <pre id="example"></pre>
                     </div>
 
                 </div>
@@ -160,14 +131,14 @@
 
 </div>
 
-<script type="text/javascript" src="/js/jquery.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/jquery.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/bootstrap.min.js"></script>
 <!--消息提示-->
-<script src="/js/bootstrap-notify.min.js"></script>
-<script type="text/javascript" src="/js/lightyear.js"></script>
-<script type="text/javascript" src="/js/main.min.js"></script>
-<script type="text/javascript" src="/js/jquery.json-viewer.js"></script>
-<script type="text/javascript" src="/js/tool.js"></script>
+<script src="/apiDoc/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/lightyear.js"></script>
+<script type="text/javascript" src="/apiDoc/js/main.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/jquery.json-viewer.js"></script>
+<script type="text/javascript" src="/apiDoc/js/tool.js"></script>
 <script>
     var uri = $_GET['uri'] ?? '';
     var version = $_GET['version'] ?? '';
@@ -178,25 +149,12 @@
         throw new Error('uri不存在');
     }
     window.docData;
-    ajax_request('/v1.0.0/apiDoc.detail', 'GET', 'method=getDetail&uri='+uri+'&version='+version, function(res){
-        docData = res.data;
+    ajax_request('./index.php', 'GET', 'method=getDetail&uri='+uri+'&version='+version, function(res){
+        docData = res;
         rendeApiTitle();
         rendeVersion();
         rendeMethod();
         rendeParam(docData.data.method[0]);
-        if(docData.data.detail){
-            $("#response-detail").html(docData.data.detail);
-            $("#response-detail").find("table").addClass("table table-bordered");
-        }else{
-            $("#response-detail").parent().css("display", 'none');
-        }
-        $("#response-error").jsonViewer({"code":500,"msg":"系统错误！请稍后再试～","data":null,"time":1575392813.756943,"trace_id":"609fca7992a3be1d175a8dc3a0e6aa05"});
-        var errorExplainHtml = '';
-        for(var ii in docData.data.explain){
-            console.log(ii);
-            errorExplainHtml += '<tr><tr><th scope="row">'+ii+'</th><td>'+docData.data.explain[ii]+'</td></tr>';
-        }
-        $("#error-explain").html(errorExplainHtml);
     });
 
     function rendeApiTitle(){
@@ -204,19 +162,15 @@
     }
     // 渲染方法
     function rendeMethod(){
-        var exampleMethodHtml = ''; // 示例方法
-        var responseMethodHtml = '';
+        var methodHtml = '';
         for(var i in docData.data.method){
             if(i == 0){
-                responseMethodHtml += '<li class="active"><a data-toggle="tab" href="#home-basic" onclick="responseSwitchMethod(this)">'+docData.data.method[i]+'</a></li>';
-                exampleMethodHtml += '<li class="active"><a data-toggle="tab" href="#home-basic" onclick="exampleSwitchMethod(this)">'+docData.data.method[i]+'</a></li>';
+                methodHtml += '<li class="active"><a data-toggle="tab" href="#home-basic" onclick="switchMethod(this)">'+docData.data.method[i]+'</a></li>';
             }else{
-                responseMethodHtml += '<li><a data-toggle="tab" href="#home-basic" onclick="responseSwitchMethod(this)">'+docData.data.method[i]+'</a></li>';
-                exampleMethodHtml += '<li><a data-toggle="tab" href="#home-basic" onclick="exampleSwitchMethod(this)">'+docData.data.method[i]+'</a></li>';
+                methodHtml += '<li><a data-toggle="tab" href="#home-basic" onclick="switchMethod(this)">'+docData.data.method[i]+'</a></li>';
             }
         }
-        $('#example-methods').html(exampleMethodHtml);
-        $('#response-method').html(responseMethodHtml);
+        $('#example-method').html(methodHtml);
     }
 
     // 渲染版本
@@ -267,28 +221,12 @@
         $('#example').jsonViewer({"errorcode":419,"errormsg":"当前接口不支持GET请求","data":[],"time":1619688071.835674,"runtime":0.000007004165649414});
     }
 
-    function exampleSwitchMethod(obj){
+    function switchMethod(obj){
         var method = $(obj).html();
         rendeParam(method);
     }
-
-    function rendeResponse(method){
-        // 转小写
-        method = method.toUpperCase();
-        var success = docData.data.success[method] ? docData.data.success[method] : {};
-        $('#example').jsonViewer(success);
-
-    }
-    function responseSwitchMethod(obj){
-        var method = $(obj).html();
-        rendeResponse(method);
-    }
-
     function debug(obj){
-        open('debug.html?uri='+$_GET['uri']+'&version='+$_GET['version']+'&method='+$('#example-methods .active a').html(), '接口调试', 'top=120,left=120,width=800px,height=600px');
-    }
-    function editDoc(obj){
-        open('edit.html?uri='+$_GET['uri']+'&version='+$_GET['version'], '完善响应说明', 'top=120,left=120,width=800px,height=600px');
+        open('debug.html?uri='+$_GET['uri']+'&version='+$_GET['version']+'&method='+$('#example-method .active a').html(), '接口调试', 'top=120,left=120,width=800px,height=600px');
     }
 </script>
 </body>

@@ -62,10 +62,14 @@ class Mysql
                 if($num != 0){
                     $setVal .= ', ';
                 }
-                $key = 'zhanshop_set_'.$k;
-                $query->setBind($key, $v);
-                $setVal .= '`'.$k.'` = :'.$key;
-                $num++;
+                if(is_object($v) && isset($v->data)){
+                    $setVal .= '`'.$k.'` = '.$v->data;
+                }else{
+                    $key = 'zhanshop_set_'.$k;
+                    $query->setBind($key, $v);
+                    $setVal .= '`'.$k.'` = :'.$key;
+                    $num++;
+                }
             }
             $sql = 'UPDATE `'.$query->getOptions('table').'` '.$setVal.' '.$whereStr;
             return $sql;

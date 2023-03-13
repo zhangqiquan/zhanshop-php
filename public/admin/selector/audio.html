@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/materialdesignicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+  <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+  <style>
+    body{
+      background: #eee;
+    }
+    /* 第二种布局方式 */
+    .card-pricing2 {
+      background: #f9f9f9ba!important;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+      color: #465161!important;
+      border: 1px dashed transparent!important;
+    }
+    .card-pricing2:before {
+      content: "";
+      width: 100%;
+      height: 350px;
+      position: absolute;
+      top: -150px;
+      left: 0;
+      transform: skewY(-20deg);
+    }
+    .card-pricing2.bg-primary:before {
+    //background: #33cabb;
+    }
+
+    .card-pricing2 .pricing-header {
+      padding: 20px 20px 50px;
+      text-align: left;
+      position: relative;
+    }
+    .card-pricing2 .price-value {
+      display: inline-block;
+      width: 170px;
+      height: 110px;
+      padding: 15px;
+      border: 2px solid;
+      border-top: none;
+      border-bottom: none;
+      position: relative;
+    }
+    .card-pricing2 .price-value:after,
+    .card-pricing2 .price-value:before {
+      width: 121px;
+      height: 121px;
+      border: 3px solid;
+      border-right: none;
+      border-bottom: none;
+      position: absolute;
+      top: -60px;
+      content: "";
+      left: 50%;
+      transform: translateX(-50%) scaleY(.5) rotate(45deg);
+    }
+    .card-pricing2 .pricing-inner-value {
+      width: 100%;
+      height: 100%;
+      border: 2px solid;
+      border-top: none;
+      border-bottom: none;
+      z-index: 1;
+      position: relative;
+      background: #fff;
+    }
+    .card-pricing2 .pricing-inner-value:after,
+    .card-pricing2 .pricing-inner-value:before {
+      width: 97px;
+      height: 97px;
+      background: #fff;
+      border: 3px solid;
+      border-bottom: none;
+      border-right: none;
+      position: absolute;
+      top: -48px;
+      z-index: -1;
+      content: "";
+      left: 50%;
+      transform: translateX(-50%) scaleY(.5) rotate(45deg);
+    }
+    .card-pricing2 .price-value:after {
+      border-top: none;
+      border-left: none;
+      border-bottom: 3px solid;
+      border-right: 3px solid;
+      top: auto;
+      bottom: -60px;
+    }
+    .card-pricing2 .pricing-inner-value:after {
+      border-right: 3px solid;
+      border-bottom: 3px solid;
+      border-top: none;
+      border-left: none;
+      top: auto;
+      bottom: -48px;
+    }
+
+    .card-pricing2 .pricing-content {
+      padding: 10px 0 0 50px;
+      margin-bottom: 10px;
+      list-style: none;
+      text-align: left;
+      transition: all .3s ease 0s;
+    }
+    .card-pricing2 .pricing-content li {
+      padding: 2px 0;
+      font-size: 14px;
+      position: relative;
+      line-height: 27px;
+    }
+    .card-pricing2 .pricing-content li.pricing-disable:before,
+    .card-pricing2 .pricing-content li:before {
+      content: "\f2fd";
+      font-family: 'Material Design Icons';
+      color: #15c377;
+      text-align: center;
+      position: absolute;
+      left: -40px;
+      font-size: 20px;
+    }
+    .card-pricing2 .pricing-content li:nth-child(1):before {
+      content: "\f2fd";
+    }
+    .card-pricing2 .pricing-content li:nth-child(2):before {
+      content: "\f51b";
+    }
+    .card-pricing2 .pricing-content li:nth-child(3):before {
+      content: "\f0f0";
+    }
+    .card-pricing2 .pricing-content li.pricing-disable:before {
+      content: "\f15a";
+      color: #f96868;
+    }
+    .container-fluid .media-this{
+      background-color: #f96197!important;
+      border-color: #f96197!important;
+      color: #fff !important;
+    }
+    .container-fluid .card-pricing2:hover {
+      border: 1px dashed #f33!important;
+      opacity: 0.5;
+    }
+    .container-fluid .card-media{
+      position: relative;
+    }
+    .container-fluid .card-media-play{
+      width: 20%;
+      height: 20%;
+      position: absolute;
+      top: 40%;
+      left: 40%;
+      font-size: 60px;
+      cursor:pointer;
+      opacity: 0.7;
+    }
+
+
+    /* 默认的搜索框 */
+    .lyear-search {
+      position: relative;
+      z-index: 0;
+      display: -webkit-inline-box;
+      display: inline-flex;
+    }
+    .lyear-search input {
+      width: 300px;
+      padding-left: 10px;
+      -webkit-transition: .5s;
+      transition: .5s;
+    }
+    .lyear-search.lyear-search-right input {
+      padding-left: 12px;
+      padding-right: 35px;
+    }
+    .layui-laypage-count{
+      background: none!important;
+    }
+    .layui-laypage .layui-laypage-curr .layui-laypage-em{
+      background: #33cabb!important;
+    }
+    .card-body{
+      padding-left: 14px!important;
+      padding-right: 14px!important;
+    }
+    .layui-flow-more{
+      display: block;
+      min-width: 100px;
+      width: 100%!important;
+      text-align: center;
+    //position: absolute!important;
+      bottom: 0px;
+      left: 40%;
+    }
+    .item-this{
+      border: 1px dashed #f33!important;
+      opacity: 0.5;
+    }
+    .li-original{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-media img{
+      opacity: 0.2;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container-fluid p-t-15" style="background: #fff;padding-top:0px!important;margin-bottom: 15px;" id="view">
+
+  <div class="row">
+    <div class="col-md-12" style="padding-right: 0px;padding-left: 0px;">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group" style="float: left;">
+            <div class="btn-group">
+              <button class="btn btn-default" id="audio-upload"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
+              <button class="btn btn-default" id="audio-delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+            </div>
+          </div>
+          <div class="form-group" style="float: right;">
+            <form class="lyear-search lyear-search-left">
+              <div class="input-group">
+                <input onkeydown="if(window.event.keyCode==13){return false;}" type="text" id="audio-keyword" name="keyword" class="form-control" placeholder="请输入搜索的关键词...">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-default" id="keyword-search">搜索</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!--第二种布局方式-->
+  <div class="row" id="item-media">
+
+
+  </div>
+
+
+
+</div>
+
+<div style="text-align: center; background-color:#FFF; position: fixed; bottom: 0px; width: 100%;opacity: 0.8; padding-top: 8px; padding-bottom: 8px;"  id="confirmSelect">
+  <button type="button" class="btn btn-primary" id="okSelect">确 认</button>
+  <button type="button" class="btn btn-default" onclick="javascript:parent.layer.closeAll();">关 闭</button>
+
+</div>
+
+
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+  ready(function() {
+    layui.use(['zhanshop', 'flow'], function(){
+      var menuId = layui.zhanshop.getParam('_id');
+      if(menuId == false) return window.location = 'about:blank';
+      var flow = layui.flow;
+      flow.load({
+        elem: '#item-media' //指定列表容器
+        ,isAuto: true
+        ,isLazyimg: false
+        ,done: function(page, next){ //到达临界点（默认滚动触发），触发下一页
+          var lis = [];
+          //以jQuery的Ajax请求为例，请求下一页数据（注意：page是从2开始返回）
+          layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', {"search":[['original', 'like', layui.zhanshop.getParam('keyword')]], '_method': 'GET', 'page': page, 'limit': 20}, {}, function(res){
+            //假设你的列表返回在data集合中
+            layui.each(res.data.data, function(index, item){
+              var html = '<div class="col-md-3"><div class="card card-pricing2 item-media" data-data=\''+JSON.stringify(item)+'\'><div class="card-media"><img src="../images/audio.png" /><div class="card-media-play"><i class="mdi mdi-play-circle-outline media-play" data-url="'+item.url+'"></i></div></div><ul class="pricing-content"><li class="li-original" title="'+item.original+'">'+item.original+'</li><li>'+item.duration+'秒</li><li>'+item.create_time+'</li></ul></div></div>';
+              lis.push(html);
+            });
+
+            //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+            //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+            next(lis.join(''), page < Math.ceil(res.data.total/ 20));
+
+            if(layui.zhanshop.getParam('multi')){
+              var inputVal = $('#'+parent.layui.zhanshopFrom.currentInputId, window.parent.document).val();
+              var vals = inputVal ? JSON.parse(inputVal) : [];
+              $('.item-media').each(function(){
+                var data = $(this).data('data');
+                for(var i in vals){
+                    if(vals[i]['url'] == data['url']){
+                      $(this).addClass('item-this');
+                      $(this).addClass('input-select'); // 被input 默认选中的
+                    }
+                }
+              });
+            }
+
+          }, function(xhr){});
+        }
+      });
+
+      $(document).on('click', '.media-play', function() {
+        layer.open({
+          type: 2,
+          shade: 0.3,
+          title: '音乐播放器',
+          offset:'auto',
+          scrollbar: false,
+          area: ['70%', '70%'],
+          content: './dialog/qqmc.html?url='+$(this).data('url'),
+          anim: 2
+        });
+      });
+
+
+      $(document).on('click', '.item-media', function() {
+        if($(this).hasClass("item-this")){
+          // 如果被input选中的触发删除
+          if(layui.zhanshop.getParam('multi') && $(this).hasClass("input-select")){
+              var domId = parent.layui.zhanshopFrom.currentInputId; // 删除操作id 上的元素
+            var vals = $('#'+domId, window.parent.document).val(); // 合并两边的值
+            var vals = vals ? JSON.parse(vals) : [];
+            var thisData = $(this).data('data');
+            for(var i in vals){
+              if(vals[i]['url'] == thisData.url){
+                  // 删除表单元素
+                  vals.splice(i,1);
+
+              }
+            }
+            $('#'+domId, window.parent.document).parent().find('.inputAudiosDel').each(function(){
+              if($(this).data('url') == thisData.url){
+                $(this).parent().parent().parent().remove();
+              }
+            });
+            vals = JSON.stringify(vals);
+            if(vals == '[]') vals = '';
+            $('#'+domId, window.parent.document).val(vals);
+          }
+          $(this).removeClass('item-this');
+        }else{
+          if(layui.zhanshop.getParam('multi') == false){
+            // 删除其他所有
+            $('.item-this').each(function(){
+              $(this).removeClass('item-this');
+            });
+          }
+          $(this).addClass('item-this');
+        }
+      });
+
+      $(document).on('click', '#audio-upload', function() {
+        window.location = 'dialog/upload-audio.html?t='+(new Date().getTime());
+        //layui.zhanshop.iframe('上传音频', 'dialog/upload-audio.html');
+      });
+
+      $(document).on('click', '#audio-delete', function() {
+        var reqData = '';
+        $('.item-this').each(function(index){
+          var data = $(this).data('data');
+          reqData += 'pk[]='+data.audio_id+'&';
+        });
+        if(reqData == ''){
+          return layui.zhanshop.alert('请先选中需要删除的音频', 'danger');
+        }
+        reqData += '_method=DELETE';
+        layui.zhanshop.confirm('确定要删除么?', function(){
+          layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', reqData, {}, function(data){
+            // 删除指定元素即可
+            $('.item-this').each(function(){
+              $(this).parent().remove(); // 删除自身
+            });
+          },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');});
+        }, function(){
+
+        });
+      });
+
+      $('#audio-keyword').val(layui.zhanshop.getParam('keyword'));
+      $(document).on('click', '#keyword-search', function() {
+        // 触发搜索
+        var keyword = $('#audio-keyword').val();
+        var searchUrl = window.location.href;
+        searchUrl = searchUrl.split('?');
+        if(keyword == ''){
+          window.location = searchUrl[0]+'?_id='+menuId;
+          return false;
+        }
+        window.location = searchUrl[0]+'?_id='+menuId+'&keyword='+keyword;
+        return false;
+      });
+
+      $(document).on('click', '#okSelect', function() {
+        if(layui.zhanshop.getParam('multi')){
+          checkSelect();
+        }else{
+          radioSelect();
+        }
+      });
+
+      function radioSelect(){
+        // 单选就是替换 多选就是追加,还有已选的选择呢
+        var domId = parent.layui.zhanshopFrom.currentInputId;
+        var audio = '';
+        var audiosHtml = '';
+        $('.item-this').each(function(index){
+          audio = $(this).data('data');
+          delete audio['create_time'];
+          delete audio['delete_time'];
+          // 删除
+          audiosHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><div class="pictext"><span class="mdi mdi-volume-medium icotext"></span><br>'+audio.original+'</div><figcaption><a class="btn btn-round btn-square btn-danger inputAudioDel" href="javascript:void(0)"><i class="mdi mdi-close audio-delete"></i></a></figcaption></figure></li>';
+        });
+        var lesson = layui.zhanshop.getParam('lesson');
+        if(lesson){
+          $('#'+domId, window.parent.document).parent().find('span').eq(0).html(audio.original);
+        }else{
+          $('#'+domId, window.parent.document).parent().find('ul').html(audiosHtml);
+        }
+
+        $('#'+domId, window.parent.document).val(JSON.stringify(audio));
+        parent.layer.closeAll();
+      }
+
+      function checkSelect(){
+        var maxLength = 12;
+        // 单选就是替换 多选就是追加,还有已选的选择呢
+        var domId = parent.layui.zhanshopFrom.currentInputId;
+        var vals = $('#'+domId, window.parent.document).val(); // 合并两边的值
+        var vals = vals ? JSON.parse(vals) : [];
+        // 已选之前已选，现在取消了
+        audiosHtml = '';
+        for(var i in vals){
+          audiosHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><div class="pictext"><span class="mdi mdi-volume-medium icotext"></span><br>'+vals[i]['original']+'</div><figcaption><a class="btn btn-round btn-square btn-danger inputAudiosDel" href="javascript:void(0)"><i class="mdi mdi-close audios-delete"></i></a></figcaption></figure></li>';
+        }
+        $('.item-this').each(function(index){
+          var rowData = $(this).data('data');
+          delete rowData['create_time'];
+          delete rowData['delete_time'];
+          if(JSON.stringify(vals).indexOf(rowData.url) < 0){
+            vals.push(rowData);
+            audiosHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><div class="pictext"><span class="mdi mdi-volume-medium icotext"></span><br>'+rowData.original+'</div><figcaption><a class="btn btn-round btn-square btn-danger inputAudiosDel" data-url="'+rowData.url+'" href="javascript:void(0)"><i class="mdi mdi-close audios-delete"></i></a></figcaption></figure></li>';
+          }
+        });
+        audiosHtml += '<li class="col-6 col-md-4 col-lg-2"><a class="add audios-add" ></a></li>';
+        // 把图片处理一下
+        if(vals.length > maxLength) return layui.zhanshop.alert('最大不能选择'+maxLength+'个', danger);
+        $('#'+domId, window.parent.document).parent().find('ul').html(audiosHtml);
+        vals = JSON.stringify(vals);
+        if(vals == '[]') vals = '';
+        $('#'+domId, window.parent.document).val(vals);
+        parent.layer.closeAll();
+      }
+
+
+    });
+
+  });
+  // layui.use(['laypage'], function(){
+  //     var laypage = layui.laypage;
+  //
+  // });
+
+</script>
+</body>
+</html>

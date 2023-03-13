@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="../css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.config.js?v=1"></script>
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.all.min.js?v=1"></script>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<form  class="layui-form">
+    <div id="view">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card">
+
+
+
+                    <!---验证还是走lay-->
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+
+                        <div class="layui-tab-content">
+
+                            <!----分步骤表单--->
+                            <div class="layui-tab-item layui-show">
+                                <div class="col-md-12">
+                                    {{#  arr_foreach(d, function(k, v){ }}
+                                        {{#  if(v.input_type == 'hidden'){ }}
+                                        {{#  }else if(v.input_type == 'password'){ }}
+                                        {{#  }else if(v.input_type == 'image'){ }}
+                                        {{#  }else if(v.input_type == 'images'){ }}
+                                        {{#  }else if(v.input_type == 'video'){ }}
+                                        {{#  }else if(v.input_type == 'videos'){ }}
+                                        {{#  }else if(v.input_type == 'audio'){ }}
+                                        {{#  }else if(v.input_type == 'audios'){ }}
+                                        {{#  }else if(v.input_type == 'document'){ }}
+                                        {{#  }else if(v.input_type == 'documents'){ }}
+                                        {{#  }else if(v.input_type == 'select'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <div class="form-controls">
+                                                <select lay-ignore class="form-control" name="{{v.field}}">
+                                                    <option value="">请选择</option>
+                                                    {{#  arr_foreach(v.value, function(k1, v1){ }}
+                                                    {{#  if(k1 == v.default){ }}
+                                                    <option value="{{k1}}" selected="">{{v1}}</option>
+                                                    {{# }else{ }}
+                                                    <option value="{{k1}}">{{v1}}</option>
+                                                    {{#  } }}
+                                                    {{#  }); }}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        {{#  }else if(v.input_type == 'radio'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <div class="clearfix">
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input checked lay-ignore type="radio" id="{{v.field}}---1" name="{{v.field}}" class="custom-control-input" value="">
+                                                    <label class="custom-control-label" for="{{v.field}}---1">全部</label>
+                                                </div>
+                                                {{#  arr_foreach(v.value, function(k1, v1){ }}
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input lay-ignore type="radio" id="{{v.field}}--{{k1}}" name="{{v.field}}" class="custom-control-input" value="{{k1}}">
+                                                    <label class="custom-control-label" for="{{v.field}}--{{k1}}">{{v1}}</label>
+                                                </div>
+                                                {{#  }); }}
+                                            </div>
+                                        </div>
+
+                                        {{#  }else if(v.input_type == 'date'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+
+                                        </div>
+
+                                        {{#  }else if(v.input_type == 'cascader'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <div class="clearfix">
+                                                <div class="cascader-prop" style="display: none;"> {"checkStrictly":true} </div>
+                                                <input type="text" data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{v.field}}" id="{{v.field}}" value="">
+                                            </div>
+                                        </div>
+
+                                        {{#  }else if(v.input_type == 'time'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+
+                                        </div>
+
+                                        {{#  }else if(v.input_type == 'timerange'){ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+
+                                        </div>
+
+                                        {{# }else{ }}
+                                        <div class="form-group">
+                                            <label for="{{v.field}}">{{v.title}}</label>
+                                            <input type="text" class="form-control" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+
+                                        </div>
+                                        {{#  } }}
+
+
+                                    {{#  }); }}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-xs-12" id="from-button" style="text-align: center;">
+                            <button type="button" class="btn btn-primary" lay-submit lay-filter="onsubmit" data-tabindex="0" id="submitButton">搜&nbsp;&nbsp;索</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</form>
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+    ready(function() {
+
+        layui.use(['zhanshop','form', 'zhanshopFrom'], function(){
+            var menuId = parent.layui.zhanshop.getParam('_id');
+            const IDNAME = parent.layui.zhanshop.table.idName;
+            window.schmas = null;
+            layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, '#view', function(data){
+                schmas = data;
+                layui.zhanshopFrom.render();
+                // 表单提交的处理
+                //监听提交
+                layui.form.on('submit(onsubmit)', function(data){
+                    window.submitData = data.field;
+                    delete submitData['select'];
+                    layui.zhanshopFrom.searchhandle(submitData, function(res){
+                        parent.where = {'_method': 'GET'};
+                        parent.where['search'] = res;
+                        //parent.layui.zhanshop.table.rowObj.update(updateData[0])
+
+                        parent.layui.zhanshopTable.render(parent.colsData, true);
+                        // layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/table.data?id='+menuId, 'POST', res, {}, function(res){
+                        //     return layui.zhanshop.alert('操作成功', 'success', function(){
+                        //         parent.window.location.reload();
+                        //     });
+                        // },function(xhr){
+                        //     return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                        // });
+                    }, true, false);
+
+                    return false;
+                });
+            }, 'POST', {"_method": "searchfrom"});
+        });
+
+    });
+</script>
+</body>
+</html>

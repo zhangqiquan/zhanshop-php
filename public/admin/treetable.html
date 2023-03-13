@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>树形表格</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="./css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="js/layer/css/layui.css">
+</head>
+<body>
+<div class="container-fluid p-t-15" id="view">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+
+
+                <div class="card-toolbar d-flex flex-column flex-md-row">
+                    <div class="toolbar-btn-action">
+                        <a style="color: #000;font-size: 18px;opacity: 0.7;line-height: 2.2em;">{{d.title}}</a>
+                    </div>
+
+                </div>
+
+
+
+                <div class="card-body">
+
+                    <div class="layui-btn-container" style="display: inline-block;">
+                        <div class="layui-btn-group">
+                            <button id="btnExpandAll" class="layui-btn layui-btn-primary layui-btn-sm" >全部展开</button>
+                            <button id="btnFoldAll" class="layui-btn layui-btn-primary layui-btn-sm" >全部折叠</button>
+                        </div>
+
+                    </div>
+                    <div style="float: right">
+                        <input class="layui-input" id="edtSearch" value="" placeholder="输入关键字"
+                               style="display: inline-block;width: 140px;height: 30px;line-height: 30px;padding: 0 5px;margin-right: 5px;"/>
+                        <div class="layui-btn-container" style="display: inline-block;">
+                            <button id="btnSearch" class="layui-btn layui-btn-sm layui-btn-primary">
+                                <i class="layui-icon">&#xe615;</i>搜索
+                            </button>
+                            <button id="btnClearSearch" class="layui-btn layui-btn-sm layui-btn-primary">
+                                <i class="layui-icon">&#x1006;</i>清除搜索
+                            </button>
+                        </div>
+                    </div>
+
+                    <table id="laytable" lay-filter="laytable"></table>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <script id="left-toolbar" type="text/html">
+        <div class="layui-btn-container layui-btn-group">
+            {{#  arr_foreach(d.head_toolbar, function(k1, v1){ }}
+            {{#  if(v1.event != 'hidden'){ }}
+            <button class="layui-btn layui-btn-primary layui-btn-sm head-event"  data-event="{{v1.event}}" lay-event="{{v1.event}}" data-href='{{v1.href}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
+            {{#  } }}
+            {{#  }); }}
+        </div>
+    </script>
+    <!---右击菜单--->
+    <div id="contextmenu" class="inner show" style="height: auto;min-height: 0px;position: absolute;left: 0px;top: 0px;z-index: 999999999999999;background: #f33;display: none;">
+        <ul class="dropdown-menu inner show" style="border: 1px solid #dddddd!important;">
+            {{#  arr_foreach(d.row_toolbar, function(k1, v1){ }}
+            {{#  if(v1.event != 'hidden'){ }}
+            <li><a class="dropdown-item row-event" href="javascript:void(0);" data-event="{{v1.event}}" data-method='{{v1.method}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>&nbsp;&nbsp;<span class="text">{{v1.title}}</span></a></li>
+            {{#  } }}
+
+            {{#  }); }}
+            <li><a class="dropdown-item row-event" data-event="source" data-event="alert" href="javascript:void(0);" ><i class="layui-icon">&#xe6b2;</i>&nbsp;&nbsp;<span class="text">查看数据源</span></a></li>
+        </ul>
+    </div>
+
+</div>
+<!---下拉菜单图标--->
+<script type="text/html" id="downmenu">
+    <i class="layui-icon" lay-event="spread" style="cursor:pointer;" >&#xe602;</i>
+</script>
+
+<script type="text/html" id="tbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="js/layer/layui.js"></script>
+<script>
+    ready(function(){
+        layui.use(['zhanshopTreeTable', 'zhanshop', 'zhanshopTableEvent'], function () {
+            layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.table?id='+layui.zhanshop.getParam('_id'), '#view', function(data){
+                //console.log(data);
+                layui.zhanshopTreeTable.url = API_ADDRESS + '/v3.0.0/index.table?id=' + layui.zhanshop.getParam('_id');
+                layui.zhanshopTreeTable.title = data.title;
+                layui.zhanshopTreeTable.elem = '#laytable';
+                layui.zhanshopTreeTable.toolbar = '#left-toolbar';
+                layui.zhanshopTreeTable.idName = data.pk;
+                layui.zhanshopTreeTable.titleName = data.name;
+                layui.zhanshopTreeTable.pidName = data.pid;
+                /***/
+                layui.zhanshopTreeTable.width = data.width;
+                layui.zhanshopTreeTable.height = data.height;
+                layui.zhanshopTreeTable.even = data.even;
+                layui.zhanshopTreeTable.skin = data.skin;
+                layui.zhanshopTreeTable.css = data.css;
+                layui.zhanshopTreeTable.lineStyle = data.lineStyle;
+                layui.zhanshopTreeTable.cellMinWidth = data.cellMinWidth;
+                layui.zhanshopTreeTable.data = data.data;
+                /***/
+                window.colsData = [{type: 'checkbox'}];
+                //colsData.unshift({type:'checkbox'});
+                for(var i in data.cols){
+                    if(data.cols[i]['in_list'] !== false){
+                        colsData.push({field: data.cols[i]['field'], title: data.cols[i]['title'], width:data.cols[i]['width'], sort: data.cols[i]['sort']});
+                    }
+                }
+                //data.cols.unshift({type:'checkbox'});
+                layui.zhanshopTreeTable.render(colsData);
+                layui.zhanshopTreeTable.schma = data.cols;
+                var table = layui.zhanshop.table.table;
+                // 全部展开
+                $('#btnExpandAll').click(function () {
+                    table.expandAll();
+                });
+
+                // 全部折叠
+                $('#btnFoldAll').click(function () {
+                    table.foldAll();
+                });
+                // 搜索
+                $('#btnSearch').click(function () {
+                    var keywords = $('#edtSearch').val();
+                    if (keywords) {
+                        table.filterData(keywords);
+                    } else {
+                        table.clearFilter();
+                    }
+                });
+
+                // 清除搜索
+                $('#btnClearSearch').click(function () {
+                    table.clearFilter();
+                });
+
+
+            }, 'POST', {"_method":"render"});
+
+        });
+    });
+
+
+</script>
+
+
+</body>
+</html>

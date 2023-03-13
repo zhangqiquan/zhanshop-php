@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="../css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.config.js?v=1"></script>
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.all.min.js?v=1"></script>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<form  class="layui-form">
+<div id="view">
+
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="card">
+
+
+
+                <!---验证还是走lay-->
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title" id="layui-tab-ul" style="margin-left: 10px;text-align: center;">
+                        {{#  arr_foreach(d, function(index, item){ }}
+                        {{index = parseInt(index)}}
+                        <li id="layertab{{index}}" data-index="{{index}}" data-table="{{item.table_name}}"  class="{{#  if(index == 0){ }}layui-this{{#  } }}">{{item.title}}</li>
+                        {{#  }); }}
+                    </ul>
+
+                    <div class="layui-tab-content">
+
+                        {{#  arr_foreach(d, function(index, item){ }}
+                        <!----分步骤表单--->
+                        <div class="layui-tab-item {{#  if(index == 0){ }}layui-show{{#  } }}">
+                            <div class="col-md-12">
+                                {{#  arr_foreach(item.schema, function(k, v){ }}
+                                {{#  if(v.input_type == 'hidden'){ }}
+                                <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{hiddenVal(v.default)}}">
+
+                                {{#  }else if(v.input_type == 'tag'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="fairy-tag-container">
+                                            <input id="{{item.table_name}}--{{v.field}}-tag" type="text" class="inputTag fairy-tag-input tag2">
+                                        </div>
+
+                                        <input class="inputTagVal" name="{{item.table_name}}[{{v.field}}]" type="hidden" value='{{v.default}}'>
+
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'cascader'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="cascader-prop" style="display: none;">
+                                            {{json_encode(v.value)}}
+                                        </div>
+                                        <input type="text"  data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{v.default}}'>
+                                    </div>
+                                </div>
+
+
+                                {{#  }else if(v.input_type == 'select'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <select lay-ignore class="form-control" name="{{item.table_name}}[{{v.field}}]">
+                                            <option value="">请选择</option>
+                                            {{#  arr_foreach(v.value, function(k1, v1){ }}
+                                            {{#  if(k1 == v.default){ }}
+                                            <option value="{{k1}}" selected="">{{v1}}</option>
+                                            {{# }else{ }}
+                                            <option value="{{k1}}">{{v1}}</option>
+                                            {{#  } }}
+                                            {{#  }); }}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'radio'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        {{#  arr_foreach(v.value, function(k1, v1){ }}
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            {{#  if(k1 == v.default){ }}
+                                            <input checked lay-ignore type="radio" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
+                                            {{# }else{ }}
+                                            <input lay-ignore type="radio" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
+                                            {{#  } }}
+                                            <label class="custom-control-label" for="{{item.table_name}}--{{v.field}}--{{k1}}">{{v1}}</label>
+                                        </div>
+                                        {{#  }); }}
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'checkbox'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        {{#  arr_foreach(v.value, function(k1, v1){ }}
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            {{#  if(in_array(k1 , v.default)){ }}
+                                            <input checked lay-ignore type="checkbox" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}][]" class="custom-control-input" value="{{k1}}">
+                                            {{# }else{ }}
+                                            <input lay-ignore type="checkbox" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}][]" class="custom-control-input" value="{{k1}}">
+                                            {{#  } }}
+                                            <label class="custom-control-label" for="{{item.table_name}}--{{v.field}}--{{k1}}">{{v1}}</label>
+                                        </div>
+                                        {{#  }); }}
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'radios'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}"  value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'checkboxs'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'radiowindow'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                                    </div>
+                                </div>
+                                {{#  }else if(v.input_type == 'checkboxwindow'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'textarea'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <textarea class="form-control inputTextarea" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}">{{=v.default}}</textarea>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'date'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <input type="text" class="form-control inputDate" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{laydate(v.default)}}">
+
+                                </div>
+
+                                {{#  }else if(v.input_type == 'time'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <input type="text" class="form-control inputTime" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{laytime(v.default)}}">
+
+                                </div>
+
+                                {{#  }else if(v.input_type == 'timerange'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{timerange(v.default)}}">
+
+                                </div>
+
+                                {{#  }else if(v.input_type == 'image'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputImage" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'images'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputImages" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'audio'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputAudio" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'audios'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputAudios" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'video'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputVideo" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'videos'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="form-controls">
+                                        <input type="hidden" class="form-control inputVideos" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'document'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="sys_document"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'documents'){ }}
+
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="sys_document"></div>
+                                        <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                                    </div>
+                                </div>
+
+                                {{#  }else if(v.input_type == 'baidueditor'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <textarea style="width:100%;height:400px;" class="layui-textarea inputBaidueditor" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}">{{=v.default}}</textarea>
+                                    </div>
+                                </div>
+                                {{#  }else if(v.input_type == 'jsoneditor'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}">{{v.title}}</label>
+                                    <div class="clearfix">
+                                        <textarea style="width:100%;height:400px;" class="layui-textarea inputJson" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}">{{=v.default}}</textarea>
+                                    </div>
+                                </div>
+                                {{#  }else if(v.input_type == 'password'){ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="">
+
+                                </div>
+                                {{# }else{ }}
+                                <div class="form-group">
+                                    <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                    <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{=v.default}}">
+
+                                </div>
+                                {{#  } }}
+
+
+                                {{#  }); }}
+                            </div>
+                        </div>
+                        <!----分步骤表单--->
+
+                        {{#  }); }}
+
+
+                    </div>
+
+                    <div class="col-xs-12" id="from-button" style="text-align: center;">
+                        <button type="button" class="from-button btn btn-default" id="upButton" style="display: none;" >上一步</button>
+                        <button type="button" class="from-button btn btn-info" id="nextButton" lay-filter="nextButton" style="display: none;">下一步</button>
+                        <button type="button" class="btn btn-primary" lay-submit lay-filter="onsubmit" data-tabindex="0" style="display: none;" id="submitButton">完&nbsp;&nbsp;成</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+</form>
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        const IDNAME = parent.layui.zhanshop.table.idName;
+        layui.use(['zhanshop','form', 'zhanshopFrom'], function(){
+            var menuId = parent.layui.zhanshop.getParam('_id');
+            window.schmas = null;
+            var postData = {'_method': 'editfrom'};
+            //postData['pk'] = layui.zhanshop.getParam(IDNAME);
+            layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(data){
+                schmas = data;
+                layui.zhanshopFrom.render();
+                // 表单提交的处理
+                //监听提交
+                layui.form.on('submit(onsubmit)', function(data){
+                    window.submitData = data.field;
+                    delete submitData['select'];
+                    layui.zhanshopFrom.verification(submitData, function(){
+                        submitData['_method'] = 'PUT';
+                        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', submitData, {}, function(res){
+                            return layui.zhanshop.alert('编辑成功', 'success', function(){
+                                // 编辑成功更新行值
+                                try{
+                                    var updateData = res.data.data;
+                                    updateData = parent.layui.zhanshopDataFormat.onHandle(updateData, parent.layui.zhanshopTable.schma);
+                                    //console.log(updateData[0]);
+                                    parent.layui.zhanshop.table.rowObj.update(updateData[0])
+                                    parent.layer.closeAll();
+                                }catch (e) {
+                                    parent.window.location.reload();
+                                }
+
+                            });
+                        },function(xhr){
+                            return layui.zhanshop.alert((xhr.responseJSON && xhr.responseJSON.msg) ? xhr.responseJSON.msg : xhr.statusText, 'danger');
+                        }, true, false);
+                    });
+
+                    return false;
+                });
+            }, 'POST', postData);
+        });
+
+    });
+</script>
+</body>
+</html>

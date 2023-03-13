@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>后台管理系统-登录</title>
+  <link rel="icon" href="favicon.ico" type="image/ico">
+  <meta name="author" content="张启全">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="css/style.min.css" rel="stylesheet">
+  <style>
+
+  </style>
+</head>
+
+<body>
+<div class="row no-gutters bg-white vh-100">
+  <div class="col-md-6 col-lg-7 col-xl-8 d-none d-md-block" style="background-image: url(images/login-bg-1.jpg); background-size: cover;">
+
+    <div class="d-flex vh-100">
+      <div class="p-5 align-self-end">
+        <br><br><br>
+        <p class="text-white"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-md-6 col-lg-5 col-xl-4 align-self-center">
+    <div class="p-5">
+      <div class="text-center">
+        <a href="javascript:void(0)" style="font-size: 24px;"> <span class="mdi mdi-laptop-windows"></span>&nbsp;&nbsp;后台管理系统 </a>
+      </div>
+      <p class="text-center text-muted"><small>请使用您的账号登录系统</small></p>
+
+      <form class="layui-form" action="#" method="post" onsubmit="return false;">
+        <div class="form-group">
+          <label for="user_name">用户名</label>
+          <input type="text" required class="form-control" id="user_name" name="user_name" placeholder="请输入您的用户名">
+        </div>
+
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" required class="form-control" id="password" name="password" placeholder="请输入您的密码">
+        </div>
+
+        <div class="form-group" style="height: 10px;">
+          <!--          <div class="custom-control custom-checkbox">-->
+          <!--            <input type="checkbox" name="expires_day" class="custom-control-input" id="expires_day" value="5">-->
+          <!--            <label class="custom-control-label not-user-select" for="expires_day">5天内自动登录</label>-->
+          <!--          </div>-->
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-block btn-primary" type="submit"   lay-submit lay-filter="onsubmit">立即登录</button>
+        </div>
+      </form>
+      <p class="text-center text-muted mt-3"></p>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="js/layer/layui.js"></script>
+<script>
+  if(top.location!=self.location){
+    parent.window.location=window.location.href;
+  }
+  ready(function(){
+    layui.use(['zhanshop','form'], function(){
+      var form = layui.form;
+      var zhanshop = layui.zhanshop;
+      form.on('submit(onsubmit)', function(data){
+        var expiresDay = 1;
+        if(data.field.expires_day) expiresDay = data.field.expires_day;
+        data.field['_method'] = 'POST';
+        zhanshop.ajax(API_ADDRESS+'/v3.0.0/passport.login', 'POST', data.field, {}, function(res){
+          console.info(res);
+          try{
+            zhanshop.setcookie('token', res.data.token, 3600*24*10000);
+            zhanshop.setcookie('the_header_bg', 'color_7', 3600*24*10000);
+            zhanshop.setcookie('the_logo_bg', 'color_7', 3600*24*10000);
+            for(var i in res.data){
+              zhanshop.setSesson(i, res.data[i]);
+            }
+            // 存本地存储
+            var referer = '';
+            try{referer = window.atob(layui.zhanshop.getParam('referer'));}catch (e) {}
+            // 如果不包含当前地址 只跳admin
+            //ok 乱码后就无法出现?api
+            if(referer && referer.lastIndexOf('?_id') >= 0){
+              if(referer.lastIndexOf(window.location.protocol+'//'+window.location.hostname) >= 0){
+                // 获取当前的网址
+                return window.location = referer;
+              }
+
+            }
+
+            window.location = 'index.html';
+          }catch (e) {
+            console.error(e);
+            return zhanshop.alert('登录失败'+e.toString(), 'danger');
+          }
+
+        },function(xhr){
+          try{
+            return zhanshop.alert(xhr.responseJSON.msg, 'danger');
+          }catch (e) {
+            return zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+          }
+
+        });
+        return false;
+      });
+    });
+
+  });
+
+</script>
+</body>
+</html>

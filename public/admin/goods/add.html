@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="../css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.config.js?v=1"></script>
+    <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.all.min.js?v=1"></script>
+    <style>
+        .goods-sku .layui-form-label{
+            width: 90px;
+        }
+    </style>
+</head>
+<body>
+<form  class="layui-form">
+    <div id="view">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card">
+
+
+
+                    <!---验证还是走lay-->
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="position: relative;">
+                        <ul class="layui-tab-title" id="layui-tab-ul" style="margin-left: 10px;text-align: center;">
+                            0 <li  class="layui-this" id="layertab0" data-index="0" data-table="goods_item">基本信息</li>
+                            1 <li id="layertab1" data-index="1" data-table="goods_item_detail" class="">库存规格</li>
+                            2 <li id="layertab2" data-index="2" data-table="goods_item_detail" class="">商品细节</li>
+                            3 <li id="layertab3" data-index="3" data-table="goods_item_point">积分设置</li>
+                        </ul>
+
+                        <div style="width: 100%; height: 40px; position: absolute; z-index: 999;top: 0px;"></div>
+
+                        <div class="layui-tab-content">
+
+                            <!----基本信息--->
+                            <div class="layui-tab-item layui-show">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="goods_item--title"><b class="text-pink">*</b>商品标题</label>
+                                        <input type="text" class="form-control" placeholder="请输入商品标题" name="goods_item[title]" id="goods_item--title" value="">
+                                    </div>
+                                    <div class="form-group"> <label for="goods_item--sub_title">副标题</label>
+                                        <div class="clearfix">
+                                            <textarea class="form-control inputTextarea" name="goods_item[sub_title]" id="goods_item--sub_title"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="goods_item--keywords">关键词</label>
+                                        <div class="clearfix">
+                                            <div class="fairy-tag-container">
+                                                <input id="goods_item--keywords-tag" type="text" class="inputTag fairy-tag-input tag2">
+                                            </div>
+
+                                            <input class="inputTagVal" name="goods_item[keywords]" type="hidden" value="">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"> <label for="goods_item--description">描述</label>
+                                        <div class="clearfix">
+                                            <textarea class="form-control inputTextarea" name="goods_item[description]" id="goods_item--description"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="goods_item--thumbnails"><b class="text-pink">*</b>商品图片</label>
+                                        <div class="form-controls">
+                                            <input type="hidden" class="form-control inputImages" placeholder="请输入商品图片" name="goods_item[thumbnails]" id="goods_item--thumbnails" value=''>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="goods_item--cat_id"><b class="text-pink">*</b>商品类目</label>
+                                        <div class="clearfix">
+                                            <input type="text" data-menuid="goods_category" class="form-control inputCascader" placeholder=""  name="goods_item[cat_id]" id="goods_item--cat_id" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"> <label for="goods_item--min_buy">起订量</label>
+                                        <div class="clearfix">
+                                            <input type="number" class="form-control" placeholder="请输入商品起订量" name="goods_item[min_buy]" id="goods_item--min_buy" value="1">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"> <label for="goods_item--min_buy">限购量</label>
+                                        <div class="clearfix">
+                                            <input type="number" class="form-control" placeholder="请输入商品限购量" name="goods_item[max_buy]" id="goods_item--max_buy" value="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="goods_item--goods_status">商品状态</label>
+                                        <div class="clearfix">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input checked lay-ignore type="radio" id="goods_item--goods_status--1" name="goods_item[goods_status]" class="custom-control-input" value="1">
+                                                <label class="custom-control-label" for="goods_item--goods_status--1">上架</label>
+                                            </div>
+
+
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input lay-ignore type="radio" id="goods_item--goods_status--0" name="goods_item[goods_status]" class="custom-control-input" value="0">
+                                                <label class="custom-control-label" for="goods_item--goods_status--0">仓库</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div>
+
+
+                        </div>
+
+                            <!----库存规格--->
+                            <div class="layui-tab-item">
+                                <div class="col-md-12">
+                                    <div class="form-group"> <label for="goods_item--is_stock_visible">库存显示</label>
+                                        <div class="clearfix">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input checked lay-ignore type="radio" id="goods_item--is_stock_visible--1" name="goods_item[is_stock_visible]" class="custom-control-input" value="1">
+                                                <label class="custom-control-label" for="goods_item--is_stock_visible--1">显示</label>
+                                            </div>
+
+
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input lay-ignore type="radio" id="goods_item--is_stock_visible--0" name="goods_item[is_stock_visible]" class="custom-control-input" value="0">
+                                                <label class="custom-control-label" for="goods_item--is_stock_visible--0">不显示</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group goods-sku">
+                                        <label for="goods_item--min_buy"><br />库存规格</label>
+
+                                        <div class="clearfix">
+                                            <div id="fairy-is-attribute"></div>
+                                            <!--商品类型选择-->
+                                            <div id="fairy-product-type"></div>
+                                            <!--商品属性表-->
+                                            <div id="fairy-attribute-table"></div>
+                                            <!--商品规格表-->
+                                            <div id="fairy-spec-table"></div>
+                                            <!--商品库存表-->
+                                            <div id="fairy-sku-table"></div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+                            <!----商品细节--->
+                            <div class="layui-tab-item">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="goods_item_detail--video"><b class="text-pink"></b>商品视频</label>
+                                        <div class="form-controls">
+                                            <input type="hidden" class="form-control inputVideo" placeholder="请输入商品视频" name="goods_item_detail[video]" id="goods_item_detail--video" value=''>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="goods_item_detail--detail">细节</label>
+                                        <div class="clearfix">
+                                            <textarea style="width:100%;height:400px;" class="layui-textarea inputBaidueditor" name="goods_item_detail[detail]" id="goods_item_detail--detail"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!----积分设置--->
+                            <div class="layui-tab-item">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="goods_item_point--point_exchange_type"><b class="text-pink"></b>积分兑换设置</label>
+                                        <div class="clearfix">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input checked lay-ignore type="radio" id="goods_item_point--point_exchange_type--0" name="goods_item_point[point_exchange_type]" class="custom-control-input" value="0">
+                                                <label class="custom-control-label" for="goods_item_point--point_exchange_type--0">非积分兑换</label>
+                                            </div>
+
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input lay-ignore type="radio" id="goods_item_point--point_exchange_type--1" name="goods_item_point[point_exchange_type]" class="custom-control-input" value="1">
+                                                <label class="custom-control-label" for="goods_item_point--point_exchange_type--1">积分加现金购买</label>
+                                            </div>
+
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input lay-ignore type="radio" id="goods_item_point--point_exchange_type--2" name="goods_item_point[point_exchange_type]" class="custom-control-input" value="2">
+                                                <label class="custom-control-label" for="goods_item_point--point_exchange_type--2">积分兑换或直接购买</label>
+                                            </div>
+
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input lay-ignore type="radio" id="goods_item_point--point_exchange_type--3" name="goods_item_point[point_exchange_type]" class="custom-control-input" value="3">
+                                                <label class="custom-control-label" for="goods_item_point--point_exchange_type--3">只支持积分兑换</label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"> <label for="goods_item--min_buy">可用积分</label>
+                                        <div class="clearfix">
+                                            <input type="number" class="form-control" placeholder="请输入可用积分" name="goods_item_point[max_use_point]" id="goods_item_point--max_use_point" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-xs-12" id="from-button" style="text-align: center;">
+                                <button type="button" class="from-button btn btn-default" id="upButton" style="display: none;" >上一步</button>
+                                <button type="button" class="from-button btn btn-info" id="nextButton" lay-filter="nextButton" style="">下一步</button>
+                                <button type="button" class="btn btn-primary" lay-submit lay-filter="onsubmit" data-tabindex="0" style="display: none;" id="submitButton">完&nbsp;&nbsp;成</button>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</form>
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        window.schmas = null;
+        var menuId = parent.layui.zhanshop.getParam('_id');
+        const IDNAME = parent.layui.zhanshop.table.idName;
+        layui.use(['zhanshop','form', 'zhanshopFrom', 'skuTable'], function(){
+            var form = layui.form;
+            var $ = layui.$;
+            var skuTable = layui.skuTable;
+
+            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', {"_method":"addfrom"}, {}, function (data) {
+                layui.zhanshopFrom.render();
+                schmas = data.data;
+            });
+
+            layui.form.on('submit(onsubmit)', function(data){
+                delete data.field['select'];
+                delete data.field['file'];
+                console.log(data.field);
+                layui.zhanshopFrom.verification(data.field, function(){
+                    if (skuTableObj.getMode() != 0) {
+                        //多规格
+                        var state = Object.keys(data.field).some(function (item, index, array) {
+                            return item.startsWith('goods_item_skus');
+                        });
+                        if(state == false){
+                            layer.msg('sku表数据不能为空', {icon: 5, anim: 6});
+                            $("#layertab1").click();
+                            return false;
+                        }
+
+                        for(var ii in data.field){
+                            if(ii.indexOf("goods_item_skus") != -1){
+                                if(data.field[ii] == false){
+                                    $("#layertab1").click();
+                                    $("#nextButton").css("display", '');
+                                    $("#submitButton").css("display", 'none');
+                                    if(ii.indexOf("picture") != -1){
+                                        //return layer.msg('主图不能为空', {icon: 5, anim: 6});
+                                    }else if(ii.indexOf("price") != -1){
+                                        return layer.msg('销售价不能为空', {icon: 5, anim: 6});
+                                    }else if(ii.indexOf("market_price") != -1){
+                                        return layer.msg('市场价不能为空', {icon: 5, anim: 6});
+                                    }else{
+                                        data.field[ii] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        //state ? layer.alert(JSON.stringify(data.field), {title: '提交的数据'}) : layer.msg('sku表数据不能为空', {icon: 5, anim: 6});
+                    }else{
+                        if(data.field['goods_item_sku[market_price]'] == false){
+                            $("#layertab1").click();
+                            $("#nextButton").css("display", '');
+                            $("#submitButton").css("display", 'none');
+                            return layer.msg('市场价不能为空', {icon: 5, anim: 6});
+                        }
+                        if(data.field['goods_item_sku[price]'] == false){
+                            $("#layertab1").click();
+                            $("#nextButton").css("display", '');
+                            $("#submitButton").css("display", 'none');
+                            return layer.msg('1销售价不能为空', {icon: 5, anim: 6});
+                        }
+                        if(data.field['goods_item_sku[stock]'] == false){
+                            data.field['goods_item_sku[stock]'] = 0;
+                        }
+                        if(data.field['goods_item_sku[cost_price]'] == false){
+                            data.field['goods_item_sku[cost_price]'] = 0;
+                        }
+                    }
+                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', data.field, {}, function(res){
+                        return layui.zhanshop.alert('操作成功', 'success', function(){
+                            parent.window.location.reload();
+                        });
+                    },function(xhr){
+                        return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                    }, true, false);
+                    //console.log(data.field, '拿到最终数据');
+                });
+
+
+                return false;
+            });
+
+
+
+
+            var skuTableObj = skuTable.render({
+                isAttributeElemId: 'fairy-is-attribute',
+                productTypeElemId: 'fairy-product-type',
+                attributeTableElemId: 'fairy-attribute-table',
+                specTableElemId: 'fairy-spec-table',
+                skuTableElemId: 'fairy-sku-table',
+                //商品规格模式 0单规格 1多规格
+                mode: 0,
+                //是否开启sku表行合并
+                rowspan: true,
+                //图片上传接口
+                uploadUrl: './json/upload.json',
+                //获取商品类型接口
+                productTypeUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //获取商品类型下的规格和属性接口
+                attrSpecUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //创建规格接口
+                specCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //删除规格接口
+                specDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //创建规格值接口
+                specValueCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //删除规格值接口
+                specValueDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                //单规格SKU表配置
+                singleSkuTableConfig: {
+                    thead: [
+                        {title: '销售价(元)', icon: 'layui-icon-cols'},
+                        {title: '市场价(元)', icon: 'layui-icon-cols'},
+                        {title: '成本价(元)', icon: 'layui-icon-cols'},
+                        {title: '库存', icon: 'layui-icon-cols'},
+                        {title: '状态', icon: ''},
+                    ],
+                    tbody: [
+                        {type: 'input', field: 'goods_item_sku[price]', value: '0', verify: '', reqtext: '销售价不能为空'},
+                        {type: 'input', field: 'goods_item_sku[market_price]', value: '0', verify: '', reqtext: '市场价不能为空'},
+                        {type: 'input', field: 'goods_item_sku[cost_price]', value: '0', verify: '', reqtext: '成本价不能为空'},
+                        {type: 'input', field: 'goods_item_sku[stock]', value: '0', verify: '', reqtext: '库存不能为空'},
+                        {type: 'select', field: 'goods_item_sku[status]', option: [{key: '启用', value: '1'}, {key: '禁用', value: '0'}], verify: 'required', reqtext: '状态不能为空'},
+                    ]
+                },
+                //多规格SKU表配置
+                multipleSkuTableConfig: {
+                    thead: [
+                        {title: '图片', icon: ''},
+                        {title: '销售价(元)', icon: 'layui-icon-cols'},
+                        {title: '市场价(元)', icon: 'layui-icon-cols'},
+                        {title: '成本价(元)', icon: 'layui-icon-cols'},
+                        {title: '库存', icon: 'layui-icon-cols'},
+                        {title: '状态', icon: ''},
+                    ],
+                    tbody: [
+                        {type: 'image', field: 'picture', value: '', verify: '', reqtext: ''},
+                        {type: 'input', field: 'price', value: '0', verify: '', reqtext: '销售价不能为空'},
+                        {type: 'input', field: 'market_price', value: '0', verify: '', reqtext: '市场价不能为空'},
+                        {type: 'input', field: 'cost_price', value: '0', verify: '', reqtext: '成本价不能为空'},
+                        {type: 'input', field: 'stock', value: '0', verify: '', reqtext: '库存不能为空'},
+                        {
+                            type: 'select',
+                            field: 'status',
+                            option: [{key: '启用', value: '1'}, {key: '禁用', value: '0'}],
+                            verify: '',
+                            reqtext: ''
+                        },
+                    ]
+                },
+                // ========================================== 回显时相关配置参数 ========================================== //
+                //商品id
+                productId: 0,
+                //商品类型id
+                productTypeId: 0,
+                //sku数据接口
+                skuDataUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+            });
+        });
+        // layui.use(['zhanshop','form', 'zhanshopFrom'], function(){
+        //
+        // });
+
+
+    });
+
+
+</script>
+</body>
+</html>

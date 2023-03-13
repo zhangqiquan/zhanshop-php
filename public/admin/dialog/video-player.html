@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>视频播放器</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+    <script type="text/javascript" src="../js/layer/module/ext/ckplayer/ckplayer.js"></script>
+</head>
+<body>
+<div id="video" class="video" style="width: 100%;"></div>
+<script type="text/javascript">
+    document.getElementById('video').style.height = (document.documentElement.clientHeight - 20)+'px';
+    window.onresize = function(){
+        document.getElementById('video').style.height = (document.documentElement.clientHeight - 20)+'px';
+    }
+    function getParam(key = null){
+        var url = window.document.location.href.toString(); //当前完整url
+        var u = url.split("?"); //以？为分隔符把url转换成字符串数组
+        try {
+            if (typeof(u[1]) == "string") {
+                u = u[1].split("&"); //同上
+                var get = {};
+                for (var i in u) {
+                    var j = u[i].split("="); //同上
+                    get[j[0]] = j[1];
+                }
+                if(key){
+                    var val = get[key] ? get[key] : '';
+                    if(val) val = decodeURI(val);
+                    return val;
+                }
+                return get;
+            } else {
+                return {};
+            }
+        }catch (e) {
+            return {};
+        }
+    }
+    var videoObject = {
+        container: '.video', //“#”代表容器的ID，“.”或“”代表容器的class
+        variable: 'player', //播放函数名称，该属性必需设置，值等于下面的new ckplayer()的对象
+        video: getParam('url'),//视频地址
+        autoplay: true,//是否自动播放
+    };
+    var player = new ckplayer(videoObject);//初始化播放器
+</script>
+</body>
+</html>

@@ -10,9 +10,11 @@ declare (strict_types=1);
 
 namespace app\task;
 
+use Swoole\Timer;
+use zhanshop\Task;
+
 class Test
 {
     public function execute($serv){
-
     }
 }

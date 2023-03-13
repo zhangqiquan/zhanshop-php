@@ -12,7 +12,7 @@ declare (strict_types=1);
 namespace app\http;
 
 use app\http\v1_0_0\middleware\RequestLog;
-use zhanshop\App;
+use zhanshop\Request;
 
 class Controller
 {
@@ -29,6 +29,17 @@ class Controller
     protected $afterMiddleware = [
         RequestLog::class
     ];
+
+    /**
+     * restful
+     * @param Request $request
+     * @return mixed
+     */
+    public function restful(Request &$request){
+        $action = $request->method().$request->getAction();
+        $data = $request->getService()->$action($request);
+        return $data;
+    }
 
     /**
      * 统一返回

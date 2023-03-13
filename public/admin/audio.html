@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.min.css">
+    <link rel="stylesheet" type="text/css" href="js/layer/css/layui.css">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <style>
+        body{
+            background: #eee;
+        }
+        /* 第二种布局方式 */
+        .card-pricing2 {
+            background: #f9f9f9ba!important;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            color: #465161!important;
+            border: 1px dashed transparent!important;
+        }
+        .card-pricing2:before {
+            content: "";
+            width: 100%;
+            height: 350px;
+            position: absolute;
+            top: -150px;
+            left: 0;
+            transform: skewY(-20deg);
+        }
+        .card-pricing2.bg-primary:before {
+            //background: #33cabb;
+        }
+
+        .card-pricing2 .pricing-header {
+            padding: 20px 20px 50px;
+            text-align: left;
+            position: relative;
+        }
+        .card-pricing2 .price-value {
+            display: inline-block;
+            width: 170px;
+            height: 110px;
+            padding: 15px;
+            border: 2px solid;
+            border-top: none;
+            border-bottom: none;
+            position: relative;
+        }
+        .card-pricing2 .price-value:after,
+        .card-pricing2 .price-value:before {
+            width: 121px;
+            height: 121px;
+            border: 3px solid;
+            border-right: none;
+            border-bottom: none;
+            position: absolute;
+            top: -60px;
+            content: "";
+            left: 50%;
+            transform: translateX(-50%) scaleY(.5) rotate(45deg);
+        }
+        .card-pricing2 .pricing-inner-value {
+            width: 100%;
+            height: 100%;
+            border: 2px solid;
+            border-top: none;
+            border-bottom: none;
+            z-index: 1;
+            position: relative;
+            background: #fff;
+        }
+        .card-pricing2 .pricing-inner-value:after,
+        .card-pricing2 .pricing-inner-value:before {
+            width: 97px;
+            height: 97px;
+            background: #fff;
+            border: 3px solid;
+            border-bottom: none;
+            border-right: none;
+            position: absolute;
+            top: -48px;
+            z-index: -1;
+            content: "";
+            left: 50%;
+            transform: translateX(-50%) scaleY(.5) rotate(45deg);
+        }
+        .card-pricing2 .price-value:after {
+            border-top: none;
+            border-left: none;
+            border-bottom: 3px solid;
+            border-right: 3px solid;
+            top: auto;
+            bottom: -60px;
+        }
+        .card-pricing2 .pricing-inner-value:after {
+            border-right: 3px solid;
+            border-bottom: 3px solid;
+            border-top: none;
+            border-left: none;
+            top: auto;
+            bottom: -48px;
+        }
+
+        .card-pricing2 .pricing-content {
+            padding: 10px 0 0 50px;
+            margin-bottom: 10px;
+            list-style: none;
+            text-align: left;
+            transition: all .3s ease 0s;
+        }
+        .card-pricing2 .pricing-content li {
+            padding: 2px 0;
+            font-size: 14px;
+            position: relative;
+            line-height: 27px;
+        }
+        .card-pricing2 .pricing-content li.pricing-disable:before,
+        .card-pricing2 .pricing-content li:before {
+            content: "\f2fd";
+            font-family: 'Material Design Icons';
+            color: #15c377;
+            text-align: center;
+            position: absolute;
+            left: -40px;
+            font-size: 20px;
+        }
+        .card-pricing2 .pricing-content li:nth-child(1):before {
+            content: "\f2fd";
+        }
+        .card-pricing2 .pricing-content li:nth-child(2):before {
+            content: "\f51b";
+        }
+        .card-pricing2 .pricing-content li:nth-child(3):before {
+            content: "\f0f0";
+        }
+        .card-pricing2 .pricing-content li.pricing-disable:before {
+            content: "\f15a";
+            color: #f96868;
+        }
+        .container-fluid .media-this{
+            background-color: #f96197!important;
+            border-color: #f96197!important;
+            color: #fff !important;
+        }
+        .container-fluid .card-pricing2:hover {
+            border: 1px dashed #f33!important;
+            opacity: 0.5;
+        }
+        .container-fluid .card-media{
+            position: relative;
+        }
+        .container-fluid .card-media-play{
+            width: 20%;
+            height: 20%;
+            position: absolute;
+            top: 40%;
+            left: 40%;
+            font-size: 60px;
+            cursor:pointer;
+            opacity: 0.7;
+        }
+
+
+        /* 默认的搜索框 */
+        .lyear-search {
+            position: relative;
+            z-index: 0;
+            display: -webkit-inline-box;
+            display: inline-flex;
+        }
+        .lyear-search input {
+            width: 300px;
+            padding-left: 10px;
+            -webkit-transition: .5s;
+            transition: .5s;
+        }
+        .lyear-search.lyear-search-right input {
+            padding-left: 12px;
+            padding-right: 35px;
+        }
+        .layui-laypage-count{
+            background: none!important;
+        }
+        .layui-laypage .layui-laypage-curr .layui-laypage-em{
+            background: #33cabb!important;
+        }
+        .card-body{
+            padding-left: 14px!important;
+            padding-right: 14px!important;
+        }
+        .layui-flow-more{
+            display: block;
+            min-width: 100px;
+            width: 100%!important;
+            text-align: center;
+            //position: absolute!important;
+            bottom: 0px;
+            left: 40%;
+        }
+        .item-this{
+            border: 1px dashed #f33!important;
+            opacity: 0.5;
+        }
+        .li-original{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+
+<body style="background: #eee;padding: 15px;margin-bottom: 15px;">
+<div class="container-fluid p-t-15" style="background: #fff;padding-top:0px!important;margin-bottom: 15px;" id="view">
+
+    <div class="row">
+        <div class="col-md-12" style="padding-right: 0px;padding-left: 0px;">
+            <div class="card">
+                <div class="card-header"><h4>音频管理</h4></div>
+                <div class="card-body">
+                    <div class="form-group" style="float: left;">
+                        <div class="btn-group">
+                            <button class="btn btn-default" id="audio-upload"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
+                            <button class="btn btn-default" id="audio-delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="float: right;">
+                        <form class="lyear-search lyear-search-left">
+                            <div class="input-group">
+                                <input onkeydown="if(window.event.keyCode==13){return false;}" type="text" id="audio-keyword" name="keyword" class="form-control" placeholder="请输入搜索的关键词...">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default" id="keyword-search">搜索</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--第二种布局方式-->
+    <div class="row" id="item-media">
+
+
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript" src="js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        layui.use(['zhanshop', 'flow'], function(){
+            var menuId = layui.zhanshop.getParam('_id');
+            if(menuId == false) return window.location = 'about:blank';
+            var flow = layui.flow;
+            flow.load({
+                elem: '#item-media' //指定列表容器
+                ,isAuto: true
+                ,isLazyimg: false
+                ,done: function(page, next){ //到达临界点（默认滚动触发），触发下一页
+                    var lis = [];
+                    //以jQuery的Ajax请求为例，请求下一页数据（注意：page是从2开始返回）
+                    var postData = {'_method': 'GET'};
+                    postData['search'] = [['original', 'like', layui.zhanshop.getParam('keyword')]];
+                    postData['page'] = page;
+                    postData['limit'] = '20';
+                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', postData, {}, function(res){
+                        //假设你的列表返回在data集合中
+                        layui.each(res.data.data, function(index, item){
+                            var html = '<div class="col-md-3"><div class="card card-pricing2 item-media" data-data=\''+JSON.stringify(item)+'\'><div class="card-media"><img src="./images/audio.png" /><div class="card-media-play"><i class="mdi mdi-play-circle-outline media-play" data-url="'+item.url+'"></i></div></div><ul class="pricing-content"><li class="li-original" title="'+item.original+'">'+item.original+'</li><li>'+item.duration+'秒</li><li>'+date(item.create_time)+'</li></ul></div></div>';
+                            lis.push(html);
+                        });
+
+                        //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                        //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                        next(lis.join(''), page < Math.ceil(res.data.total/ 20));
+                    }, function(xhr){}, true, false);
+                }
+            });
+
+            $(document).on('click', '.media-play', function() {
+                layer.open({
+                    type: 2,
+                    shade: 0.3,
+                    title: '音乐播放器',
+                    offset:'auto',
+                    scrollbar: false,
+                    area: ['70%', '70%'],
+                    content: './dialog/qqmc.html?url='+$(this).data('url'),
+                    anim: 2
+                });
+            });
+
+
+            $(document).on('click', '.item-media', function() {
+                if($(this).hasClass("item-this")){
+                    $(this).removeClass('item-this');
+                }else{
+                    $(this).addClass('item-this');
+                }
+            });
+
+            $(document).on('click', '#audio-upload', function() {
+                layui.zhanshop.iframe('上传音频', 'dialog/upload-audio.html?t='+(new Date().getTime()));
+            });
+
+            $(document).on('click', '#audio-delete', function() {
+                var reqData = '';
+                $('.item-this').each(function(index){
+                    var data = $(this).data('data');
+                    reqData += 'pk[]='+data.audio_id+'&';
+                });
+                if(reqData == ''){
+                    return layui.zhanshop.alert('请先选中需要删除的音频', 'danger');
+                }
+                reqData += '_method=DELETE';
+                layui.zhanshop.confirm('确定要删除么?', function(){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', reqData, {}, function(data){
+                        // 删除指定元素即可
+                        $('.item-this').each(function(){
+                            $(this).parent().remove(); // 删除自身
+                        });
+                    },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');}, true, false);
+                }, function(){
+
+                });
+            });
+
+            $('#audio-keyword').val(layui.zhanshop.getParam('keyword'));
+            $(document).on('click', '#keyword-search', function() {
+                // 触发搜索
+                var keyword = $('#audio-keyword').val();
+                var searchUrl = window.location.href;
+                searchUrl = searchUrl.split('?');
+                if(keyword == ''){
+                    window.location = searchUrl[0]+'?_id='+menuId;
+                    return false;
+                }
+                window.location = searchUrl[0]+'?_id='+menuId+'&keyword='+keyword;
+                return false;
+            });
+
+        });
+
+    });
+    // layui.use(['laypage'], function(){
+    //     var laypage = layui.laypage;
+    //
+    // });
+
+</script>
+</body>
+</html>

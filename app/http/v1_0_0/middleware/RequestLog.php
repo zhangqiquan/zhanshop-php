@@ -14,11 +14,17 @@ use zhanshop\App;
 
 class RequestLog
 {
-    public function handle(&$request, mixed &$resp){
-        return [];
+    public function handle(mixed &$request, array &$resp){
+        $code = $resp['code'] ?? 0;
         $rep = [
-            'url' => $request->server['request_uri'],
-            'resp' => $resp,
+            'time' => date('Y-m-d H:i:s'),
+            'url' => $request->server['request_uri'] ?? '',
+            'ip' => $request->server['remote_addr'] ?? '',
+            'agent' => $request->header['user-agent'] ?? '',
+            'trace' => $resp['trace_id'],
+            'code' => $code,
+            'msg'  => $resp['msg'],
+            'data' => ($code != 0) ? $resp['data'] : null
         ];
         App::log()->push(json_encode($rep, JSON_UNESCAPED_UNICODE), "request");
     }

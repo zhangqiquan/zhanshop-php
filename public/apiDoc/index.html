@@ -1,50 +1,45 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>接口文档</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=8">
-  <meta http-equiv="Expires" content="0">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Cache-control" content="no-cache">
-  <meta http-equiv="Cache" content="no-cache">
-
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
   <meta name="author" content="张启全">
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/materialdesignicons.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/js/bootstrap-multitabs/multitabs.min.css">
-  <link href="/css/style.min.css" rel="stylesheet">
-  <style>
-    .tab-pane{
-      //height:700px!important;
+  <title>api文档</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" type="text/css" href="./css/materialdesignicons.min.css?v=1">
+  <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css?v=1">
+  <link rel="stylesheet" type="text/css" href="./js/bootstrap-multitabs/multitabs.min.css?v=1">
+  <link rel="stylesheet" type="text/css" href="./css/animate.min.css?v=1">
+  <link rel="stylesheet" type="text/css" href="./css/style.min.css?v=1">
+  <script>
+    if(window.location.pathname.split('/').length <= 2){
+      window.location = window.location.pathname + '/';
     }
-  </style>
+  </script>
 </head>
 
 <body>
 <div class="lyear-layout-web">
   <div class="lyear-layout-container">
     <!--左侧导航-->
-    <aside class="lyear-layout-sidebar" style="background: #fff;">
+    <aside class="lyear-layout-sidebar">
 
       <!-- logo -->
       <div id="logo" class="sidebar-header">
-        <a href="index.html" style="color: #000;font-size: 18px;line-height: 3em;opacity: 0.7;"><i class="mdi mdi-file-word"></i>zhanshop文档</a>
+        <a href="./" style="color: #000;font-size: 16px;line-height: 3.8em;opacity: 0.7; height: 68px;"><i class="mdi mdi-file-word"></i> zhanshop接口文档</a>
       </div>
-      <div class="lyear-layout-sidebar-scroll">
+      <div class="lyear-layout-sidebar-info lyear-scroll">
 
         <nav class="sidebar-main">
-          <ul class="nav nav-drawer" id="apinav">
-            <li class="nav-item active"> <a class="multitabs" href="guide.html"><i class="mdi mdi-help-circle-outline"></i><span>开发指南</span></a> </li>
 
-
-          </ul>
         </nav>
 
-        <div class="sidebar-footer">
-        </div>
       </div>
 
     </aside>
@@ -81,119 +76,13 @@
     <!--End 页面主要内容-->
   </div>
 </div>
-
-<script type="text/javascript" src="/js/jquery.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap-multitabs/multitabs.js"></script>
-<script type="text/javascript" src="/js/index.min.js"></script>
-<script>
-  /***
-   * 获取当前浏览器类型
-   */
-  function myBrowser() {
-    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-    var isOpera = userAgent.indexOf("Opera") > -1;
-    if (isOpera) { //判断是否Opera浏览器
-      return "Opera"
-    }
-    ;
-    if (userAgent.indexOf("Firefox") > -1) { //判断是否Firefox浏览器
-      return "FF";
-    }
-    ;
-    if (userAgent.indexOf("Chrome") > -1) {
-      return "Chrome";
-    }
-    ;
-    if (userAgent.indexOf("Safari") > -1) { //判断是否Safari浏览器
-      return "Safari";
-    }
-    ;
-    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) { //判断是否IE浏览器
-      return "IE";
-    }
-    return false;
-  }
-  if(myBrowser() == false){
-    var alertHtml = "当前浏览器不兼容该页面;请使用其他浏览器;火狐和谷歌最佳";
-    alert(alertHtml);
-    window.location = "http://www.firefox.com.cn/download/";
-    document.body.title = alertHtml;
-    throw new Error("浏览器不兼容!");
-  }
-  var sign = "";
-  view();
-  // // 弹出来访问密码
-  // function login(){
-  //   sign = prompt("请输入访问密码?");
-  //   if (sign){
-  //     $.post('/v1.0.0/apiDoc.login', 'pwd='+sign+'&b=2', function (data, status, jqxhr) {
-  //       view();
-  //     }).fail(function (jqxhr) {
-  //       console.error(jqxhr);
-  //       try{
-  //         alert(jqxhr.responseJSON.msg);
-  //       }catch (e) {
-  //         alert(jqxhr.responseText);
-  //       }
-  //       login();
-  //     });
-  //   }else{
-  //     login();
-  //   }
-  // }
-
-  function view(){
-    $.get('/v1.0.0/apiDoc.apis', 'pwd='+sign, function (data, status, jqxhr) {
-      var html = '';
-      var ret = data.data;
-      for(var i in ret){
-        html += '<li class="nav-item nav-item-has-subnav"><a href="javascript:void(0)"><i class="mdi mdi-file-word"></i><span>'+ret[i]['title']+'</span></a><ul class="nav nav-subnav">';
-        var apilist = ret[i]['apis'];
-        for(var ii in apilist){
-          html += '<li> <a class="multitabs" href="doc.html?uri='+apilist[ii]['uri']+'&version='+apilist[ii]['version']+'">'+apilist[ii]['title']+'</a> </li>';
-        }
-        html += '</ul></li>';
-      }
-      $('#apinav').append(html);
-      myonload();
-    }).fail(function (jqxhr) {
-      console.error(jqxhr);
-      try{
-        alert(jqxhr.responseJSON.msg);
-      }catch (e) {
-        alert(jqxhr.responseText);
-      }
-      login();
-    });
-  }
-
-
-
-  function myonload(){
-
-    $('.multitabs').click(function(){
-      var stateObject = {};
-      var title = this.innerHTML;
-      console.log(this.href);
-      var newUrl = this.href.split("/doc.html?")[1];
-      if(newUrl != undefined){
-        window.history.pushState(stateObject, title, '#/doc.html?'+newUrl);
-      }
-    });
-    var hpx = (document.body.clientHeight - 50)+'px';
-    if(window.location.hash){
-      $('.multitabs').each(function(){
-        var thishref = this.href.split("/doc.html?")[1];
-        var href = window.location.href;
-        href = href.split("/doc.html?")[1];
-        if(href == thishref){
-          $(this).click();
-        }
-      });
-    }
-  }
-</script>
+<script type="text/javascript" src="./js/layer/layui.js?v=1"></script>
+<script type="text/javascript" src="./js/jquery.min.js?v=1"></script>
+<script type="text/javascript" src="./js/popper.min.js?v=1"></script>
+<script type="text/javascript" src="./js/bootstrap.min.js?v=1"></script>
+<script type="text/javascript" src="./js/perfect-scrollbar.min.js?v=1"></script>
+<script type="text/javascript" src="./js/bootstrap-multitabs/multitabs.min.js?v=1"></script>
+<script type="text/javascript" src="./js/jquery.cookie.min.js?v=1"></script>
+<script type="text/javascript" src="./js/index.min.js?v=1"></script>
 </body>
 </html>

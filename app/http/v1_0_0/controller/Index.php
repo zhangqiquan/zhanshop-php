@@ -10,12 +10,10 @@ declare (strict_types=1);
 
 namespace app\http\v1_0_0\controller;
 
-use app\http\Controller;
-use app\http\v1_0_0\middleware\RequestLog;
-use zhanshop\App;
-
 // 全部采用post请求
-class Index extends Controller
+use zhanshop\apidoc\ApiDocController;
+
+class Index extends ApiDocController
 {
     /**
      * 前置中间件
@@ -29,10 +27,13 @@ class Index extends Controller
      * @var array
      */
     protected $afterMiddleware = [
-        RequestLog::class
     ];
 
-    public function index(mixed &$request){
-        return "123";
+    public function doc(mixed &$request){
+
+    }
+
+    public function hello(mixed &$request){
+        return "hello";
     }
 }

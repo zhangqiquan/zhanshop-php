@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>图片管理器</title>
+    <meta name="author" content="yinqi">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.min.css">
+    <link rel="stylesheet" type="text/css" href="js/layer/css/layui.css">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <style>
+        body{
+            background: #eee;
+        }
+
+
+        /* 默认的搜索框 */
+        .lyear-search {
+            position: relative;
+            z-index: 0;
+            display: -webkit-inline-box;
+            display: inline-flex;
+        }
+        .lyear-search input {
+            width: 300px;
+            padding-left: 10px;
+            -webkit-transition: .5s;
+            transition: .5s;
+        }
+        .lyear-search.lyear-search-right input {
+            padding-left: 12px;
+            padding-right: 35px;
+        }
+        .layui-laypage-count{
+            background: none!important;
+        }
+        .layui-laypage .layui-laypage-curr .layui-laypage-em{
+            background: #33cabb!important;
+        }
+        .layui-flow-more{
+            display: block;
+            min-width: 100px;
+            width: 20%!important;
+            text-align: center;
+            position: absolute!important;
+            bottom: 0px;
+            left: 40%;
+        }
+        .masonry-item img{
+            width: 100%;
+            border: 1px dashed transparent;
+        }
+        .masonry-item img:hover{
+            border: 1px dashed #f33;
+            opacity: 0.5;
+        }
+        .item-this{
+            border: 1px dashed #f33!important;
+            opacity: 0.5;
+        }
+        .masonry-item .image-text {
+            text-align: center;
+            width: 100%;
+            display: block;
+            background: #fff!important;
+            line-height: 2em;
+            color: #465161;;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card  card-image">
+                <div class="card-header"><h4>图片管理</h4></div>
+                <div class="card-body">
+                    <div class="form-group" style="float: left;margin-bottom: 0rem;">
+                        <div class="btn-group">
+                            <button class="btn btn-default" id="image-upload"><i class="layui-icon layui-icon-upload-drag"></i>上传</button>
+                            <button class="btn btn-default" id="image-delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="float: right;">
+                        <form class="lyear-search lyear-search-left">
+                            <div class="input-group">
+                                <input onkeydown="if(window.event.keyCode==13){return false;}" type="text" id="image-keyword" name="keyword" class="form-control" placeholder="请输入搜索的关键词...">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default" id="keyword-search">搜索</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--第二种布局方式-->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="masonry-grid" data-provide="photoswipe" id="imageList">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</div>
+
+<script type="text/javascript" src="js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        layui.use(['flow', 'zhanshop'], function(){
+            var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
+            var flow = layui.flow;
+            var imageMenuId = layui.zhanshop.getParam('_id');
+            if(imageMenuId == false) return window.location = 'about:blank';
+            flow.load({
+                elem: '#imageList' //指定列表容器
+                ,isAuto: true
+                ,isLazyimg: false
+                ,done: function(page, next){ //到达临界点（默认滚动触发），触发下一页
+                    var lis = [];
+                    //以jQuery的Ajax请求为例，请求下一页数据（注意：page是从2开始返回）
+                    var postData = {'_method': 'GET'};
+                    postData['search'] = [['original', 'like', layui.zhanshop.getParam('keyword')]];
+                    postData['page'] = page;
+                    postData['limit'] = '20';
+                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', postData, {}, function(res){
+                        //假设你的列表返回在data集合中
+                        layui.each(res.data.data, function(index, item){
+                            lis.push('<a class="masonry-item" href="javascript:void(0)"><img  data-data=\''+JSON.stringify(item)+'\' class="item-image" src="'+item.url+'" alt="'+item.original+'"><i class="image-text">'+item.original+'</i></a>');
+                        });
+
+                        //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                        //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                        next(lis.join(''), page < Math.ceil(res.data.total/ 20));
+                    }, function(xhr){}, true, false);
+                }
+            });
+
+            $(document).on('click', '.item-image', function() {
+                if($(this).hasClass("item-this")){
+                    $(this).removeClass('item-this');
+                }else{
+                    $(this).addClass('item-this');
+                }
+            });
+
+            $(document).on('click', '#image-upload', function() {
+                layui.zhanshop.iframe('上传图片', 'dialog/upload-image.html?t='+(new Date().getTime()));
+            });
+            $('#image-keyword').val(layui.zhanshop.getParam('keyword'));
+            $(document).on('click', '#keyword-search', function() {
+                // 触发搜索
+                var keyword = $('#image-keyword').val();
+                var searchUrl = window.location.href;
+                searchUrl = searchUrl.split('?');
+                if(keyword == ''){
+                    window.location = searchUrl[0]+'?_id='+imageMenuId;
+                    return false;
+                }
+                window.location = searchUrl[0]+'?_id='+imageMenuId+'&keyword='+keyword;
+                return false;
+            });
+
+            $(document).on('click', '#image-delete', function() {
+                var reqData = '';
+                $('.item-this').each(function(index){
+                    var data = $(this).data('data');
+                    reqData += 'pk[]='+data.image_id+'&';
+                });
+                if(reqData == ''){
+                    return layui.zhanshop.alert('请先选中需要删除的图片', 'danger');
+                }
+                reqData += '_method=DELETE';
+                layui.zhanshop.confirm('确定要删除么?', function(){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(data){
+                        // 删除指定元素即可
+                        $('.item-this').each(function(){
+                            $(this).parent().remove(); // 删除自身
+                        });
+                    },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');}, true, false);
+                }, function(){
+
+                });
+            });
+        });
+    })
+
+
+</script>
+</body>
+</html>

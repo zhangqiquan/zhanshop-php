@@ -140,7 +140,7 @@ class Query
     }
 
     public function whereRaw(string $condition, array $bind = []){
-        $this->options['where']['RAW'][] = [$condition, $bind];
+        if($condition) $this->options['where']['RAW'][] = [$condition, $bind];
         return $this;
     }
 
@@ -166,13 +166,13 @@ class Query
         if (!empty($data)) {
             $this->options['data'][] = $data;
             $sql = $this->builder->update($this);
-            return $this->execute($sql, $this->getBind(), $pdo);
+            return $this->execute($sql, $this->getBind(), false, $pdo);
         }
     }
 
     public function delete(mixed $pdo = null){
         $sql = $this->builder->delete($this);
-        return $this->execute($sql, $this->getBind(), $pdo);
+        return $this->execute($sql, $this->getBind(), false, $pdo);
     }
 
     public function insertAll(array $data, bool $getLastInsID = false, mixed $pdo = null) :float{
@@ -188,47 +188,79 @@ class Query
         $this->options['field'] = $field;
         $sql = $this->builder->count($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data[0]['__count'];
+        return $data[0]['__count'] ?? 0;
     }
 
     public function avg(string $field, mixed $pdo = null){
         $this->options['field'] = $field;
         $sql = $this->builder->avg($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data[0]['__avg'];
+        return $data[0]['__avg'] ?? 0;
     }
 
     public function max(string $field, mixed $pdo = null){
         $this->options['field'] = $field;
         $sql = $this->builder->max($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data[0]['__max'];
+        return $data[0]['__max'] ?? 0;
     }
 
     public function min(string $field, mixed $pdo = null){
         $this->options['field'] = $field;
         $sql = $this->builder->min($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data[0]['__min'];
+        return $data[0]['__min'] ?? 0;
     }
 
     public function sum(string $field = '*', mixed $pdo = null){
         $this->options['field'] = $field;
         $sql = $this->builder->sum($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data['__sum'];
+        return $data[0]['__sum'] ?? 0;
     }
 
     public function find(mixed $pdo = null){
         $sql = $this->builder->find($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
-        return $data;
+        return $data[0] ?? null;
     }
 
     public function select(mixed $pdo = null){
         $sql = $this->builder->select($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
         return $data;
+    }
+
+    public function finder(int $page, int $limit = 20, mixed $pdo = null){
+        $offset = ($page - 1) * $limit;
+        return [
+            'data' => $this->limit($offset, $limit)->select($pdo),
+            'total' => $this->count('*', $pdo),
+        ];
+    }
+
+    public function value(string $field, mixed $pdo = null){
+        $this->options['field'] = $field;
+        $sql = $this->builder->find($this);
+        $data = $this->query($sql, $this->getBind(), $pdo);
+        return $data[0][$field] ?? null;
+    }
+
+    public function column(string $field, string $key, mixed $pdo = null){
+        $ret = [];
+        $data = $this->field($key.','.$field)->select($pdo);
+        if($data){
+            if(strpos($field, ',') === false){
+                foreach($data as $v){
+                    $ret[$v[$key]] = $v[$field];
+                }
+            }else{
+                foreach($data as $v){
+                    $ret[$v[$key]] = $v;
+                }
+            }
+        }
+        return $ret;
     }
 
 
@@ -239,7 +271,7 @@ class Query
 
     public function execute(string $sql, array $bind = [], bool $lastID = false, mixed $pdo = null){
         $pdoPoll = DbManager::get($this->connection);
-        return $pdoPoll->execute($sql, $bind, $lastID, $pdo);
+        return (float) $pdoPoll->execute($sql, $bind, $lastID, $pdo);
     }
 
     public function transaction($call){
@@ -260,7 +292,7 @@ class Query
         }
 
         $data = $this->options[$name] ?? null;
-        if($setNull) unset($this->options[$name]);
+        //if($setNull) unset($this->options[$name]);
         return $data;
     }
 

@@ -9,10 +9,14 @@
 declare (strict_types=1);
 
 namespace app\crontab;
+use Swoole\Timer;
 
 class Test
 {
     public function execute($serv){
-
+//        Timer::tick(2000, function () use ($serv){
+//            //$serv->task('watchTask'); 执行已注册的task任务
+//            // 或者就在当前定时任务进行中执行
+//        });
     }
 }

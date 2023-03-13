@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href="css/bootstrap.min.css?v=1626847316" rel="stylesheet">
+    <link href="css/materialdesignicons.min.css?v=1626847316" rel="stylesheet">
+
+    <!--标签插件-->
+    <link rel="stylesheet" href="js/jquery-tagsinput/jquery.tagsinput.min.css?v=1626847316">
+    <link href="css/style.min.css?v=1626847316" rel="stylesheet">
+    <link rel="stylesheet" href="js/layer/css/layui.css?v=1626847316" media="all">
+</head>
+
+<body style="background: transparent;">
+
+<div style="width: 98%; margin-left:auto; margin-right:auto;margin-top: 1%; background: #fff;">
+    <form class="layui-form" action="">
+        <div class="form-group col-md-12">
+            <label><b class="text-pink">*</b>用户名</label>
+            <input class="form-control" readonly="" id="user_name" type="readonly" value="" lay-verify="required">
+        </div>
+        <div class="form-group col-md-12">
+            <label><b class="text-pink">*</b>密码</label>
+            <input class="form-control" id="password" name="password" autocomplete="off" type="text" value="" lay-verify="required">
+        </div>
+        <div class="form-group col-md-12">
+            <div class="form-group">
+                <label for="avatar"><b class="text-pink">*</b>头像</label>
+                <div class="form-controls">
+                    <input lay-verify="required" type="hidden" class="form-control inputImage" placeholder="请输入头像" name="avatar" id="avatar" value=''>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-md-12">
+            <label>上次登陆时间</label>
+            <input class="form-control" readonly="" id="last_login_time" type="readonly" value="" >
+        </div>
+
+        <div class="form-group col-md-12">
+            <label>上次登陆IP</label>
+            <input class="form-control" readonly="" id="last_login_ip" type="readonly" value="" >
+        </div>
+
+        <div class="form-group col-md-12">
+            <label>登陆次数</label>
+            <input class="form-control" readonly="" id="login_count" type="readonly" value="" >
+        </div>
+        <div class="form-group col-md-12" style="text-align: center;">
+            <button class="btn btn-primary" lay-submit lay-filter="formDemo">修 改</button>
+        </div> <!--表单按钮END--> <!---表单列表END---->
+    </form>
+</div>
+
+<script src="js/layer/layui.js"></script>
+
+<script>
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    // 决定要载入什么组件
+    ready(function() {
+
+        layui.use(['element', 'form', 'zhanshopFrom', 'zhanshop'], function(){
+            var element = layui.element;
+            var view = layui.view;
+            window.$ = layui.$;
+
+            var apiUrl = 'index.user';
+            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/'+apiUrl, 'GET', {}, {}, function(res){
+                $("#avatar").val(res.data.avatar);
+                $("#last_login_ip").val(res.data.last_login_ip);
+                $("#last_login_time").val(date(res.data.last_login_time));
+                $("#login_count").val(res.data.login_count);
+                $("#user_name").val(res.data.user_name);
+                layui.zhanshopFrom.render();
+            });
+
+            var form = layui.form;
+
+            //提交
+            form.on('submit(formDemo)', function(data){
+                layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/'+'index.user', 'POST', data.field, {}, function(res){
+                    return layui.zhanshop.alert('修改成功', 'success', function(){
+                        parent.window.location.reload();
+                    });
+                },function(xhr){
+                    return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                }, true, false);
+                return false;
+            });
+
+            // layui.form.on('submit(onsubmit)', function(data){
+            //     layui.zhanshop.ajax(API_ADDRESS+'index.user', 'POST', data.field, {}, function(res){
+            //         return layui.zhanshop.alert('修改成功', 'success', function(){
+            //             parent.window.location.reload();
+            //         });
+            //     },function(xhr){
+            //         return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+            //     });
+            //     return false;
+            // });
+
+        });
+    });
+
+</script>
+
+</body>
+</html>

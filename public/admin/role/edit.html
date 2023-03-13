@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <title>编辑角色</title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../js/jquery-tagsinput/jquery.tagsinput.min.css?v=1626847316">
+    <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+    <style type="text/css">
+        .page_container {
+            padding:8px;
+            margin-top:20px;
+        }
+        .lyear-checkbox{
+            margin-left: 18px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid p-t-15" id="view" style="background: #fff;height: auto;overflow: hidden;padding: 0px!important;">
+    <form id="layform"  action="" method="post"  onsubmit="return submitForm(this)">
+        <input type="hidden" id="role_id" name="role_id" value="">
+        <div class="layui-tab layui-tab-card layui-tab-brief" style="margin: 0px;">
+            <!---分步骤表单-->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show ">
+                    <div class="form-group col-md-12">
+                        <label><b class="text-pink">*</b>角色名称</label>
+                        <input type="text" name="role_name" id="role_name" lay-verify="required" autocomplete="off" placeholder="请输入角色名称" class="layui-input" value="">
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <label><b class="text-pink">*</b>权限菜单</label>
+                        <div class="table-responsive" id="menuBody">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--表单按钮-->
+            <div class="form-group col-md-12" style="text-align: center;">
+                <button class="btn btn-primary ajax-post" target-form="add-form" type="submit">确 定</button>
+                <button class="btn btn-default" onclick="javascript:parent.layer.closeAll();" type="button">关 闭</button>
+            </div>
+            <!--表单按钮END-->
+            <!---表单列表END---->
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+
+<script type="text/javascript">
+    const IDNAME = parent.layui.zhanshop.table.idName;
+    /**
+     * @param source json数据源
+     * @param id 主键ID
+     * @param parendId 父级ID名称
+     * @param children 子级名称
+     */
+    var treeData = function (source, id, parentId, children){
+        let cloneData = (typeof source == 'object') ? source : JSON.parse(source);
+        return cloneData.filter(father=>{
+            let branchArr = cloneData.filter(child => father[id] == child[parentId]);
+            branchArr.length>0 ? father[children] = branchArr : ''
+            return father[parentId] == 0
+        })
+    }
+    var menuHtml = '<table class="table table-striped"><thead><tr><th><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="check-all"><label class="custom-control-label" for="check-all">全选</label></div></th></tr></thead><tbody>';
+
+
+    var forMenuAddHtml = function(childMenus, dataid){
+
+        var count =  dataid.split('-').length;
+        for(var i in childMenus){
+            var textDataid = dataid+'-'+childMenus[i]['id'];
+            if(childMenus[i]['children'] == undefined){
+                var childHtml = '';
+                for(var ii in childMenus){
+                    if(childMenus[ii]['children'] == undefined){
+                        childHtml += '<div class="custom-control custom-checkbox custom-control-inline"><input type="checkbox" name="rules[]" class="custom-control-input checkbox-child" id="'+dataid+'-'+childMenus[ii]['id']+'" dataid="'+dataid+'-'+childMenus[ii]['id']+'" value="'+childMenus[ii]['id']+'"><label class="custom-control-label" for="'+dataid+'-'+childMenus[ii]['id']+'">'+childMenus[ii]['name']+'</label> </div>';
+                        delete childMenus[ii];
+                    }
+                }
+                if(childHtml){
+                    menuHtml += '<tr><td class="p-l-40" style="padding-left: '+(15*count)+'px !important;">'+childHtml+'</td></tr>';
+                }
+            }else{
+                menuHtml += '<tr><td class="p-l-20" style="padding-left: '+(15*count)+'px !important;"><div class="custom-control custom-checkbox"><input name="rules[]" type="checkbox" class="custom-control-input checkbox-parent checkbox-child" id="'+textDataid+'"  dataid="'+textDataid+'" value="'+childMenus[i]['id']+'"><label class="custom-control-label" for="'+textDataid+'">'+childMenus[i]['name']+'</label></div></td></tr>';
+                forMenuAddHtml(childMenus[i]['children'], textDataid);
+            }
+        }
+    };
+    var createMenu = function (data, is_frist) {
+        for(var i in data){
+            menuHtml += '<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" name="rules[]" class="custom-control-input checkbox-parent" id="id-'+data[i]['id']+'" dataid="id-'+data[i]['id']+'" value="'+data[i]['id']+'"><label class="custom-control-label" for="id-'+data[i]['id']+'">'+data[i]['name']+'</label></div></td></tr>';
+            if(data[i].children && data[i].children.length > 0){
+                forMenuAddHtml(data[i].children, 'id-'+data[i]['id']);
+            }
+        }
+        menuHtml += '</tbody></table>';
+        return menuHtml;
+    };
+
+    var setSidebar = function(data){
+        if (data.length == 0) return false;
+        var treeObj = treeData(data, 'id', 'pid', 'children');
+        html = createMenu(treeObj, true);
+        $('#menuBody').append(html);
+
+    }
+
+    ready(function() {
+        layui.use(['zhanshop'], function() {
+            const IDNAME = parent.layui.zhanshop.table.idName;
+            window.menuId = parent.layui.zhanshop.getParam('_id');
+            var postData = {'_method': 'editfrom'};
+            //postData[IDNAME] = layui.zhanshop.getParam(IDNAME);
+            layui.zhanshop.view(API_ADDRESS+"/v3.0.0/index.table?id="+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(res){
+                // 菜单
+                setSidebar(res[0]['schema']['menus']['value']);
+                var menus = JSON.parse(res[0]['schema']['menus']['default']);
+                //选择所有的复选框
+                $("input[type='checkbox']").each(function(index){
+                    if(in_array($(this).val(), menus)){
+                        $(this).prop('checked', true);
+                    }
+                });
+
+                $('#role_name').val(res[0]['schema']['role_name']['default']);
+                $(function(){
+                    // 复选框全选
+                    $("#check-all").change(function () {
+                        $("input[type='checkbox']").prop('checked', $(this).prop("checked"));
+                    });
+                    //动态选择框，上下级选中状态变化
+                    $('input.checkbox-parent').on('change', function(){
+                        var dataid = $(this).attr("dataid");
+                        $('input[dataid^=' + dataid + '-]').prop('checked', $(this).is(':checked'));
+                    });
+                    $('input.checkbox-child').on('change', function(){
+                        var dataid = $(this).attr("dataid");
+                        dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                        var parent = $('input[dataid=' + dataid + ']');
+                        if($(this).is(':checked')){
+                            parent.prop('checked', true);
+                            //循环到顶级
+                            while(dataid.lastIndexOf("-") != 2){
+                                dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                                parent = $('input[dataid=' + dataid + ']');
+                                parent.prop('checked', true);
+                            }
+                        }else{
+                            //父级
+                            if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                                parent.prop('checked', false);
+                                //循环到顶级
+                                while(dataid.lastIndexOf("-") != 2){
+                                    dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                                    parent = $('input[dataid=' + dataid + ']');
+                                    if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                                        parent.prop('checked', false);
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    //选择所有的复选框
+                    $("input[type='checkbox']").each(function(index){
+                        if(in_array($(this).val(), menus)){
+                            $(this).prop('checked', true);
+                        }
+                    });
+                });
+            }, 'POST', postData);
+
+
+
+
+        });
+
+
+    });
+
+
+
+    function submitForm(obj){
+        if($('#role_name').val() == ''){
+            layer.msg("角色名称不能为空", {
+                title: '错误',
+                icon: 2,
+                anim: 6
+            });
+            $('#role_name').focus();
+            return false;
+        }
+        var data = $(obj).serializeArray();
+        var menus = [];
+        for(i in data){
+            if(data[i]['name'] == 'rules[]'){
+                menus.push(data[i]['value']);
+            }
+        }
+
+        if(menus == false){
+            layer.msg("请选择权限菜单", {
+                title: '错误',
+                icon: 2,
+                anim: 6
+            });
+            return false;
+        }
+        var putData = {
+            '_method': 'PUT',
+            'system_role': {
+                "role_name":$('#role_name').val(),
+                "menus":JSON.stringify(menus)
+            }
+        };
+        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', putData, {}, function(res){
+            return layui.zhanshop.alert('编辑成功', 'success', function(){
+                parent.window.location.reload();
+            });
+        },function(xhr){
+            return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+        }, true, false);
+
+        return false;
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -4,16 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>API调试</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=8">
-    <meta http-equiv="Expires" content="0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Cache-control" content="no-cache">
-    <meta http-equiv="Cache" content="no-cache">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="/css/animate.css" rel="stylesheet">
-    <link href="/css/style.min.css" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta name="author" content="yinqi">
+    <link href="/apiDoc/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/apiDoc/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/apiDoc/css/animate.css" rel="stylesheet">
+    <link href="/apiDoc/css/style.min.css" rel="stylesheet">
     <style>
         /* Syntax highlighting for JSON objects */
         pre{
@@ -186,14 +185,14 @@
 
 </div>
 
-<script type="text/javascript" src="/js/jquery.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/jquery.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/bootstrap.min.js"></script>
 <!--消息提示-->
-<script src="/js/bootstrap-notify.min.js"></script>
-<script type="text/javascript" src="/js/lightyear.js"></script>
-<script type="text/javascript" src="/js/main.min.js"></script>
-<script type="text/javascript" src="/js/jquery.json-viewer.js"></script>
-<script type="text/javascript" src="/js/tool.js"></script>
+<script src="/apiDoc/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/lightyear.js"></script>
+<script type="text/javascript" src="/apiDoc/js/main.min.js"></script>
+<script type="text/javascript" src="/apiDoc/js/jquery.json-viewer.js"></script>
+<script type="text/javascript" src="/apiDoc/js/tool.js"></script>
 <script>
     console.log(navigator.userAgent);
     $('#apiTitle').html(opener.docData.data.title+'  '+$_GET['method']);
@@ -273,7 +272,11 @@
         request.done(function(res) {
             lightyear.loading('hide');
             $('#example').css('display', '');
-
+            if(res.errorcode == undefined){
+                notifyError(res);
+            }else if(res.errorcode != 0){
+                notifyError(res.errormsg);
+            }
             $('#example').jsonViewer(res);
 
             // 更新成功文档
@@ -285,8 +288,7 @@
                 'result' : JSON.stringify(res),
                 'request_method' : $_GET['method'],
             };
-            $.post("/v1.0.0/apiDoc.debug", requestData, function (){
-
+            ajax_request('./index.php', 'POST', requestData, function(res){
             });
         });
 
@@ -295,24 +297,23 @@
             lightyear.loading('hide');
             $('#example').css('display', '');
             if(jqXHR.responseJSON){
-                notifyError("请求异常");
+                notifyError(jqXHR.responseJSON.errormsg);
                 $('#example').jsonViewer(jqXHR.responseJSON);
-                var requestData = {
-                    'method' : 'updateDoc',
-                    'uri' : opener.docData.data.uri,
-                    'version' : opener.docData.data.version,
-                    'http_code' : '500',
-                    'result' : jqXHR.responseText,
-                    'request_method' : $_GET['method'],
-                };
-
-                $.post("/v1.0.0/apiDoc.debug", requestData, function (){
-
-                });
             }else{
                 notifyError(jqXHR.responseText);
             }
+            var requestData = {
+                'method' : 'updateDoc',
+                'uri' : opener.docData.data.uri,
+                'version' : opener.docData.data.version,
+                'http_code' : '500',
+                'result' : jqXHR.responseText,
+                'request_method' : $_GET['method'],
+            };
 
+            // 更新错误文档
+            ajax_request('./index.php', 'POST', requestData, function(res){
+            });
         });
     }
 </script>

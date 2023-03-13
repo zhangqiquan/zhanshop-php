@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => '00bf78c3388848ba20da61cf27f93e78a717b4ca',
         'name' => '__root__',
         'dev' => true,
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => '00bf78c3388848ba20da61cf27f93e78a717b4ca',
             'dev_requirement' => false,
         ),
         'zhanshop/framework' => array(
@@ -25,7 +25,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../zhanshop/framework',
             'aliases' => array(),
-            'reference' => '9ed690033ae0f918ab382c01d8fd1e138db843fe',
+            'reference' => '596c021d8183eb1626d17f63566b4f55a0ed7a17',
             'dev_requirement' => false,
         ),
     ),

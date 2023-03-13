@@ -2,7 +2,6 @@
 declare (strict_types=1);
 
 use zhanshop\App;
-
 require __DIR__ . '/vendor/autoload.php';
 
 $console = App::make(__DIR__)->console();

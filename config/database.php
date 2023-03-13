@@ -63,34 +63,9 @@ return [
         //指定查询对象
         'query' => 'query',
         'pool' => [
-              'max_connections' => swoole_cpu_num() * 50,
+              'max_connections' => 10,
               'timeout' => 0.1,
          ],
       ],
-
-    'test' => [
-        'type' => 'mysql',
-        // 服务器地址
-        'hostname' => '36.111.20.204',
-        // 数据库名
-        'database' => 'test',
-        // 用户名
-        'username' => 'root',
-        // 密码
-        'password' => 'ZQQ123456',
-        // 端口
-        'hostport' => 3306,
-        // 数据库连接参数
-        'params' => [
-            PDO::ATTR_TIMEOUT => 3,
-        ],
-        // 数据库编码
-        'charset' => 'utf8mb4',
-        'query' => 'query',
-        'pool' => [
-            'max_connections' => swoole_cpu_num() * 50,
-            'timeout' => 0.1,
-        ],
-    ],
     ],
 ];

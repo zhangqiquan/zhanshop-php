@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QQ音乐播放器</title>
+    <script src="https://y.gtimg.cn/music/h5/player/player.js?max_age=2592000"></script>
+</head>
+<body>
+    本播放器依赖QQ音乐播放器，界面功能暂未开发,本空白播放页目前仅支持单个音频播放输出
+    <script type="text/javascript" src="../../js/layer/layui.js"></script>
+    <script>
+      ready(function() {
+        layui.use(['zhanshop'], function(){
+          var params = {
+            target: "auto"
+          };
+          var player = new QMplayer(params);
+          player.play(layui.zhanshop.getParam('url'));
+        });
+      });
+
+    </script>
+</body>
+</html>
