@@ -26,6 +26,9 @@ php8.1 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，
 ## 关于热更新
 非vendor, runtime, public目录下的php文件只要发生了变更就会触发更新
 
+## 提供测试数据
+在项目目录下有一个 zhanshop.sql 文件 想要把后台管理系统跑起来 需要把zhanshop.sql导入到 mysql数据库中，建议mysql使用8.0以上版本
+
 注意修改了 .dev.*的配置文件和 修改了 config目录下的 app.php 请手动进行重新启动
 
 示例 php cmd.php server:http restart
@@ -229,3 +232,9 @@ App::cache()->set(...);
 
 等等....
 ~~~
+
+## 交流群
+由于微信群无法直接加入，故可先加下方二维码好友，并声明目的，再拉您入群。
+
+微信号： eee7798
+![](http://test-cdn.zhanshop.cn/2023313/167870337640814238.jpg)
