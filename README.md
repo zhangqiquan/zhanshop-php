@@ -107,12 +107,6 @@ composer require zhanshop/framework
 
 ~~~
 
-## 完整的初始化项目
-
-~~~
-https://github.com/zhangqiquan/zhanshop-php.git
-~~~
-
 
 ## 控制台使用方法
 ~~~
