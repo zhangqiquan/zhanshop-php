@@ -19,7 +19,7 @@ type 目前支持3种收集类型
 
 1：File 写入到本地,再结合阿里云/腾讯云日志收集工具将日志收集到阿里云/腾讯云日志服务 （推荐）
 
-2：Es 将日志批量写入到Elasticsearch
+2：Es 将日志批量写入到Elasticsearch 依赖 composer require elasticsearch/elasticsearch 需要手动安装
 
 3： 写入到数据库中
 
