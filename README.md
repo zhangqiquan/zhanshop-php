@@ -33,7 +33,7 @@ php8.1 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，
 示例 php cmd.php server:http restart
 
 ## 提供测试数据
-在项目目录下有一个 zhanshop.sql 文件 想要把后台管理系统跑起来 需要把zhanshop.sql导入到 mysql数据库中，建议mysql使用8.0以上版本
+在项目目录下有一个 zhanshop.sql 文件 想要把后台管理系统跑起来 需要把zhanshop.sql导入到 mysql数据库中，建议mysql使用8.0以上版本, 
 
 
 ## 性能表现 （供参考和对比）
@@ -156,6 +156,20 @@ WantedBy=multi-user.target
 保存后
 
 systemctl enable zhanshop_http.service
+
+~~~
+
+## 演习地址
+~~~
+后台管理系统：
+http://36.111.20.204:6300/admin/
+账号: admin
+密码: admin123
+
+http接口服务：
+http://36.111.20.204:6200/apiDoc
+
+访问密码： zhangqiquan123
 
 ~~~
 
