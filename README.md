@@ -23,6 +23,9 @@ type 目前支持3种收集类型
 
 3： 写入到数据库中
 
+## 关于附件
+目前附件是只传七牛云的 依赖 composer require qiniu/php-sdk  并修改 config/sns.php 相应配置
+
 ## 环境要求
 php8.1 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，swoole4.8 以上的扩展支持
 
