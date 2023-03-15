@@ -166,7 +166,7 @@ http://36.111.20.204:6300/admin/
 http接口服务：
 http://36.111.20.204:6200/apiDoc
 
-访问密码： zhangqiquan123
+访问密码： zhangqiquan
 
 ~~~
 
