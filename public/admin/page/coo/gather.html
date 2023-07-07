@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="../../css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../../js/layer/css/layui.css">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <script>
+        var searchFieldNum = 0;
+    </script>
+</head>
+<body>
+<div class="container-fluid p-t-15" id="view">
+
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    {{#  if(d.tabs.length){ }}
+                    <ul class="layui-tab-title">
+                        {{#  arr_foreach(d.tabs, function(k1, v1){ }}
+                        {{#  if(k1 == 0){ }}
+                        <li class="layui-this" onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+                        {{# }else{ }}
+                        <li  onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+                        {{#  } }}
+                        {{#  }); }}
+                    </ul>
+                    {{#  } }}
+
+                    <div class="layui-tab-content">
+
+                        <div class="card-toolbar d-flex flex-column flex-md-row">
+                            <div class="toolbar-btn-action"> <a style="color: #000;font-size: 18px;opacity: 0.7;line-height: 1.6em;">{{d.title}}</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <form method="post" class="layui-form"  onsubmit="return gaterSearch(this);">
+
+                        <div style="width: 100%; margin-left: auto; margin-right: auto;">
+                            <div style="width: 45%; float: left;">
+                                <label class="layui-form-label" style="width: 160px;">周统计字段时间范围</label>
+                                <div class="layui-input-block" style="margin-left: 165px;">
+                                    <input type="text" name="weekly_time" lay-verify="required" placeholder="请选择时间范围" autocomplete="off" class="layui-input inputTimerange">
+                                </div>
+                            </div>
+
+                            <div style="width: 45%; float: right; margin-right: 1%;">
+                                <label class="layui-form-label"  style="width: 160px;">月字段时间范围</label>
+                                <div class="layui-input-block"  style="margin-left: 165px;">
+                                    <input type="text" name="month_time" lay-verify="required" placeholder="请选择时间范围" autocomplete="off" class="layui-input inputTimerange">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block" style="text-align: center; padding-top: 30px;">
+                                <button type="submit" lay-submit class="layui-btn">搜索</button>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <table id="laytable" lay-filter="laytable"></table>
+
+                    <script id="left-toolbar" type="text/html">
+                        <div class="layui-btn-container layui-btn-group">
+                            {{#  arr_foreach(d.head_toolbar, function(k1, v1){ }}
+                            {{#  if(v1.event != 'hidden'){ }}
+                            <button data-config={{=json_encode(v1)}} class="layui-btn layui-btn-primary layui-btn-sm head-event" lay-event="header"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
+                            {{#  } }}
+                            {{#  }); }}
+                        </div>
+                    </script>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script type="text/javascript" src="../../js/layer/layui.js"></script>
+<script>
+    var where = {};
+    var tabWhere = [];
+    window.zhanshop = null;
+    ready(function() {
+        layui.use(['zhanshopTable', 'zhanshop'], function() {
+            var menuId = layui.zhanshop.getParam('id');
+            zhanshop = layui.zhanshop;
+            var table = layui.zhanshopTable;
+            // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
+            zhanshop.view(API_ADDRESS + '/v4.0.0/index.table?id=' + menuId, '#view', function(
+                data) {
+
+                // 日期时间范围
+                layui.laydate.render({
+                    elem: '.inputTimerange',
+                    type: 'datetime',
+                    range: true,
+                    rangeLinked: true
+                });
+
+                table.url = API_ADDRESS + '/v4.0.0/index.table?id=' + menuId;
+                table.title = data.title;
+                table.elem = '#laytable';
+                table.toolbar = '#left-toolbar';
+                table.rowbar = data.row_toolbar; // 配置行级别菜单
+                /**/
+                table.width = data.width;
+                table.height = data.height;
+                table.even = data.even;
+                table.skin = data.skin;
+                table.css = data.css;
+                table.size = data.size;
+                table.limit = data.limit;
+                table.limits = data.limits;
+                table.lineStyle = data.lineStyle;
+                table.cellMinWidth = data.cellMinWidth;
+                table.data = data.data;
+                /**/
+                table.idName = data.pk;
+                table.titleName = data.title_name;
+                table.pidName = data.pid_name;
+                table.schma = data.cols;
+                table.searchPage = data.searchpage;
+                window.colsData = [];
+                if(data.cols_first){
+                    colsData.push({type: data.cols_first});
+                }
+                for(var i in data.cols){
+                    if(data.cols[i]['in_list'] !== false){
+                        colsData.push(table.laycols(data.cols[i]));
+                    }
+                }
+                table.render(colsData);
+
+            }, 'POST', {"_method":"render"});
+
+            window.gaterSearch = function(obj){
+
+                where = {'_method': 'GET'};
+                where['search'] = [];
+                if(obj.weekly_time.value.indexOf(" - ") == -1 || obj.weekly_time.value.indexOf("NaN") != -1){
+                    layer.msg("日期范围格式错误", {
+                        icon: 2,
+                        anim: 6
+                    });
+                    return false;
+                }
+                if(obj.month_time.value.indexOf(" - ") == -1 || obj.month_time.value.indexOf("NaN") != -1){
+                    layer.msg("日期范围格式错误", {
+                        icon: 2,
+                        anim: 6
+                    });
+                    return false;
+                }
+                where['search'].push(['weekly_time', 'BETWEEN',obj.weekly_time.value.replace(' - ', ',')]);
+                where['search'].push(['month_time', 'BETWEEN',obj.month_time.value.replace(' - ', ',')]);
+                 try{
+                     table.render(colsData, true);
+                 }catch (e) {
+                     console.info(e);
+                 }
+
+                return false;
+            }
+
+        });
+    });
+</script>
+</body>
+</html>

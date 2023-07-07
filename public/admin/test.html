@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo</title>
+  <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+  <link href="//unpkg.com/layui@2.8.2/dist/css/layui.css" rel="stylesheet">
+</head>
+<body>
+<div class="layui-btn-container">
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-tab">tab 层</button>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-prompt-0">prompt - 单行文本框层</button>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-prompt-1">prompt - 密令输入框层</button>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-prompt-2">prompt - 多行文本框层</button>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-photos-one">photos - 单张图片层</button>
+  <button type="button" class="layui-btn layui-btn-primary" lay-on="test-tips-photos">photos - 多张相册层</button>
+</div>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<script src="//unpkg.com/layui@2.8.2/dist/layui.js"></script>
+<script>
+  layui.use(function(){
+    var layer = layui.layer;
+    var util = layui.util;
+    // 事件
+    util.on('lay-on', {
+      'test-tips-photos-one': function(){
+        layer.photos({
+          photos: {
+            "title": "图片预览",
+            "start": 0,
+            "data": [
+              {
+                "alt": "浩瀚宇宙",
+                "pid": 5,
+                "src": "https://unpkg.com/outeres/demo/outer-space.jpg",
+              }
+            ]
+          },
+          hideFooter: true // 是否隐藏底部栏 --- 2.8+
+        });
+      }
+    })
+  });
+</script>
+</body>
+</html>

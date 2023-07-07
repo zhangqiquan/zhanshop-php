@@ -89,12 +89,12 @@
       layui.form.on('submit(onsubmit)', function(data){
         window.submitData = data.field;
         delete submitData['select'];
-        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', submitData, {}, function(res){
+        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', submitData, {}, function(res){
           return layui.zhanshop.alert('操作成功', 'success', function(){
             parent.window.location.reload();
           });
         },function(xhr){
-          return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+          return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
         }, true, false);
 
         return false;

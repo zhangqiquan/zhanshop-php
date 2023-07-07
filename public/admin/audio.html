@@ -273,9 +273,9 @@
                     postData['search'] = [['original', 'like', layui.zhanshop.getParam('keyword')]];
                     postData['page'] = page;
                     postData['limit'] = '20';
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', postData, {}, function(res){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', postData, {}, function(res){
                         //假设你的列表返回在data集合中
-                        layui.each(res.data.data, function(index, item){
+                        layui.each(res.data.list, function(index, item){
                             var html = '<div class="col-md-3"><div class="card card-pricing2 item-media" data-data=\''+JSON.stringify(item)+'\'><div class="card-media"><img src="./images/audio.png" /><div class="card-media-play"><i class="mdi mdi-play-circle-outline media-play" data-url="'+item.url+'"></i></div></div><ul class="pricing-content"><li class="li-original" title="'+item.original+'">'+item.original+'</li><li>'+item.duration+'秒</li><li>'+date(item.create_time)+'</li></ul></div></div>';
                             lis.push(html);
                         });
@@ -324,12 +324,12 @@
                 }
                 reqData += '_method=DELETE';
                 layui.zhanshop.confirm('确定要删除么?', function(){
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', reqData, {}, function(data){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', reqData, {}, function(data){
                         // 删除指定元素即可
                         $('.item-this').each(function(){
                             $(this).parent().remove(); // 删除自身
                         });
-                    },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');}, true, false);
+                    },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, true, false);
                 }, function(){
 
                 });

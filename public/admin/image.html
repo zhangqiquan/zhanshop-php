@@ -144,9 +144,9 @@
                     postData['search'] = [['original', 'like', layui.zhanshop.getParam('keyword')]];
                     postData['page'] = page;
                     postData['limit'] = '20';
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', postData, {}, function(res){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+imageMenuId, 'POST', postData, {}, function(res){
                         //假设你的列表返回在data集合中
-                        layui.each(res.data.data, function(index, item){
+                        layui.each(res.data.list, function(index, item){
                             lis.push('<a class="masonry-item" href="javascript:void(0)"><img  data-data=\''+JSON.stringify(item)+'\' class="item-image" src="'+item.url+'" alt="'+item.original+'"><i class="image-text">'+item.original+'</i></a>');
                         });
 
@@ -193,12 +193,12 @@
                 }
                 reqData += '_method=DELETE';
                 layui.zhanshop.confirm('确定要删除么?', function(){
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(data){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(data){
                         // 删除指定元素即可
                         $('.item-this').each(function(){
                             $(this).parent().remove(); // 删除自身
                         });
-                    },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');}, true, false);
+                    },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, true, false);
                 }, function(){
 
                 });

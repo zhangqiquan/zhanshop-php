@@ -123,7 +123,7 @@
             window.menuId = parent.layui.zhanshop.getParam('_id');
             var postData = {'_method': 'editfrom'};
             //postData[IDNAME] = layui.zhanshop.getParam(IDNAME);
-            layui.zhanshop.view(API_ADDRESS+"/v3.0.0/index.table?id="+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(res){
+            layui.zhanshop.view(API_ADDRESS+"/v4.0.0/index.table?id="+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(res){
                 // 菜单
                 setSidebar(res[0]['schema']['menus']['value']);
                 var menus = JSON.parse(res[0]['schema']['menus']['default']);
@@ -195,7 +195,6 @@
     function submitForm(obj){
         if($('#role_name').val() == ''){
             layer.msg("角色名称不能为空", {
-                title: '错误',
                 icon: 2,
                 anim: 6
             });
@@ -212,7 +211,6 @@
 
         if(menus == false){
             layer.msg("请选择权限菜单", {
-                title: '错误',
                 icon: 2,
                 anim: 6
             });
@@ -225,12 +223,12 @@
                 "menus":JSON.stringify(menus)
             }
         };
-        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', putData, {}, function(res){
+        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', putData, {}, function(res){
             return layui.zhanshop.alert('编辑成功', 'success', function(){
                 parent.window.location.reload();
             });
         },function(xhr){
-            return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+            return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
         }, true, false);
 
         return false;

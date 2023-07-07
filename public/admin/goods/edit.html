@@ -86,7 +86,7 @@
                                     <div class="form-group">
                                         <label for="goods_item--cat_id"><b class="text-pink">*</b>商品类目</label>
                                         <div class="clearfix">
-                                            <input type="text" data-menuid="goods_category" class="form-control inputCascader" placeholder=""  name="goods_item[cat_id]" id="goods_item--cat_id" value="13">
+                                            <input type="text" data-menuid="GoodsCategory" class="form-control inputCascader" placeholder=""  name="goods_item[cat_id]" id="goods_item--cat_id" value="13">
                                         </div>
                                     </div>
 
@@ -248,7 +248,7 @@
             var menuId = parent.layui.zhanshop.getParam('_id');
             const IDNAME = parent.layui.zhanshop.table.idName;
 
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', {_method: "editfrom"}, {}, function (data) {
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', {_method: "editfrom"}, {}, function (data) {
                 var item = data.data;
                 for(var i in item){
                     var table_name = item[i]['table_name'];
@@ -278,17 +278,17 @@
                     //图片上传接口
                     uploadUrl: './json/upload.json',
                     //获取商品类型接口
-                    productTypeUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    productTypeUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //获取商品类型下的规格和属性接口
-                    attrSpecUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    attrSpecUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //创建规格接口
-                    specCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    specCreateUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //删除规格接口
-                    specDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    specDeleteUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //创建规格值接口
-                    specValueCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    specValueCreateUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //删除规格值接口
-                    specValueDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    specValueDeleteUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                     //单规格SKU表配置
                     singleSkuTableConfig: {
                         thead: [
@@ -337,7 +337,7 @@
                     //商品类型id
                     productTypeId: item[0]['schema']['product_type_id']['default'],
                     //sku数据接口
-                    skuDataUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
+                    skuDataUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME),
                 });
 
 
@@ -397,7 +397,7 @@
                             }
                         }
                         data.field['_method'] = 'PUT';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', data.field, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', data.field, {}, function(res){
                             return layui.zhanshop.alert('编辑成功', 'success', function(){
                                 // 编辑成功更新行值
                                 try{
@@ -412,7 +412,7 @@
 
                             });
                         },function(xhr){
-                            return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                            return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                         }, true, false);
                         //console.log(data.field, '拿到最终数据');
                     });

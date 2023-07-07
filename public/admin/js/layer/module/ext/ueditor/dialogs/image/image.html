@@ -114,6 +114,79 @@
 
         </div>
     </div>
+    <script src="../../../../../layui.js"></script>
+    <script>
+        window.uploadToken = '';
+        window.uploadDomain = '';
+        window.uploadUrl = 'https://upload.qiniup.com/';
+        window.getImagedUrl = '/v4.0.0/index.table?id=SysImage';
+        ready(function() {
+            layui.use(['zhanshop'], function() {
+                //'_method=addfrom'
+                layui.zhanshop.ajax(API_ADDRESS + '/v4.0.0/index.table?id=SysImage', 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function (data) {
+                    uploadToken = data.data.token;
+                    uploadDomain = data.data.domain;
+                }, function(xhr){
+                    return parent.layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger', function (){
+                        parent.window.location.reload();
+                    });
+                }, true, false);
+            });
+        });
+        
+        window.ueditorUploadBeforeSend = function (file, data, header) {
+            data["token"] = uploadToken;
+            console.log(data);
+            var fileName = file.file.name;
+            var fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+            var fileName = (new Date().getTime())+Math.floor(Math.random()*10000); // 加上文件的大小 创建时间
+            var qiniuKey = (new Date()).toLocaleDateString().replace(/\//g,'')+'/'+fileName+'.'+fileExtension;
+            data["key"] = qiniuKey;
+        }
+        /**
+         * 上传完成
+         * @param responseDatas
+         */
+        window.ueditorUploadFinish = function (responseDatas){
+            // 上传成功做一个动作
+            // 同步到后台,original,size 这两个值我也要
+            var reqData = [];
+            for(var i in responseDatas){
+                reqData.push({
+                    'url': uploadDomain+'/'+responseDatas[i]['key'],
+                    'size': responseDatas[i]['size'],
+                    'original': responseDatas[i]['original']
+                });
+            }
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysImage', 'POST', {"system_images":reqData},{},function(){
+            },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, '后台数据同步中...');
+        }
+
+        /**
+         * 单个图片上传成功
+         * @param data
+         */
+        window.ueditorUploadSuccess = function (data){
+            var json = JSON.parse(data._raw);
+            var parts = data['key'].split(".");
+            var obj = {
+                "state" : "SUCCESS",
+                "url" : uploadDomain+'/'+json['key'],// 加上绝对路径避免小程序等应用加载不出来
+                "title" : data['key'],
+                "original" : data['key'],
+                "type" : parts[1] ? parts[1] : 'jpg',
+                "size" : "-1",
+            };
+            return obj;
+        }
+        window.ueditorGetImages = function (page, limit, callback){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysImage', 'POST', {"_method": "GET", "page": page, "limit": limit},{},function(res){
+                callback(res.data);
+            },function(xhr){
+                return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
+            }, '数据载入中...');
+        }
+    </script>
     <script type="text/javascript" src="image.js"></script>
 
 </body>

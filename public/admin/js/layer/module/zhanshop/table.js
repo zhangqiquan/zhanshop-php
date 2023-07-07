@@ -1,7 +1,9 @@
-layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat'], function (exports) {
-    var zhanshopTable = layui.zhanshop.table;
+layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat', 'dropdown'], function (exports) {
+    var zhanshopTable = layui.zhanshop.table; // 获取基类 下面进行重写
     var zhanshop = layui.zhanshop;
     var table = layui.table;
+    var dropdown = layui.dropdown;
+    var util = layui.util;
     window.rowObj = null;// 当前操作的表格行
     where = {'_method': 'GET'};
     zhanshopTable.render = function(schma, single = false){
@@ -24,6 +26,7 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat'], f
             elem: zhanshopTable.elem,
             toolbar: zhanshopTable.toolbar,
             defaultToolbar: zhanshopTable.defaultToolbar,
+            //rowToolbar: zhanshopTable.rowbar, // 行级菜单
             skin: zhanshopTable.skin,
             size: zhanshopTable.size,
             even: zhanshopTable.even,
@@ -39,31 +42,21 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat'], f
             where: where,
             headers: headers,
             contentType: 'application/json',
-            page: {
-                groups : 5,
-                first : false,
-                last : false,
-                limits : [10,20,50,100,300,500,1000],
-                layout: ['prev', 'page', 'next', 'limit', 'count']
-            },
+            page: zhanshopTable.page,
             done: function(){
-                $('tr').contextmenu(function(e) {
-                    $(this).click();
-                    e.preventDefault() // 阻止右键菜单默认行为
-                    $("#contextmenu").css({"display":"","left":e.originalEvent.pageX,"top":e.originalEvent.pageY});
-                })
-        }
-        ,error: function(err, res){
+            }
+            ,error: function(err, res){
                 if(err.readyState < 4){
                     alert('网络异常,请刷新重新加载');
                     window.location.reload();
                 }
-                layui.zhanshop.alert('接口出错'+err.responseText, 'danger');
+                layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                 console.log(err);
             }
-        ,parseData: function(res){
+            ,parseData: function(res){
                 // 处理数据
-                var data = res.data.data;
+                var data = res.data.list;
+                window.apiSourceData = data;
                 data = layui.zhanshopDataFormat.onHandle(data, layui.zhanshopTable.schma);
                 return {
                     "code": res.code, //解析接口状态
@@ -79,20 +72,42 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat'], f
             zhanshop.table.rowObj = obj;
         });
 
-        table.on('sort('+zhanshopTable.elem.replace('#','')+')', function(obj){
-            $('tr').contextmenu(function(e) {
-                $(this).click();
-                e.preventDefault() // 阻止右键菜单默认行为
-                $("#contextmenu").css({"display":"","left":e.originalEvent.pageX,"top":e.originalEvent.pageY});
-            })
+        table.on('rowContextmenu('+zhanshopTable.elem.replace('#','')+')', function(obj){
+            zhanshop.table.rowObj = obj;
+            rowObj = obj;
+            dropdown.render({
+                trigger: 'contextmenu',
+                show: true,
+                data: zhanshopTable.rowbar,
+                click: function(menuData, othis) {
+                    layui.zhanshopTableEvent.rowClick(menuData); // 点击行级菜单
+                }
+            });
+            obj.setRowChecked({selectedStyle: true}); // 标注行选中状态样式
+
+            window.event.preventDefault()
         });
+
+        // table.on('sort('+zhanshopTable.elem.replace('#','')+')', function(obj){
+        //     $('tr').contextmenu(function(e) {
+        //         $(this).click();
+        //         e.preventDefault() // 阻止右键菜单默认行为
+        //         $("#contextmenu").css({"display":"","left":e.originalEvent.pageX,"top":e.originalEvent.pageY});
+        //     })
+        // });
         // layui表格头事件
         table.on('toolbar('+zhanshopTable.elem.replace('#','')+')', function(obj){
             if(obj.event == 'reload'){
                 return window.location.reload();
+            }else if(obj.event == 'data'){
+                zhanshopTable.listObj = table.checkStatus(zhanshopTable.elem.replace('#',''));
+                window.listData = zhanshopTable.listObj.data;
+            }else{
+                zhanshopTable.listObj = table.checkStatus(zhanshopTable.elem.replace('#',''));
+                window.listData = zhanshopTable.listObj.data;
+                obj = $(this).data('config');
+                layui.zhanshopTableEvent.headClick(obj);
             }
-            zhanshopTable.listObj = table.checkStatus(zhanshopTable.elem.replace('#',''));
-            layui.zhanshopTableEvent.headClick(this);
         });
 
         document.onclick = function(){
@@ -101,6 +116,96 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat'], f
 
         zhanshopTable.table = table;
 
+    }
+
+    zhanshopTable.export = function (schma, single = false) {
+        var exportWhere = where;
+        var headers = {};
+        var gets = layui.zhanshop.getParam();
+        delete gets['_id'];
+        delete gets['select'];
+        delete gets['domid'];
+        if(single == false){
+            for(var i in gets){
+                where[i] = gets[i];
+            }
+        }
+
+        var url = zhanshopTable.url;
+        if(url.indexOf("?") == -1){
+            url += '?_token='+layui.zhanshop.getcookie('token');
+        }else{
+            url += '&_token='+layui.zhanshop.getcookie('token');
+        }
+
+        // 只能加在URL中
+
+        var form = $("<form>");
+        form.attr("style","display:none");
+        form.attr("target","_blank");
+        form.attr("method","post");
+        form.attr("action", url);
+
+        var input = $("<input>");
+        input.attr("type","hidden");
+        input.attr('name', '_method');
+        input.attr("value", exportWhere._method);
+
+        delete exportWhere['_method'];
+
+        form.append(input);
+
+        for(var i in exportWhere['search']){
+            var row = exportWhere['search'][i];
+            for(var ii in row){
+                var input = $("<input>");
+                input.attr("type","hidden");
+                input.attr('name', 'search['+i+']['+ii+']');
+                input.attr("value",row[ii]);
+                form.append(input);
+
+            }
+        }
+
+        $("body").append(form);
+        form.submit();
+        form.remove();
+    }
+    /**
+     * 生成表格列字段
+     * @param cols
+     */
+    zhanshopTable.laycols = function (cols) {
+        var data = {
+            field: cols.field,
+            title: cols.title,
+            width: cols.width,
+            sort: cols.sort ? cols.sort : false
+        };
+
+        if(cols.fieldTitle != undefined) data['fieldTitle'] = cols.fieldTitle;
+        if(cols.minWidth != undefined) data['minWidth'] = cols.minWidth;
+        if(cols.maxWidth != undefined) data['maxWidth'] = cols.maxWidth;
+        if(in_array(cols.type, ['normal', 'checkbox', 'radio', 'numbers', 'space'])){
+            data['type'] = cols.type;
+        }
+        if(in_array(cols.fixed, ['left', 'right'])){
+            data['fixed'] = cols.fixed;
+        }
+        if(cols.templet != undefined) data['templet'] = '<div>'+cols.templet+'</div>';
+        if(cols.exportTemplet != undefined) data['exportTemplet'] = cols.exportTemplet;
+        if(cols.totalRow != undefined) data['totalRow'] = cols.totalRow;
+        if(cols.edit != undefined) data['edit'] = cols.edit;
+        if(cols.hide != undefined) data['hide'] = cols.hide;
+        if(cols.escape != undefined) data['escape'] = cols.escape;
+        if(cols.unresize != undefined) data['unresize'] = cols.unresize;
+        if(cols.event != undefined) data['event'] = cols.event;
+        if(cols.style != undefined) data['style'] = cols.style;
+        if(cols.align != undefined) data['align'] = cols.align;
+
+        if(cols.colspan != undefined) data['colspan'] = cols.colspan;
+        if(cols.rowspan != undefined) data['rowspan'] = cols.rowspan;
+        return data;
     }
 
     // 行右击菜单事件

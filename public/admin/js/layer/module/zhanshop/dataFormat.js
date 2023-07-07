@@ -94,7 +94,7 @@ layui.define([], function (exports) {
             return data;
         },
         time: function(data, val){
-            if(!isNaN(data)){
+            if(data && !isNaN(data)){
                 return date(data, 'Y-m-d H:i:s');
             }
             return data;
@@ -103,20 +103,20 @@ layui.define([], function (exports) {
             return window.timerange(data);
         },
         image: function(data, val){
-            if(data) return '<img src="'+data+'" height="28px" onclick="pictureBrowser(this)" />';
+            //if(data) return '<img src="'+data+'" height="28px" onclick="pictureBrowser(this)" />';
             return data;
         },
         images: function(data, val){
-            try{
-                data = JSON.parse(data);
-                var html = '';
-                for(var i in data){
-                    html += '<img src="'+data[i]+'" height="38px" onclick="pictureBrowser(this)" /> &nbsp;'
-                }
-                return html;
-            }catch (e) {
-                
-            }
+            // try{
+            //     data = JSON.parse(data);
+            //     var html = '';
+            //     for(var i in data){
+            //         html += '<img src="'+data[i]+'" height="38px" onclick="pictureBrowser(this)" /> &nbsp;'
+            //     }
+            //     return html;
+            // }catch (e) {
+            //
+            // }
             return data;
         },
         audio: function(data, val){
@@ -224,6 +224,9 @@ layui.define([], function (exports) {
 
             }
             return data;
+        },
+        icon: function (data, val) {
+            return '';
         }
     };
     exports('zhanshopDataFormat', obj);//导出

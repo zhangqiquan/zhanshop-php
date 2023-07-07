@@ -81,7 +81,7 @@
                                         {{#  }else if(v.input_type == 'date'){ }}
                                         <div class="form-group">
                                             <label for="{{v.field}}">{{v.title}}</label>
-                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="{{v.default}}">
 
                                         </div>
 
@@ -90,28 +90,28 @@
                                             <label for="{{v.field}}">{{v.title}}</label>
                                             <div class="clearfix">
                                                 <div class="cascader-prop" style="display: none;"> {"checkStrictly":true} </div>
-                                                <input type="text" data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{v.field}}" id="{{v.field}}" value="">
+                                                <input type="text" data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{v.field}}" id="{{v.field}}" value="{{v.default}}">
                                             </div>
                                         </div>
 
                                         {{#  }else if(v.input_type == 'time'){ }}
                                         <div class="form-group">
                                             <label for="{{v.field}}">{{v.title}}</label>
-                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="{{v.default}}">
 
                                         </div>
 
                                         {{#  }else if(v.input_type == 'timerange'){ }}
                                         <div class="form-group">
                                             <label for="{{v.field}}">{{v.title}}</label>
-                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+                                            <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="{{v.default}}">
 
                                         </div>
 
                                         {{# }else{ }}
                                         <div class="form-group">
                                             <label for="{{v.field}}">{{v.title}}</label>
-                                            <input type="text" class="form-control" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="">
+                                            <input type="text" class="form-control" placeholder="请输入{{v.title}}" name="{{v.field}}" id="{{v.field}}" value="{{v.default}}">
 
                                         </div>
                                         {{#  } }}
@@ -125,6 +125,7 @@
 
                         <div class="col-xs-12" id="from-button" style="text-align: center;">
                             <button type="button" class="btn btn-primary" lay-submit lay-filter="onsubmit" data-tabindex="0" id="submitButton">搜&nbsp;&nbsp;索</button>
+                            <button type="button" class="btn btn-yellow" lay-submit lay-filter="onexport" data-tabindex="0" id="exportButton">导&nbsp;&nbsp;出</button>
                         </div>
                     </div>
 
@@ -144,7 +145,41 @@
             var menuId = parent.layui.zhanshop.getParam('_id');
             const IDNAME = parent.layui.zhanshop.table.idName;
             window.schmas = null;
-            layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, '#view', function(data){
+            
+            
+            var searchView = function (url, elem, callback, reqMethod = 'POST', data = '', head = {}) {
+                var view = $(elem).html();
+                layui.zhanshop.ajax(url, reqMethod, data, head, function(res){
+                    for(var i in parent.where['search']){
+                        var item = parent.where['search'][i];
+                        var field = item[0];
+                        if(res.data[field] !== undefined && res.data[field]['default'] !== undefined){
+                            if(res.data[field]['input_type'] == 'time' && res.data[field]['type'] == 'int'){
+                                var arr = item[2].split(',');
+                                var arr0 = arr[0].trim();
+                                var arr1 = arr[1].trim();
+                                res.data[field]['default'] = date(arr0)+' , '+date(arr1);
+                            }else{
+                                res.data[field]['default'] = item[2];
+                            }
+
+                        }
+                    }
+                    laytpl($(elem).html()).render(res.data, function(html){
+                        $(elem).html(html);
+                        //渲染成功回调
+                        if(callback != undefined){
+                            callback(res.data);
+                        }
+                    });
+                }, function(xhr){
+                    zhanshop.alert('页面渲染失败:'+(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText), 'danger', function(){
+                        window.location.reload();
+                    });
+                });
+            }
+
+            searchView(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, '#view', function(data){
                 schmas = data;
                 layui.zhanshopFrom.render();
                 // 表单提交的处理
@@ -158,13 +193,23 @@
                         //parent.layui.zhanshop.table.rowObj.update(updateData[0])
 
                         parent.layui.zhanshopTable.render(parent.colsData, true);
-                        // layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/table.data?id='+menuId, 'POST', res, {}, function(res){
-                        //     return layui.zhanshop.alert('操作成功', 'success', function(){
-                        //         parent.window.location.reload();
-                        //     });
-                        // },function(xhr){
-                        //     return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
-                        // });
+                        // 关闭当前
+                        parent.layer.closeAll();
+                    }, true, false);
+
+                    return false;
+                });
+
+                layui.form.on('submit(onexport)', function(data){
+                    // 创建一个临时表单实现下载
+                    window.submitData = data.field;
+                    delete submitData['select'];
+                    layui.zhanshopFrom.searchhandle(submitData, function(res){
+                        parent.where = {'_method': 'export'};
+                        parent.where['search'] = res;
+                        parent.layui.zhanshopTable.export(parent.colsData, true);
+                        // // 关闭当前
+                        parent.layer.closeAll();
                     }, true, false);
 
                     return false;

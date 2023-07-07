@@ -7,6 +7,7 @@
   <link href="../../css/bootstrap.min.css" rel="stylesheet">
   <link href="../../css/materialdesignicons.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="../../css/style.min.css">
+  <link rel="stylesheet" type="text/css" href="../../js/layer/css/layui.css">
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache">
   <meta http-equiv="expires" content="0">
@@ -325,10 +326,10 @@
 <script type="text/javascript" src="../../js/layer/layui.js"></script>
 <script>
   ready(function() {
-    var menuId = 'sys_image';
+    var menuId = 'SysImage';
     layui.use(['zhanshop'], function(){
 
-      layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
+      layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
 
 
         $wrap = $('#uploader'),
@@ -706,7 +707,7 @@
                     'original': responseDatas[i]['original']
                   });
                 }
-                layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id=sys_image', 'POST', {"system_images":reqData},{},function(){
+                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysImage', 'POST', {"system_images":reqData},{},function(){
                     window.location = document.referrer;
                 },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
                 console.log(reqData);
@@ -834,7 +835,9 @@
         updateTotalProgress();
 
       }, function(xhr){
-        return zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+        return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger', function (){
+          window.history.go(-1);
+        });
       }, true, false);
 
 

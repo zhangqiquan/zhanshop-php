@@ -321,11 +321,11 @@
 <script type="text/javascript" src="../../js/webuploader/webuploader.audio.js"></script>
 <script type="text/javascript" src="../../js/layer/layui.js"></script>
 <script>
-    var menuId = 'sys_audio';
+    var menuId = 'SysAudio';
     ready(function() {
         layui.use(['zhanshop'], function(){
 
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=audio&_method=uploadToken', {}, function(data){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=audio&_method=uploadToken', {}, function(data){
 
                 $wrap = $('#uploader'),
 
@@ -703,7 +703,7 @@
                                         'duration' : responseDatas[i]['duration'],
                                     });
                                 }
-                                layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id=sys_audio', 'POST', {"system_audios":reqData},{},function(){
+                                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysAudio', 'POST', {"system_audios":reqData},{},function(){
                                     window.location.href=document.referrer;
                                 },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
 
@@ -836,7 +836,9 @@
                 updateTotalProgress();
 
             }, function(xhr){
-                return zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                return parent.layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger', function (){
+                    window.history.go(-1);
+                });
             }, true, false);
 
 

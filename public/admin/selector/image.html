@@ -132,7 +132,7 @@
 
 <script type="text/javascript" src="../js/layer/layui.js"></script>
 <script>
-    var imageMenuId = 'sys_image';
+    var imageMenuId = 'SysImage';
     ready(function() {
         layui.use(['flow', 'zhanshop'], function(){
             var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
@@ -150,9 +150,9 @@
                         'limit' : '20',
                         'search' : [['original', 'like', layui.zhanshop.getParam('keyword')]]
                     };
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(res){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(res){
                         //假设你的列表返回在data集合中
-                        layui.each(res.data.data, function(index, item){
+                        layui.each(res.data.list, function(index, item){
                             lis.push('<a class="masonry-item" href="javascript:void(0)"><img  data-data=\''+JSON.stringify(item)+'\' class="item-image" src="'+item.url+'" alt="'+item.original+'"><i class="image-text">'+item.original+'</i></a>');
                         });
 
@@ -242,12 +242,12 @@
                 }
                 reqData += '_method=DELETE';
                 layui.zhanshop.confirm('确定要删除么?', function(){
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(data){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+imageMenuId, 'POST', reqData, {}, function(data){
                         // 删除指定元素即可
                         $('.item-this').each(function(){
                             $(this).parent().remove(); // 删除自身
                         });
-                    },function(xhr){return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');}, true, false);
+                    },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, true, false);
                 }, function(){
 
                 });
@@ -268,7 +268,7 @@
                 var imgsHtml = '';
                 $('.item-this').each(function(index){
                     urls.push(this.src);
-                    imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+this.src+'" height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImageDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
+                    imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+this.src+'" min-height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImageDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
                 });
                 // 把图片处理一下
                 $('#'+domId, window.parent.document).parent().find('ul').html(imgsHtml);
@@ -286,12 +286,12 @@
                 var vals = vals ? JSON.parse(vals) : [];
                 imgsHtml = '';
                 for(var i in vals){
-                    imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+vals[i]+'" height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImagesDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
+                    imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+vals[i]+'" min-height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImagesDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
                 }
                 $('.item-this').each(function(index){
                     if(vals.indexOf(this.src) < 0){
                         vals.push(this.src);
-                        imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+this.src+'" height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImagesDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
+                        imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><img src="'+this.src+'" min-height="200px"><figcaption><a class="btn btn-round btn-square btn-danger inputImagesDel" href="javascript:void(0)"><i class="mdi mdi-close image-delete"></i></a></figcaption></figure></li>';
                     }
                 });
                 imgsHtml += '<li class="col-6 col-md-4 col-lg-2"><a class="add images-add" ></a></li>';

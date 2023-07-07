@@ -3,21 +3,26 @@ layui.define(['zhanshop'], function (exports) {
         headClick: function(obj){
             window.idName = layui.zhanshop.table.idName;
             window.listData = layui.zhanshop.table.listObj.data;
-            window.menuObj = obj;
-            var event = $(obj).data('event');
-            this[event].call(this, listData);
+            //window.menuObj = obj;
+            var event = obj.event;
+            this[event].call(this, obj);
         },
         rowClick: function(obj){
+            console.log(obj);
             window.idName = layui.zhanshop.table.idName;
             window.rowData = layui.zhanshop.table.rowObj.data;
-            var event = $(obj).data('event');
+            var event = obj.event;
             this[event].call(this, obj);
         },
         add: function(obj){
-            layui.zhanshop.iframe($(menuObj).data('title'), $(menuObj).data('page')+'?t='+(Date.parse(new Date()) / 1000));
+            if(obj.target == '_self'){
+                window.location = obj.page+'?t='+(Date.parse(new Date()) / 1000);
+            }else{
+                layui.zhanshop.iframe(obj.title, obj.page+'?t='+(Date.parse(new Date()) / 1000));
+            }
         },
         edit: function(obj){
-            layui.zhanshop.iframe($(obj).data('title'), $(obj).data('page')+'?'+idName+'='+rowData[idName]+'?t='+(Date.parse(new Date()) / 1000));
+            layui.zhanshop.iframe(obj.title, obj.page+'?'+idName+'='+rowData[idName]+'?t='+(Date.parse(new Date()) / 1000));
         },
         delete: function(obj){
             var req = {
@@ -42,8 +47,8 @@ layui.define(['zhanshop'], function (exports) {
                 '_method':'DELETE',
             };
             var push = [];
-            for(var i in obj){
-                push.push(obj[i][idName]);
+            for(var i in listData){
+                push.push(listData[i][idName]);
             }
             req['pk'] = push;
             if(push.length == 0) return layui.zhanshop.alert('请选择需要删除的行', 'danger');
@@ -65,23 +70,23 @@ layui.define(['zhanshop'], function (exports) {
                     }
                     // 删除当前行
                 }, function(xhr){
-                    layui.zhanshop.alert(xhr.responseText, 'danger');
+                    layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                 });
             });
         },
         ajax: function(obj){
             var req = {
-                '_method': $(obj).data('method'),
+                '_method': obj.method,
             };
             req[idName] = rowData[idName];
             layui.zhanshop.ajax(layui.zhanshop.table.url, 'POST', req, {}, function(data){
 
             }, function(xhr){
-                layui.zhanshop.alert(xhr.responseText, 'danger');
+                layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             });
         },
         open: function(obj){
-            layui.zhanshop.iframe($(menuObj).data('title'), $(menuObj).data('page')+'?t='+(Date.parse(new Date()) / 1000));
+            layui.zhanshop.iframe(obj.title, obj.page+'?t='+(Date.parse(new Date()) / 1000));
         },
         submit: function(obj){
             this.ajax(obj);

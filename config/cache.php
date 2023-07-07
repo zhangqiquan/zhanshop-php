@@ -24,23 +24,6 @@ return [
                 'max_connections' => swoole_cpu_num() * 10,
                 'timeout' => 0.1,
             ],
-        ],
-        'test' => [
-            // REDIS地址
-            'host'       => '36.111.20.204',
-            // REDIS端口
-            'port'       => 6379,
-            // REDIS密码
-            'password'   => 'zhangqiquan123',
-            // REDIS库
-            'select'     => 1,
-            // REDIS 超时时间
-            'timeout'    => 1,
-
-            'pool' => [
-                'max_connections' => swoole_cpu_num() * 10,
-                'timeout' => 0.1,
-            ],
         ]
     ]
 ];

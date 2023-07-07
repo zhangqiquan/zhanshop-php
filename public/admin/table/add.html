@@ -9,8 +9,8 @@
   <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../css/animate.min.css">
   <link rel="stylesheet" type="text/css" href="../css/style.min.css">
-  <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.config.js?v=1"></script>
-  <script type="text/javascript" src="../js/layer/module/ext/ueditor/ueditor.all.min.js?v=1"></script>
+  <script type="text/javascript" charset="utf-8" src="../js/layer/module/ext/ueditor/ueditor.config.js"></script>
+  <script type="text/javascript" charset="utf-8" src="../js/layer/module/ext/ueditor/_examples/editor_api.js"></script>
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache">
   <meta http-equiv="expires" content="0">
@@ -31,7 +31,7 @@
           <ul class="layui-tab-title" id="layui-tab-ul" style="margin-left: 10px;text-align: center;">
             {{#  arr_foreach(d, function(index, item){ }}
             {{index = parseInt(index)}}
-              <li id="layertab{{index}}" data-index="{{index}}" data-table="{{item.table_name}}"  class="{{#  if(index == 0){ }}layui-this{{#  } }}">{{item.title}}</li>
+              <li id="layertab{{index}}" data-index="{{index}}" data-table="{{item.step}}"  class="{{#  if(index == 0){ }}layui-this{{#  } }}">{{item.title}}</li>
             {{#  }); }}
           </ul>
 
@@ -43,18 +43,18 @@
               <div class="col-md-12">
                 {{#  arr_foreach(item.schema, function(k, v){ }}
                 {{#  if(v.input_type == 'hidden'){ }}
-                <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{hiddenVal(v.default)}}">
+                <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{hiddenVal(v.default)}}">
 
                 {{#  }else if(v.input_type == 'tag'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
                     <div class="fairy-tag-container">
-                      <input id="{{item.table_name}}--{{v.field}}-tag" type="text" class="inputTag fairy-tag-input tag2">
+                      <input id="step{{item.step}}--{{v.field}}-tag" type="text" class="inputTag fairy-tag-input tag2">
                     </div>
 
-                    <input class="inputTagVal" name="{{item.table_name}}[{{v.field}}]" type="hidden" value="">
+                    <input class="inputTagVal" name="{{item.step}}[{{v.field}}]" type="hidden" value="">
 
                   </div>
                 </div>
@@ -62,21 +62,21 @@
                 {{#  }else if(v.input_type == 'cascader'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
                     <div class="cascader-prop" style="display: none;">
                       {{json_encode(v.value)}}
                     </div>
-                    <input type="text" data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="0">
+                    <input type="text" data-menuid="{{v.value_menu}}" class="form-control inputCascader" placeholder=""  name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="0">
                   </div>
                 </div>
 
 
                 {{#  }else if(v.input_type == 'select'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <select lay-ignore class="form-control" name="{{item.table_name}}[{{v.field}}]">
+                    <select lay-ignore class="form-control" name="{{item.step}}[{{v.field}}]">
                       <option value="">请选择</option>
                       {{#  arr_foreach(v.value, function(k1, v1){ }}
                       {{#  if(k1 == v.default){ }}
@@ -91,17 +91,17 @@
 
                 {{#  }else if(v.input_type == 'radio'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
                     {{#  arr_foreach(v.value, function(k1, v1){ }}
                     <div class="custom-control custom-radio custom-control-inline">
                       {{#  if(k1 == v.default){ }}
-                      <input checked lay-ignore type="radio" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
+                      <input checked lay-ignore type="radio" id="step{{item.step}}--{{v.field}}--{{k1}}" name="{{item.step}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
                       {{# }else{ }}
-                      <input lay-ignore type="radio" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
+                      <input lay-ignore type="radio" id="step{{item.step}}--{{v.field}}--{{k1}}" name="{{item.step}}[{{v.field}}]" class="custom-control-input" value="{{k1}}">
                       {{#  } }}
 
-                      <label class="custom-control-label" for="{{item.table_name}}--{{v.field}}--{{k1}}">{{v1}}</label>
+                      <label class="custom-control-label" for="step{{item.step}}--{{v.field}}--{{k1}}">{{v1}}</label>
                     </div>
                     {{#  }); }}
                   </div>
@@ -109,170 +109,186 @@
 
                 {{#  }else if(v.input_type == 'checkbox'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
                     {{#  arr_foreach(v.value, function(k1, v1){ }}
                     <div class="custom-control custom-checkbox custom-control-inline">
-                      <input lay-ignore type="checkbox" id="{{item.table_name}}--{{v.field}}--{{k1}}" name="{{item.table_name}}[{{v.field}}][]" class="custom-control-input" value="{{k1}}">
-                      <label class="custom-control-label" for="{{item.table_name}}--{{v.field}}--{{k1}}">{{v1}}</label>
+                      <input lay-ignore type="checkbox" id="step{{item.step}}--{{v.field}}--{{k1}}" name="{{item.step}}[{{v.field}}][]" class="custom-control-input" value="{{k1}}">
+                      <label class="custom-control-label" for="step{{item.step}}--{{v.field}}--{{k1}}">{{v1}}</label>
                     </div>
                     {{#  }); }}
                   </div>
                 </div>
 
+                {{#  }else if(v.input_type == 'xmselect'){ }}
+                <div class="form-group">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <div class="clearfix">
+                    <div class="xmselect-prop" style="display: none;">
+                      {{json_encode(v.value)}}
+                    </div>
+                    <div class="xm-select-demo inputXmselect" id="step{{item.step}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value=''>
+                  </div>
+                </div>
+
                 {{#  }else if(v.input_type == 'radios'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                    <div class="xm-select-demo inputRadios" id="step{{item.step}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value=''>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'checkboxs'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                    <div class="xm-select-demo inputCheckboxs" id="step{{item.step}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value=''>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'radiowindow'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                    <div class="xm-select-demo inputRadios" id="step{{item.step}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value=''>
                   </div>
                 </div>
                 {{#  }else if(v.input_type == 'checkboxwindow'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value=''>
+                    <div class="xm-select-demo inputCheckboxs" id="step{{item.step}}--{{v.field}}-div"  data-menuid="{{v.value_menu}}"></div>
+                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value=''>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'textarea'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <textarea class="form-control inputTextarea" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}"></textarea>
+                    <textarea class="form-control inputTextarea" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}"></textarea>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'date'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
-                  <input type="text" class="form-control inputDate" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="text" class="form-control inputDate" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="">
 
                 </div>
 
                 {{#  }else if(v.input_type == 'time'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
-                  <input type="text" class="form-control inputTime" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="text" class="form-control inputTime" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="">
 
                 </div>
 
                 {{#  }else if(v.input_type == 'timerange'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
-                  <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="text" class="form-control inputTimerange" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="">
 
                 </div>
 
                 {{#  }else if(v.input_type == 'image'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputImage" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputImage" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'images'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputImages" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputImages" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'audio'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputAudio" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputAudio" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'audios'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputAudios" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputAudios" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'video'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputVideo" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputVideo" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'videos'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="form-controls">
-                    <input type="hidden" class="form-control inputVideos" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                    <input type="hidden" class="form-control inputVideos" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'document'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}">{{v.title}}</label>
-                  <div class="clearfix">
-                    <div class="xm-select-demo inputRadios" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="sys_document"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <div class="form-controls">
+                    <input type="hidden" class="form-control inputDocument" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'documents'){ }}
 
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
-                  <div class="clearfix">
-                    <div class="xm-select-demo inputCheckboxs" id="{{item.table_name}}--{{v.field}}-div"  data-menuid="sys_document"></div>
-                    <input type="hidden" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value='{{=v.default}}'>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <div class="form-controls">
+                    <input type="hidden" class="form-control inputDocuments" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value='{{=v.default}}'>
                   </div>
                 </div>
 
                 {{#  }else if(v.input_type == 'baidueditor'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
                   <div class="clearfix">
-                    <textarea style="width:100%;height:400px;" class="layui-textarea inputBaidueditor" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}"></textarea>
+                    <textarea style="width:100%;height:400px;" class="layui-textarea inputBaidueditor" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}"></textarea>
                   </div>
                 </div>
                 {{#  }else if(v.input_type == 'jsoneditor'){ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}">{{v.title}}</label>
+                  <label for="step{{item.step}}--{{v.field}}">{{v.title}}</label>
                   <div class="clearfix">
-                    <textarea style="width:100%;height:400px;" class="layui-textarea inputJson" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}">{{=v.default}}</textarea>
+                    <textarea style="width:100%;height:400px;" class="layui-textarea inputJson" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}">{{=v.default}}</textarea>
                   </div>
+                </div>
+                {{#  }else if(v.input_type == 'number'){ }}
+                <div class="form-group">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="{{v.input_type}}" step="{{=v.value.step}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{=v.default}}">
+
                 </div>
                 {{# }else{ }}
                 <div class="form-group">
-                  <label for="{{item.table_name}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
-                  <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.table_name}}[{{v.field}}]" id="{{item.table_name}}--{{v.field}}" value="{{=v.default}}">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="{{v.input_type}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{=v.default}}">
 
                 </div>
                 {{#  } }}
@@ -312,7 +328,7 @@
       var menuId = parent.layui.zhanshop.getParam('_id');
       const IDNAME = parent.layui.zhanshop.table.idName;
       window.schmas = null;
-      layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, '#view', function(data){
+      layui.zhanshop.view(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, '#view', function(data){
         schmas = data;
         layui.zhanshopFrom.render();
         // 表单提交的处理
@@ -322,12 +338,12 @@
           delete submitData['select'];
           layui.zhanshopFrom.verification(submitData, function(){
             // 我这里不要走json了
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', submitData, {}, function(res){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', submitData, {}, function(res){
               return layui.zhanshop.alert('操作成功', 'success', function(){
                 parent.window.location.reload();
               });
             },function(xhr){
-              return layui.zhanshop.alert((xhr.responseJSON && xhr.responseJSON.msg) ? xhr.responseJSON.msg : xhr.statusText, 'danger');
+              return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             }, true, false);
           });
 

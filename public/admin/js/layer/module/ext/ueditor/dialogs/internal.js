@@ -2,8 +2,6 @@
     var parent = window.parent;
     //dialog对象
     dialog = parent.$EDITORUI[window.frameElement.id.replace( /_iframe$/, '' )];
-    parent.document.getElementById( dialog.id+'_iframe' ).style.height = parent.document.documentElement.clientHeight+'px';//限制一下高度
-    
     //当前打开dialog的编辑器实例
     editor = dialog.editor;
 

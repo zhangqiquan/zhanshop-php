@@ -9,8 +9,8 @@
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="./css/style.min.css">
-    <script type="text/javascript" src="./js/layer/module/ext/ueditor/ueditor.config.js?v=1"></script>
-    <script type="text/javascript" src="./js/layer/module/ext/ueditor/ueditor.all.min.js?v=1"></script>
+    <script type="text/javascript" charset="utf-8" src="./js/layer/module/ext/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./js/layer/module/ext/ueditor/_examples/editor_api.js"></script>
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="cache-control" content="no-cache">
     <meta http-equiv="expires" content="0">
@@ -245,7 +245,7 @@
                                     <div class="form-group">
                                         <label for="system_config--{{v.field}}">{{v.title}}</label>
                                         <div class="clearfix">
-                                            <div class="xm-select-demo inputRadios" id="system_config--{{v.field}}-div"  data-menuid="sys_document"></div>
+                                            <div class="xm-select-demo inputRadios" id="system_config--{{v.field}}-div"  data-menuid="SysDocument"></div>
                                             <input type="hidden" placeholder="请输入{{v.title}}" name="system_config[{{v.field}}]" id="system_config--{{v.field}}" value='{{=v.default}}'>
                                         </div>
                                     </div>
@@ -255,7 +255,7 @@
                                     <div class="form-group">
                                         <label for="system_config--{{v.field}}">{{v.title}}</label>
                                         <div class="clearfix">
-                                            <div class="xm-select-demo inputCheckboxs" id="system_config--{{v.field}}-div"  data-menuid="sys_document"></div>
+                                            <div class="xm-select-demo inputCheckboxs" id="system_config--{{v.field}}-div"  data-menuid="SysDocument"></div>
                                             <input type="hidden" placeholder="请输入{{v.title}}" name="system_config[{{v.field}}]" id="system_config--{{v.field}}" value='{{=v.default}}'>
                                         </div>
                                     </div>
@@ -323,7 +323,7 @@
             window.schmas = null;
             var postData = {'_method': 'editfrom'};
             //postData['pk'] = layui.zhanshop.getParam(IDNAME);
-            layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.config?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(data){
+            layui.zhanshop.view(API_ADDRESS+'/v4.0.0/index.config?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), '#view', function(data){
                 schmas = data;
                 layui.zhanshopFrom.render();
                 // 表单提交的处理
@@ -333,11 +333,11 @@
                     delete submitData['select'];
                     layui.zhanshopFrom.verification(submitData, function(){
                         submitData['_method'] = 'PUT';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.config?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', submitData, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.config?id='+menuId+'&pk'+'='+layui.zhanshop.getParam(IDNAME), 'POST', submitData, {}, function(res){
                             return layui.zhanshop.alert('保存成功', 'success', function(){
                             });
                         },function(xhr){
-                            return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                            return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                         }, true, false);
                     });
 

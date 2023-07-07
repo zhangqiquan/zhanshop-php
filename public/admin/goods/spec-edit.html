@@ -86,7 +86,7 @@
       var menuId = parent.layui.zhanshop.getParam('_id');
         // 表单提交的处理var postData = {'_method': 'editfrom'};
         //监听提交
-      layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', {'_method': 'editfrom'}, {}, function(ret){
+      layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', {'_method': 'editfrom'}, {}, function(ret){
         $("#goods_attr_spec_title").val(ret.data[0]['schema']['title']['default']);
         $("#goods_attr_spec_explain").val(ret.data[0]['schema']['explain']['default']);
         var options = ret.data[0]['schema']['options']['default'];
@@ -103,7 +103,7 @@
             window.submitData = data.field;
             delete submitData['select'];
             submitData['_method'] = 'PUT';
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', submitData, {}, function(res){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId+'&pk='+layui.zhanshop.getParam(IDNAME), 'POST', submitData, {}, function(res){
               return layui.zhanshop.alert('编辑成功', 'success', function(){
                 // 编辑成功更新行值
                 try{
@@ -118,7 +118,7 @@
 
               });
             },function(xhr){
-              return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+              return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             }, true, false);
 
             return false;

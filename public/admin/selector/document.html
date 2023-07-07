@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="../css/style.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <script>
+    var searchFieldNum = 0;
+  </script>
+</head>
+
+<body>
+<div class="container-fluid p-t-15" id="view" style="margin: 0px!important; padding: 0px!important;">
+
+  <div class="row">
+
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+          {{#  if(d.tabs.length){ }}
+          <ul class="layui-tab-title">
+            {{#  arr_foreach(d.tabs, function(k1, v1){ }}
+            {{#  if(k1 == 0){ }}
+            <li class="layui-this" onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+            {{# }else{ }}
+            <li  onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+            {{#  } }}
+            {{#  }); }}
+          </ul>
+          {{#  } }}
+
+          <div class="layui-tab-content">
+
+            <div class="card-toolbar d-flex flex-column flex-md-row">
+              <div class="toolbar-btn-action"> <a style="color: #000;font-size: 18px;opacity: 0.7;line-height: 1.6em;">{{d.title}}</a>
+              </div>
+              <form class="search-bar ml-md-auto" method="post" onsubmit="return laysearch(this);">
+                <div class="input-group ml-md-auto"> <select name="field" id="search-field" class="custom-select" style="max-width: 110px!important;text-align: center;">
+                  {{#  arr_foreach(d.cols, function(k1, v1){ }}
+                  {{#  if(v1.search === true || searchFieldNum == 0){ }}
+                  <option value="{{v1.field}}">{{v1.title}}</option>
+                  {{#  } }}
+                  {{searchFieldNum++}}
+                  {{#  }); }}
+                </select>
+                  <input id="search-val" type="text" class="form-control" style="width: 250px;" name="keyword" placeholder="请输入搜索内容"> <button class="btn btn-outline-success" type="submit">搜索</button>&nbsp;
+                  <button class="btn btn-outline-warning" type="button" onclick="advancedSearch()">高级</button> </div>
+              </form>
+            </div>
+          </div>
+
+          <table id="laytable" lay-filter="laytable"></table>
+
+          <script id="left-toolbar" type="text/html">
+            <div class="layui-btn-container layui-btn-group">
+              {{#  arr_foreach(d.head_toolbar, function(k1, v1){ }}
+              {{#  if(v1.event != 'hidden'){ }}
+              <button data-config={{=configEncode(v1)}} class="layui-btn layui-btn-primary layui-btn-sm head-event" lay-event="header"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
+              {{#  } }}
+              {{#  }); }}
+              <button style="display: none;" id="checkData" class="layui-btn layui-btn-primary layui-btn-sm head-event" lay-event="data"><i class="layui-icon"></i></button>
+            </div>
+          </script>
+          <!---右击菜单--->
+          <!--                    <div id="contextmenu" class="inner show" style="height: auto;min-height: 0px;position: absolute;left: 0px;top: 0px;z-index: 999999999999999;background: #f33;display: none;">-->
+          <!--                        <ul class="dropdown-menu inner show" style="border: 1px solid #dddddd!important;">-->
+          <!--                            {{#  arr_foreach(d.row_toolbar, function(k1, v1){ }}-->
+          <!--                            {{#  if(v1.event != 'hidden'){ }}-->
+          <!--                            <li><a class="dropdown-item row-event" href="javascript:void(0);" data-event="{{v1.event}}" data-method='{{v1.method}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>&nbsp;&nbsp;<span class="text">{{v1.title}}</span></a></li>-->
+          <!--                            {{#  } }}-->
+
+          <!--                            {{#  }); }}-->
+          <!--                            <li><a class="dropdown-item row-event" data-event="source" data-event="alert" href="javascript:void(0);" ><i class="layui-icon">&#xe6b2;</i>&nbsp;&nbsp;<span class="text">查看数据源</span></a></li>-->
+          <!--                        </ul>-->
+          <!--                    </div>-->
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div style="height: 20px; width: 100%;"></div>
+<div style="text-align: center; background-color:#FFF; position: fixed; bottom: 0px; width: 100%;opacity: 0.8; padding-top: 8px; padding-bottom: 8px;"  id="confirmSelect">
+  <button type="button" class="btn btn-primary" id="okSelect">确 认</button>
+  <button type="button" class="btn btn-default" onclick="javascript:parent.layer.closeAll();">关 闭</button>
+
+</div>
+
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+  var where = {};
+  var tabWhere = [];
+  window.listData = null;
+  window.zhanshop = null;
+  window.configEncode = function (data){
+    data.page = data.page.replace("./","");
+    data.target = '_self';
+    return json_encode(data);
+  };
+  ready(function() {
+    layui.use(['zhanshopTable', 'zhanshop'], function() {
+      zhanshop = layui.zhanshop;
+      var table = layui.zhanshopTable;
+      // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
+      zhanshop.view(API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id'), '#view', function(
+              data) {
+        table.url = API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id');
+        table.title = data.title;
+        table.elem = '#laytable';
+        table.toolbar = '#left-toolbar';
+        table.rowbar = data.row_toolbar; // 配置行级别菜单
+        /**/
+        table.width = data.width;
+        table.height = data.height;
+        table.even = data.even;
+        table.skin = data.skin;
+        table.css = data.css;
+        table.size = data.size;
+        table.limit = data.limit;
+        table.limits = data.limits;
+        table.page = data.page;
+        table.lineStyle = data.lineStyle;
+        table.cellMinWidth = data.cellMinWidth;
+        table.data = data.data;
+        /**/
+        table.idName = data.pk;
+        table.titleName = data.title_name;
+        table.pidName = data.pid_name;
+        table.schma = data.cols;
+        table.searchPage = '../table/search.html';
+        window.colsData = [];
+        if(zhanshop.getParam('multi') == 1){
+          colsData.push({type: "checkbox"});
+        }else{
+          colsData.push({type: "radio"});
+        }
+        for(var i in data.cols){
+          if(data.cols[i]['in_list'] !== false){
+            colsData.push(table.laycols(data.cols[i]));
+          }
+        }
+        table.render(colsData);
+
+      }, 'POST', {"_method":"render"});
+
+
+
+
+      $(document).on('click', '#okSelect', function() {
+        if(layui.zhanshop.getParam('multi')){
+          checkSelect();
+        }else{
+          radioSelect();
+        }
+      });
+
+      function radioSelect(){
+        $("#checkData").click();
+        // 单选就是替换 多选就是追加,还有已选的选择呢
+        var domId = parent.layui.zhanshopFrom.currentInputId;
+
+        var documentData = {
+          'file_id': listData[0]['file_id'],
+          'url': listData[0]['url'],
+          'original': listData[0]['original'],
+          'size': listData[0]['size'],
+        };
+         var documentsHtml = '';
+        documentsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><div class="pictext"><span class="mdi mdi-file-document icotext"></span><br>'+listData[0]['original']+'</div><figcaption><a class="btn btn-round btn-square btn-danger inputDocumentDel" href="javascript:void(0)"><i class="mdi mdi-close document-delete"></i></a></figcaption></figure></li>';
+        $('#'+domId, window.parent.document).parent().find('ul').html(documentsHtml);
+        $('#'+domId, window.parent.document).val(JSON.stringify(documentData));
+        parent.layer.closeAll();
+      }
+
+      function checkSelect(){
+        $("#checkData").click();
+        var maxLength = 12;
+        // 单选就是替换 多选就是追加,还有已选的选择呢
+        var domId = parent.layui.zhanshopFrom.currentInputId;
+        // 已选之前已选，现在取消了
+        documentsHtml = '';
+
+        var documentDatas = [];
+        for(var i in listData){
+          documentDatas.push({
+            'file_id': listData[i]['file_id'],
+            'url': listData[i]['url'],
+            'original': listData[i]['original'],
+            'size': listData[i]['size'],
+          });
+
+          documentsHtml += '<li class="col-6 col-md-4 col-lg-2"><figure><div class="pictext"><span class="mdi mdi-volume-medium icotext"></span><br>'+listData[i]['original']+'</div><figcaption><a class="btn btn-round btn-square btn-danger inputDocumentsDel" href="javascript:void(0)"><i class="mdi mdi-close documents-delete"></i></a></figcaption></figure></li>';
+        }
+
+        console.log(documentDatas);
+
+        documentsHtml += '<li class="col-6 col-md-4 col-lg-2"><a class="add documents-add" ></a></li>';
+        // 把附件处理一下
+        //if(vals.length > maxLength) return layui.zhanshop.alert('最大不能选择'+maxLength+'个', danger);
+        $('#'+domId, window.parent.document).parent().find('ul').html(documentsHtml);
+        $('#'+domId, window.parent.document).val(JSON.stringify(documentDatas));
+        parent.layer.closeAll();
+      }
+
+
+    });
+
+
+  });
+</script>
+</body>
+</html>

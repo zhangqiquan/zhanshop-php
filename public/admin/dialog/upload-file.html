@@ -10,6 +10,7 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/materialdesignicons.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/style.min.css">
+    <link rel="stylesheet" type="text/css" href="../js/layer/css/layui.css">
     <style>
         .example {
             position: relative;
@@ -327,7 +328,7 @@
     var menuId = parent.layui.zhanshop.getParam('_id');
     ready(function() {
         layui.use(['zhanshop'], function(){
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=file&_method=uploadToken', {}, function(data){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=file&_method=uploadToken', {}, function(data){
                 $wrap = $('#uploader'),
 
                     // 图片容器
@@ -703,10 +704,10 @@
                                         'original': responseDatas[i]['original']
                                     });
                                 }
-                                layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id=sys_document', 'POST', {"system_files":reqData},{},function(){
+                                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysDocument', 'POST', {"system_files":reqData},{},function(){
                                     parent.layer.closeAll();
                                     parent.window.location.reload();
-                                },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
+                                },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, '后台数据同步中...');
 
                                 console.log(reqData);
                                 console.log( '上传成功' );
@@ -837,7 +838,7 @@
                 updateTotalProgress();
 
             }, function(xhr){
-                return zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                return parent.layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             }, true, false);
 
 

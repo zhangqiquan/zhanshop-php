@@ -61,23 +61,23 @@
                         <div class="layui-btn-container layui-btn-group">
                             {{#  arr_foreach(d.head_toolbar, function(k1, v1){ }}
                             {{#  if(v1.event != 'hidden'){ }}
-                            <button class="layui-btn layui-btn-primary layui-btn-sm head-event"  data-event="{{v1.event}}" lay-event="header" data-href='{{v1.href}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
+                            <button data-config={{=json_encode(v1)}} class="layui-btn layui-btn-primary layui-btn-sm head-event" lay-event="header"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
                             {{#  } }}
                             {{#  }); }}
                         </div>
                     </script>
                     <!---右击菜单--->
-                    <div id="contextmenu" class="inner show" style="height: auto;min-height: 0px;position: absolute;left: 0px;top: 0px;z-index: 999999999999999;background: #f33;display: none;">
-                        <ul class="dropdown-menu inner show" style="border: 1px solid #dddddd!important;">
-                            {{#  arr_foreach(d.row_toolbar, function(k1, v1){ }}
-                            {{#  if(v1.event != 'hidden'){ }}
-                            <li><a class="dropdown-item row-event" href="javascript:void(0);" data-event="{{v1.event}}" data-method='{{v1.method}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>&nbsp;&nbsp;<span class="text">{{v1.title}}</span></a></li>
-                            {{#  } }}
+<!--                    <div id="contextmenu" class="inner show" style="height: auto;min-height: 0px;position: absolute;left: 0px;top: 0px;z-index: 999999999999999;background: #f33;display: none;">-->
+<!--                        <ul class="dropdown-menu inner show" style="border: 1px solid #dddddd!important;">-->
+<!--                            {{#  arr_foreach(d.row_toolbar, function(k1, v1){ }}-->
+<!--                            {{#  if(v1.event != 'hidden'){ }}-->
+<!--                            <li><a class="dropdown-item row-event" href="javascript:void(0);" data-event="{{v1.event}}" data-method='{{v1.method}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>&nbsp;&nbsp;<span class="text">{{v1.title}}</span></a></li>-->
+<!--                            {{#  } }}-->
 
-                            {{#  }); }}
-                            <li><a class="dropdown-item row-event" data-event="source" data-event="alert" href="javascript:void(0);" ><i class="layui-icon">&#xe6b2;</i>&nbsp;&nbsp;<span class="text">查看数据源</span></a></li>
-                        </ul>
-                    </div>
+<!--                            {{#  }); }}-->
+<!--                            <li><a class="dropdown-item row-event" data-event="source" data-event="alert" href="javascript:void(0);" ><i class="layui-icon">&#xe6b2;</i>&nbsp;&nbsp;<span class="text">查看数据源</span></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
 
                 </div>
             </div>
@@ -90,15 +90,18 @@
 <script>
     var where = {};
     var tabWhere = [];
+    window.zhanshop = null;
     ready(function() {
         layui.use(['zhanshopTable', 'zhanshop'], function() {
+            zhanshop = layui.zhanshop;
             // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
-            layui.zhanshop.view(API_ADDRESS + '/v3.0.0/index.table?id=' + layui.zhanshop.getParam('_id'), '#view', function(
+            zhanshop.view(API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id'), '#view', function(
                 data) {
-                layui.zhanshopTable.url = API_ADDRESS + '/v3.0.0/index.table?id=' + layui.zhanshop.getParam('_id');
+                layui.zhanshopTable.url = API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id');
                 layui.zhanshopTable.title = data.title;
                 layui.zhanshopTable.elem = '#laytable';
                 layui.zhanshopTable.toolbar = '#left-toolbar';
+                layui.zhanshopTable.rowbar = data.row_toolbar; // 配置行级别菜单
                 /**/
                 layui.zhanshopTable.width = data.width;
                 layui.zhanshopTable.height = data.height;
@@ -108,6 +111,7 @@
                 layui.zhanshopTable.size = data.size;
                 layui.zhanshopTable.limit = data.limit;
                 layui.zhanshopTable.limits = data.limits;
+                layui.zhanshopTable.page = data.page;
                 layui.zhanshopTable.lineStyle = data.lineStyle;
                 layui.zhanshopTable.cellMinWidth = data.cellMinWidth;
                 layui.zhanshopTable.data = data.data;
@@ -117,10 +121,13 @@
                 layui.zhanshopTable.pidName = data.pid_name;
                 layui.zhanshopTable.schma = data.cols;
                 layui.zhanshopTable.searchPage = data.searchpage;
-                window.colsData = [{type: 'checkbox'}];
+                window.colsData = [];
+                if(data.cols_first){
+                    colsData.push({type: data.cols_first});
+                }
                 for(var i in data.cols){
                     if(data.cols[i]['in_list'] !== false){
-                        colsData.push({field: data.cols[i]['field'], title: data.cols[i]['title'], width:data.cols[i]['width'], sort: data.cols[i]['sort']});
+                        colsData.push(layui.zhanshopTable.laycols(data.cols[i]));
                     }
                 }
                 layui.zhanshopTable.render(colsData);

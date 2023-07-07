@@ -6,33 +6,31 @@
 // +----------------------------------------------------------------------
 // | Author: zhangqiquan <768617998@qq.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
+
+use zhanshop\App;
+
 return [
     // 修改成自己的配置
     'qiniu' => [
-        'accesskey' => '七牛的accesskey',
-        'secretkey' => '七牛的secretkey',
+        'accesskey' => App::env()->get('SNS_QINIU_ACCESSKEY'),
+        'secretkey' => App::env()->get('SNS_QINIU_SECRETKEY'),
         'buckets' => [
             'img' => [
-                'bucket' => 'test-zhanshop',
-                'domain' => 'http://test-cdn.zhanshop.cn',
+                'bucket' => App::env()->get('SNS_QINIU_BUCKETS_IMAGE'),
+                'domain' => App::env()->get('SNS_QINIU_DOMAIN_IMAGE'),
             ],
             'audio' => [
-                'bucket' => 'test-zhanshop',
-                'domain' => 'http://test-cdn.zhanshop.cn',
+                'bucket' => App::env()->get('SNS_QINIU_BUCKETS_AUDIO'),
+                'domain' => App::env()->get('SNS_QINIU_DOMAIN_AUDIO'),
             ],
             'video' => [
-                'bucket' => 'test-zhanshop',
-                'domain' => 'http://test-cdn.zhanshop.cn',
+                'bucket' => App::env()->get('SNS_QINIU_BUCKETS_VIDEO'),
+                'domain' => App::env()->get('SNS_QINIU_DOMAIN_VIDEO'),
             ],
             'file' => [
-                'bucket' => 'test-zhanshop',
-                'domain' => 'http://test-cdn.zhanshop.cn',
+                'bucket' => App::env()->get('SNS_QINIU_BUCKETS_FILE'),
+                'domain' => App::env()->get('SNS_QINIU_DOMAIN_FILE'),
             ],
         ],
-    ],
-    'robot' => [
-//        'type' => 'QyWeChat', // 支持钉钉DingDing 企业微信QyWeChat 飞书Feishu
-//        'url' => 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx',
     ],
 ];

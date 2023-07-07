@@ -9,8 +9,8 @@ layui.config({
     version: timeStamp.slice(0, 7),// 版本号有效期1天
 }).extend({
     'zhanshop': 'zhanshop/zhanshop',
-    'zhanshopTreeTable': 'zhanshop/treeTable',
     'zhanshopTable': 'zhanshop/table',
+    'zhanshopTreeTable': 'zhanshop/treeTable',
     'zhanshopTableEvent': 'zhanshop/tableEvent',
     'zhanshopFrom': 'zhanshop/from',
     'zhanshopDataFormat': 'zhanshop/dataFormat',
@@ -19,7 +19,6 @@ layui.config({
     'tableSelect': 'table-select/table-select',
     'inputTag': 'inputtag/inputtag',
     'layCascader': 'cascader/cascader',
-    'treeTable': 'treetable/treetable',
     'skuTable': 'skuTable/skuTable',
     'sortable': 'skuTable/sortable',
 });
@@ -175,6 +174,20 @@ window.laydate = function(val){
         return val;
     }
     return date(val, 'Y-m-d');
+}
+
+window.previewJsonPics = function (str, height = 40){
+    try{
+        var imgs = JSON.parse(str);
+        var html = '';
+        for(var i in imgs){
+            html += '<img onclick="previewPic(this)" src="'+imgs[i]+'" height="'+height+'px" />&nbsp;';
+        }
+        return html;
+    }catch (e) {
+
+    }
+    return '';
 }
 
 window.laytimerange = function(val){

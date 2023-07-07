@@ -2,6 +2,35 @@ layui.define(['laytpl'], function (exports) {
     window.$ = layui.$;
     window.laytpl=layui.laytpl;
 
+    window.previewPic = function (obj) {
+        layer.photos({
+            "shade": 0.2,
+            photos: {
+                "title": "图片预览",
+                "start": 0,
+                "data": [
+                    {
+                        "alt": $(obj).attr('alt'),
+                        "pid": $(obj).data('id'),
+                        "src": obj.src,
+                    }
+                ]
+            },
+            //hideFooter: true // 是否隐藏底部栏 --- 2.8+
+        });
+    }
+
+    window.previewPics = function (objs) {
+        layer.photos({
+            "shade": 0.2,
+            photos: {
+                "title": "图片预览",
+                "start": 0,
+                "data": objs
+            },
+        });
+    }
+
     var zhanshop = {
         /**
          * 加载层
@@ -50,6 +79,7 @@ layui.define(['laytpl'], function (exports) {
             return layer.alert(msg, {
                 title: title,
                 icon: icon,
+                zIndex: 999999999,
                 skin: 'lyear-skin-'+type,
                 time: time,
                 anim: anim,
@@ -91,7 +121,7 @@ layui.define(['laytpl'], function (exports) {
          * @param offset 坐标支持auto,r,b,l,t,lt,rt
          * @param area
          */
-        iframe: function(title, page, skin = 'layui-layer-molv', offset = 'auto', area = ['99.2%', '98%']){
+        iframe: function(title, page, skin = 'layui-layer-molv', offset = 'auto', area = ['98.2%', '96%']){
             layer.open({
                 skin: skin,
                 type: 2,
@@ -115,7 +145,7 @@ layui.define(['laytpl'], function (exports) {
                     }
                 });
             }, function(xhr){
-                zhanshop.alert('模板渲染失败:'+(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText), 'danger', function(){
+                zhanshop.alert('页面渲染失败: '+(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText), 'danger', function(){
                     window.location.reload();
                 });
             });
@@ -213,17 +243,8 @@ layui.define(['laytpl'], function (exports) {
                     return zhanshop.alert('网络异常,请刷新重新加载', 'danger', function(){window.location.reload();});
                 }else if(jqXHR.statusText == 'timeout' || jqXHR.status == 0){
                     return zhanshop.alert('请求超时,请刷新重新加载', 'danger', function(){window.location.reload();});
-                }if(jqXHR.responseJSON && jqXHR.responseJSON.code){
-                    if(jqXHR.responseJSON.code == 10001 || jqXHR.responseJSON.code == 10000){
-                        return parent.window.location = getRootPath()+'/login.html?referer='+window.btoa(parent.window.location.href);
-                    }else if(jqXHR.responseJSON.code == 10002){
-                        return zhanshop.alert(jqXHR.responseJSON.msg, 'danger', function(){
-                            return parent.window.location = getRootPath()+'/login.html';
-                        });
-                    }else if(jqXHR.responseJSON.code == 10003){
-                        return zhanshop.alert(jqXHR.responseJSON.msg, 'danger', function(){
-                        });
-                    }
+                }if(jqXHR.responseJSON && jqXHR.responseJSON.code > 10000 && jqXHR.responseJSON.code < 10010){
+                    return parent.window.location = getRootPath()+'/login.html?referer='+window.btoa(parent.window.location.href);
                 }
                 console.error(jqXHR);
                 return errorCallback(jqXHR);
@@ -284,12 +305,19 @@ layui.define(['laytpl'], function (exports) {
             skin: 'line',
             size: 'sm',
             limits: [10,20,50,100,200],
+            page: {
+                groups : 5,
+                first : false,
+                last : false,
+                layout: ['prev', 'page', 'next', 'limit', 'count']
+            },
             lineStyle: '',
             data: null,
             cellMinWidth: '60',
             height: 'full-150', // 高度
             elem: '#laytable', // 表格载体dom
             toolbar: null, // 头部左侧工具栏
+            rowbar: null, // 行级菜单
             defaultToolbar: ['filter', 'print', 'exports',{
                 title: '刷新页面'
                 ,layEvent: 'reload'
@@ -303,12 +331,19 @@ layui.define(['laytpl'], function (exports) {
             titleName: null,
             pidName: null,
             searchPage: null,
+            treeCustomName: {
+                'id': 'id',
+                'name': 'title',
+                'pid': 'parent_id',
+                'isParent': 'is_parent',
+                'children': 'children',
+            },
             search: function(){
                 console.log(111);
             },
             render: function(){
             },
-            laycols: function(){
+            laycols: function(cols){
             },
             formatData: function(){
             },
@@ -346,6 +381,7 @@ layui.define(['laytpl'], function (exports) {
                 return {};
             }
         }
+
     };
     exports('zhanshop', zhanshop);//导出
 });

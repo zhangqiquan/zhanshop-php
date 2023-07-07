@@ -86,7 +86,7 @@
                                     <div class="form-group">
                                         <label for="goods_item--cat_id"><b class="text-pink">*</b>商品类目</label>
                                         <div class="clearfix">
-                                            <input type="text" data-menuid="goods_category" class="form-control inputCascader" placeholder=""  name="goods_item[cat_id]" id="goods_item--cat_id" value="">
+                                            <input type="text" data-menuid="GoodsCategory" class="form-control inputCascader" placeholder=""  name="goods_item[cat_id]" id="goods_item--cat_id" value="">
                                         </div>
                                     </div>
 
@@ -248,7 +248,7 @@
             var $ = layui.$;
             var skuTable = layui.skuTable;
 
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', {"_method":"addfrom"}, {}, function (data) {
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', {"_method":"addfrom"}, {}, function (data) {
                 layui.zhanshopFrom.render();
                 schmas = data.data;
             });
@@ -308,12 +308,12 @@
                             data.field['goods_item_sku[cost_price]'] = 0;
                         }
                     }
-                    layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/index.table?id='+menuId, 'POST', data.field, {}, function(res){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', data.field, {}, function(res){
                         return layui.zhanshop.alert('操作成功', 'success', function(){
                             parent.window.location.reload();
                         });
                     },function(xhr){
-                        return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                        return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                     }, true, false);
                     //console.log(data.field, '拿到最终数据');
                 });
@@ -338,17 +338,17 @@
                 //图片上传接口
                 uploadUrl: './json/upload.json',
                 //获取商品类型接口
-                productTypeUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                productTypeUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //获取商品类型下的规格和属性接口
-                attrSpecUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                attrSpecUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //创建规格接口
-                specCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                specCreateUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //删除规格接口
-                specDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                specDeleteUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //创建规格值接口
-                specValueCreateUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                specValueCreateUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //删除规格值接口
-                specValueDeleteUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                specValueDeleteUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
                 //单规格SKU表配置
                 singleSkuTableConfig: {
                     thead: [
@@ -397,7 +397,7 @@
                 //商品类型id
                 productTypeId: 0,
                 //sku数据接口
-                skuDataUrl: API_ADDRESS+'/v3.0.0/index.table?id='+menuId,
+                skuDataUrl: API_ADDRESS+'/v4.0.0/index.table?id='+menuId,
             });
         });
         // layui.use(['zhanshop','form', 'zhanshopFrom'], function(){

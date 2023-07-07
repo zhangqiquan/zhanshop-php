@@ -17,7 +17,7 @@
 
 <body style="background: transparent;">
 
-<div style="width: 98%; margin-left:auto; margin-right:auto;margin-top: 1%; background: #fff;">
+<div style="width: 98.5%; margin-left:auto; margin-right:auto; padding-top: 15px; margin-top: 0.8%; background: #fff;">
     <form class="layui-form" action="">
         <div class="form-group col-md-12">
             <label><b class="text-pink">*</b>用户名</label>
@@ -52,6 +52,7 @@
         </div>
         <div class="form-group col-md-12" style="text-align: center;">
             <button class="btn btn-primary" lay-submit lay-filter="formDemo">修 改</button>
+            <br /><br />
         </div> <!--表单按钮END--> <!---表单列表END---->
     </form>
 </div>
@@ -69,7 +70,7 @@
             window.$ = layui.$;
 
             var apiUrl = 'index.user';
-            layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/'+apiUrl, 'GET', {}, {}, function(res){
+            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/'+apiUrl, 'GET', {}, {}, function(res){
                 $("#avatar").val(res.data.avatar);
                 $("#last_login_ip").val(res.data.last_login_ip);
                 $("#last_login_time").val(date(res.data.last_login_time));
@@ -82,12 +83,12 @@
 
             //提交
             form.on('submit(formDemo)', function(data){
-                layui.zhanshop.ajax(API_ADDRESS+'/v3.0.0/'+'index.user', 'POST', data.field, {}, function(res){
+                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/'+'index.user', 'POST', data.field, {}, function(res){
                     return layui.zhanshop.alert('修改成功', 'success', function(){
                         parent.window.location.reload();
                     });
                 },function(xhr){
-                    return layui.zhanshop.alert(xhr.responseText ? xhr.responseText : xhr.statusText, 'danger');
+                    return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                 }, true, false);
                 return false;
             });

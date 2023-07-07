@@ -9,7 +9,7 @@
   <link href="css/materialdesignicons.min.css" rel="stylesheet">
   <link href="css/style.min.css" rel="stylesheet">
   <meta http-equiv="pragma" content="no-cache">
-  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="expires" content="0">
 </head>
 
@@ -227,7 +227,7 @@
 <script type="text/javascript">
   ready(function() {
     layui.use(['zhanshop','form', 'zhanshopFrom'], function(){
-      layui.zhanshop.view(API_ADDRESS+'/v3.0.0/index.main', '#view', function(data){
+      layui.zhanshop.view(API_ADDRESS+'/v4.0.0/index.main', '#view', function(data){
         $(document).ready(function(e) {
           var $dashChartBarsCnt  = jQuery( '.js-chartjs-bars' )[0].getContext( '2d' ),
                   $dashChartLinesCnt = jQuery( '.js-chartjs-lines' )[0].getContext( '2d' );
