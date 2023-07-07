@@ -1,0 +1,53 @@
+{
+    "packages": [
+        {
+            "name": "zhanshop/framework",
+            "version": "v3.0.2",
+            "version_normalized": "3.0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zhangqiquan/zhanshop-framework.git",
+                "reference": "0866eea1d7e95c6bd95b4031ad6eb36b147520d4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zhangqiquan/zhanshop-framework/zipball/0866eea1d7e95c6bd95b4031ad6eb36b147520d4",
+                "reference": "0866eea1d7e95c6bd95b4031ad6eb36b147520d4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "time": "2023-07-06T06:44:26+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "zhanshop\\": "src/zhanshop/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "张启全",
+                    "email": "768617998@qq.com"
+                }
+            ],
+            "description": "张启全研发的PHP框架",
+            "homepage": "http://www.zhanshop.cn/",
+            "keywords": [
+                "zhanshop"
+            ],
+            "support": {
+                "issues": "https://github.com/zhangqiquan/zhanshop-framework/issues",
+                "source": "https://github.com/zhangqiquan/zhanshop-framework/tree/v3.0.2"
+            },
+            "install-path": "../zhanshop/framework"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
