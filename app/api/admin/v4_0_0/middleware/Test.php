@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | zhanshop-admin / Test.php    [ 2023/5/13 14:22 ]
+// | zhanshop_admin / Test.php [ 2023/4/29 下午11:07 ]
 // +----------------------------------------------------------------------
 // | Copyright (c) 2011~2023 zhangqiquan All rights reserved.
 // +----------------------------------------------------------------------
@@ -8,14 +8,14 @@
 // +----------------------------------------------------------------------
 declare (strict_types=1);
 
-namespace app\task;
+namespace app\api\admin\v4_0_0\middleware;
 
-use zhanshop\App;
+use zhanshop\Request;
+use zhanshop\Response;
 
 class Test
 {
-    public static function echo($a, $b, $c){
-        // 测试在task和定时任务进程里面操作数据库和redis
-        var_dump($a, $b, $c);
+    public function handle(Request &$request, Response &$response){
+
     }
 }

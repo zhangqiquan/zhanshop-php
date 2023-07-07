@@ -9,14 +9,22 @@
 declare (strict_types=1);
 
 namespace app\crontab;
-use Swoole\Timer;
 
-class Test
+use zhanshop\App;
+use zhanshop\Crontab;
+
+class Test extends Crontab
 {
-    public function execute($serv){
-//        Timer::tick(2000, function () use ($serv){
-//            //$serv->task('watchTask'); 执行已注册的task任务
-//            // 或者就在当前定时任务进行中执行
-//        });
+    public function configure()
+    {
+        $this->setTitle("每天3秒执行一次")->interval(3);
+    }
+
+    public function execute()
+    {
+        App::task()->callback([
+            \app\task\Test::class,
+            'echo'
+        ], 1, 2, 3);
     }
 }
