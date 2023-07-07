@@ -21,6 +21,7 @@ class Storagetoken
      * @return array
      */
     public static function qiniu($type){
+        App::phar()->import('app/library/qiniu');
         $accesskey = App::config()->get('sns.qiniu.accesskey');
         $secretKey = App::config()->get('sns.qiniu.secretkey');
         $buckets = App::config()->get('sns.qiniu.buckets');
