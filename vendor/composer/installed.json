@@ -7,18 +7,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zhangqiquan/zhanshop-framework.git",
-                "reference": "0866eea1d7e95c6bd95b4031ad6eb36b147520d4"
+                "reference": "1f78ae905bda7c93f8fad4d3957d7f0baa5e3861"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zhangqiquan/zhanshop-framework/zipball/0866eea1d7e95c6bd95b4031ad6eb36b147520d4",
-                "reference": "0866eea1d7e95c6bd95b4031ad6eb36b147520d4",
+                "url": "https://api.github.com/repos/zhangqiquan/zhanshop-framework/zipball/1f78ae905bda7c93f8fad4d3957d7f0baa5e3861",
+                "reference": "1f78ae905bda7c93f8fad4d3957d7f0baa5e3861",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
-            "time": "2023-07-06T06:44:26+00:00",
+            "time": "2023-07-07T09:43:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
