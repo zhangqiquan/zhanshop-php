@@ -1,14 +1,16 @@
-const API_ADDRESS = window.location.protocol+'//'+window.location.host;
+const API_ADDRESS = window.location.protocol+'//'+window.location.host; // 管理后台API地址
+//const API_ADDRESS = 'http://127.0.0.1:6200';
 window.layPath = getRootPath()+'/js/layer/';
 
+var timeStamp = new Date().getTime().toString();
 layui.config({
     base: layPath+"module/",
     // cookie开启debug模式的话不缓存库
-    version: true,// 版本号有效期1天
+    version: timeStamp.slice(0, 7),// 版本号有效期1天
 }).extend({
     'zhanshop': 'zhanshop/zhanshop',
-    'zhanshopTreeTable': 'zhanshop/treeTable',
     'zhanshopTable': 'zhanshop/table',
+    'zhanshopTreeTable': 'zhanshop/treeTable',
     'zhanshopTableEvent': 'zhanshop/tableEvent',
     'zhanshopFrom': 'zhanshop/from',
     'zhanshopDataFormat': 'zhanshop/dataFormat',
@@ -17,7 +19,6 @@ layui.config({
     'tableSelect': 'table-select/table-select',
     'inputTag': 'inputtag/inputtag',
     'layCascader': 'cascader/cascader',
-    'treeTable': 'treetable/treetable',
     'skuTable': 'skuTable/skuTable',
     'sortable': 'skuTable/sortable',
 });
@@ -173,6 +174,31 @@ window.laydate = function(val){
         return val;
     }
     return date(val, 'Y-m-d');
+}
+
+window.previewStrPic = function (src, height = 40){
+    try{
+        if(src){
+            return '<img onclick="previewPic(this)" src="'+src+'" height="'+height+'px" />&nbsp;';
+        }
+    }catch (e) {
+
+    }
+    return '';
+}
+
+window.previewJsonPics = function (str, height = 40){
+    try{
+        var imgs = JSON.parse(str);
+        var html = '';
+        for(var i in imgs){
+            html += '<img onclick="previewPic(this)" src="'+imgs[i]+'" height="'+height+'px" />&nbsp;';
+        }
+        return html;
+    }catch (e) {
+
+    }
+    return '';
 }
 
 window.laytimerange = function(val){

@@ -70,7 +70,7 @@
             window.$ = layui.$;
 
             var apiUrl = 'index.user';
-            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/'+apiUrl, 'GET', {}, {}, function(res){
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/'+apiUrl, 'GET', {}, {}, function(res){
                 $("#avatar").val(res.data.avatar);
                 $("#last_login_ip").val(res.data.last_login_ip);
                 $("#last_login_time").val(date(res.data.last_login_time));
@@ -83,7 +83,7 @@
 
             //提交
             form.on('submit(formDemo)', function(data){
-                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/'+'index.user', 'POST', data.field, {}, function(res){
+                layui.zhanshop.ajax(API_ADDRESS+'/v1/'+'index.user', 'POST', data.field, {}, function(res){
                     return layui.zhanshop.alert('修改成功', 'success', function(){
                         parent.window.location.reload();
                     });

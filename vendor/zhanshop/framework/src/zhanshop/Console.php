@@ -11,15 +11,20 @@ declare (strict_types=1);
 
 namespace zhanshop;
 
-use zhanshop\console\command\Admin;
 use zhanshop\console\command\ApiCreate;
 use zhanshop\console\command\ApiDoc;
+use zhanshop\console\command\ApiRoute;
+use zhanshop\console\command\CallScript;
 use zhanshop\console\command\Help;
 use zhanshop\console\command\Http;
 use zhanshop\console\command\Phar;
+use zhanshop\console\command\PullRegionData;
 use zhanshop\console\command\Server;
+use zhanshop\console\command\software\Dnscheck;
+use zhanshop\console\command\software\ScanPorts;
 use zhanshop\console\Input;
 use zhanshop\console\Output;
+use Swoole\Coroutine;
 /**
  * 控制台程序不要实例化控制台程序
  * @method static Help help()
@@ -44,9 +49,12 @@ class Console{
     protected $commands = [
         'help'       => Help::class,
         'server' => Server::class,
+        'script' => CallScript::class,
         'phar' => Phar::class,
-        'api:create' => ApiCreate::class,
-        'api:manager' => ApiDoc::class
+        'api:route' => ApiRoute::class,
+        'software:scan:ports' => ScanPorts::class,
+        'software:dns:check' => Dnscheck::class,
+        'pull:reagion' => PullRegionData::class,
     ];
 
     /**
@@ -91,10 +99,11 @@ class Console{
     public function runWithRequest(Input $input){
         $instance = $this->getApp($input->getCommand());
         $instance->configure();
-        $instance->initialize(); // 初始化
         if($instance->getIsCoroutine()){
             \Swoole\Coroutine\run(function() use (&$instance, &$input){
+                $instance->initialize(); // 初始化
                 $instance->execute($input, $this->output); // 执行控制台app
+                \Swoole\Timer::clearAll();
             });
         }else{
             $instance->execute($input, $this->output); // 执行控制台app
@@ -109,7 +118,7 @@ class Console{
      * @throws \Exception
      */
     public function getApp(mixed $command){
-        $this->commands[$command] ?? App::error()->setError($command.'指令未注册', 500);
+            $this->commands[$command] ?? App::error()->setError($command.'指令未注册', 500);
         if(!isset($this->instance[$command])){
             $this->instance[$command] = new $this->commands[$command]();
         }

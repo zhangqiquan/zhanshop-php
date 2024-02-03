@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue3 代码示例</title>
+</head>
+<body>
+
+<div id="vue-code">
+</div>
+
+
+
+
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+
+    ready(function() {
+        layui.use(['zhanshop'], function () {
+            $ = layui.$;
+            eval(window.parent.codemirror.getValue());
+            //$(document.body).html(window.parent.codemirror.getValue());
+            //$("#vue-code").html(window.parent.codemirror.getValue());
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -285,6 +285,14 @@
                   <input type="{{v.input_type}}" step="{{=v.value.step}}" class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{=v.default}}">
 
                 </div>
+
+                {{#  }else if(v.input_type == 'readonly'){ }}
+                <div class="form-group">
+                  <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                  <input type="{{v.input_type}}" readonly class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{=v.default}}">
+
+                </div>
+
                 {{# }else{ }}
                 <div class="form-group">
                   <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
@@ -328,7 +336,7 @@
       var menuId = parent.layui.zhanshop.getParam('_id');
       const IDNAME = parent.layui.zhanshop.table.idName;
       window.schmas = null;
-      layui.zhanshop.view(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, '#view', function(data){
+      layui.zhanshop.view(API_ADDRESS+'/v1/index.table/'+menuId, '#view', function(data){
         schmas = data;
         layui.zhanshopFrom.render();
         // 表单提交的处理
@@ -338,7 +346,7 @@
           delete submitData['select'];
           layui.zhanshopFrom.verification(submitData, function(){
             // 我这里不要走json了
-            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', submitData, {}, function(res){
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', submitData, {}, function(res){
               return layui.zhanshop.alert('操作成功', 'success', function(){
                 parent.window.location.reload();
               });

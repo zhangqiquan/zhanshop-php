@@ -93,8 +93,8 @@ declare (strict_types=1);\n\n";
      * @param $suffix
      * @return string
      */
-    public static function orderId($suffix = false){
-        $ip = str_replace('.','',$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');//9位
+    public static function orderId($suffix = false, $ip = '127.0.0.1'){
+        $ip = str_replace('.','',$ip);//9位
         if(is_numeric($ip) == false){
             $ip = '127001';
         }
@@ -234,5 +234,16 @@ declare (strict_types=1);\n\n";
     public static function getWeek7(int|string $date){
         $date = self::getWeek1($date);
         return date('Y-m-d', strtotime('+6 day', strtotime($date)));
+    }
+
+    /**
+     * 清除所有标点符号
+     * @param string $str
+     * @return array|string|string[]|null
+     */
+    public static function clearSymbol(string $str){
+        $pattern = '/[[:punct:]]+/u';
+        $replacement = '';
+        return preg_replace($pattern, "", $str);
     }
 }

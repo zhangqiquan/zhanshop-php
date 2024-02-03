@@ -17,7 +17,7 @@ class Mysql
     public function &insert(Query &$query){
         $data = $query->getOptions("data", true);
         if($data){
-            $field = '`'.implode('`, `', array_keys($data[0])).'`';
+            $field = implode(', ', array_keys($data[0]));
             $sql = 'INSERT INTO '.$query->getOptions('table').' ('.$field.') VALUES';
 
             foreach ($data as $k => $v){
@@ -27,7 +27,7 @@ class Mysql
                 $sql .= ' (';
                 $num = 0;
                 foreach ($v as $kk => $vv){
-                    $key = 'zhanshop_'.$kk.$k;
+                    $key = 'zhanshop_'.str_replace('.', '__', $kk).$k;
                     $query->setBind($key, $vv);
                     if($num != 0) $sql .= ', ';
                     $sql .= ':'.$key;
@@ -57,20 +57,16 @@ class Mysql
         if($whereStr){
             $setVal = "SET ";
             $data = $query->getOptions("data", true);
-            $num = 0;
             foreach ($data[0] as $k => $v){
-                if($num != 0){
-                    $setVal .= ', ';
-                }
                 if(is_object($v) && isset($v->data)){
-                    $setVal .= '`'.$k.'` = '.$v->data;
+                    $setVal .= $k.' = '.$v->data.', ';
                 }else{
-                    $key = 'zhanshop_set_'.$k;
+                    $key = 'zhanshop_set_'.str_replace('.', '__', $k);
                     $query->setBind($key, $v);
-                    $setVal .= '`'.$k.'` = :'.$key;
-                    $num++;
+                    $setVal .= $k.' = :'.$key.', ';
                 }
             }
+            $setVal = rtrim($setVal, ', ');
             $sql = 'UPDATE '.$query->getOptions('table').' '.$setVal.' '.$whereStr;
             return $sql;
         }
@@ -78,43 +74,68 @@ class Mysql
     }
 
     public function count(Query &$query){
-        $where = $query->getOptions("where", true);
-        $whereStr = $this->parseWhere($query, $where);
+        $joinStr = $this->parseJoin($query, $query->getOptions("join", true));
+        $whereStr = $this->parseWhere($query, $query->getOptions("where", true));
+        $havingStr = $this->parseHaving($query, $query->getOptions("having", true));
+        $groupStr = $this->parseGroup($query, $query->getOptions("group", true));
+        $alias = $this->parseAlias($query, $query->getOptions('alias', true));
+        $distinct = $query->getOptions('distinct', true);
         $field = $query->getOptions('field', true);
-        $sql = 'SELECT COUNT('.($field ?? '*').') AS __count FROM '.$query->getOptions('table').$whereStr;
+
+        $sql = 'SELECT count('.($distinct ? ' DISTINCT' : '').' '.($field ?? '*').') as __count FROM '.$query->getOptions('table').$alias.$joinStr.$whereStr.$groupStr.$havingStr;
         return $sql;
     }
 
     // 聚合查询只有where条件有效
     public function avg(Query &$query){
-        $where = $query->getOptions("where", true);
-        $whereStr = $this->parseWhere($query, $where);
+        $joinStr = $this->parseJoin($query, $query->getOptions("join", true));
+        $whereStr = $this->parseWhere($query, $query->getOptions("where", true));
+        $havingStr = $this->parseHaving($query, $query->getOptions("having", true));
+        $groupStr = $this->parseGroup($query, $query->getOptions("group", true));
+        $alias = $this->parseAlias($query, $query->getOptions('alias', true));
+        $distinct = $query->getOptions('distinct', true);
         $field = $query->getOptions('field', true);
-        $sql = 'SELECT AVG('.($field ?? '*').') AS __avg FROM '.$query->getOptions('table').$whereStr;
+
+        $sql = 'SELECT AVG('.($distinct ? ' DISTINCT' : '').' '.($field ?? '*').') as __avg FROM '.$query->getOptions('table').$alias.$joinStr.$whereStr.$groupStr.$havingStr;
         return $sql;
     }
 
     public function min(Query &$query){
-        $where = $query->getOptions("where", true);
-        $whereStr = $this->parseWhere($query, $where);
+        $joinStr = $this->parseJoin($query, $query->getOptions("join", true));
+        $whereStr = $this->parseWhere($query, $query->getOptions("where", true));
+        $havingStr = $this->parseHaving($query, $query->getOptions("having", true));
+        $groupStr = $this->parseGroup($query, $query->getOptions("group", true));
+        $alias = $this->parseAlias($query, $query->getOptions('alias', true));
+        $distinct = $query->getOptions('distinct', true);
         $field = $query->getOptions('field', true);
-        $sql = 'SELECT MIN('.($field ?? '*').') AS __min FROM '.$query->getOptions('table').$whereStr;
+
+        $sql = 'SELECT MIN('.($distinct ? ' DISTINCT' : '').' '.($field ?? '*').') as __min FROM '.$query->getOptions('table').$alias.$joinStr.$whereStr.$groupStr.$havingStr;
         return $sql;
     }
 
     public function max(Query &$query){
-        $where = $query->getOptions("where", true);
-        $whereStr = $this->parseWhere($query, $where);
+        $joinStr = $this->parseJoin($query, $query->getOptions("join", true));
+        $whereStr = $this->parseWhere($query, $query->getOptions("where", true));
+        $havingStr = $this->parseHaving($query, $query->getOptions("having", true));
+        $groupStr = $this->parseGroup($query, $query->getOptions("group", true));
+        $alias = $this->parseAlias($query, $query->getOptions('alias', true));
+        $distinct = $query->getOptions('distinct', true);
         $field = $query->getOptions('field', true);
-        $sql = 'SELECT MAX('.($field ?? '*').') AS __max FROM '.$query->getOptions('table').$whereStr;
+
+        $sql = 'SELECT MAX('.($distinct ? ' DISTINCT' : '').' '.($field ?? '*').') as __max FROM '.$query->getOptions('table').$alias.$joinStr.$whereStr.$groupStr.$havingStr;
         return $sql;
     }
 
     public function sum(Query &$query){
-        $where = $query->getOptions("where", true);
-        $whereStr = $this->parseWhere($query, $where);
+        $joinStr = $this->parseJoin($query, $query->getOptions("join", true));
+        $whereStr = $this->parseWhere($query, $query->getOptions("where", true));
+        $havingStr = $this->parseHaving($query, $query->getOptions("having", true));
+        $groupStr = $this->parseGroup($query, $query->getOptions("group", true));
+        $alias = $this->parseAlias($query, $query->getOptions('alias', true));
+        $distinct = $query->getOptions('distinct', true);
         $field = $query->getOptions('field', true);
-        $sql = 'SELECT SUM('.($field ?? '*').') AS __sum FROM '.$query->getOptions('table').$whereStr;
+
+        $sql = 'SELECT SUM('.($distinct ? ' DISTINCT' : '').' '.($field ?? '*').') as __sum FROM '.$query->getOptions('table').$alias.$joinStr.$whereStr.$groupStr.$havingStr;
         return $sql;
     }
 
@@ -162,7 +183,7 @@ class Mysql
             if($firstKey != $k){
                 $whereStr .= ' AND ';
             }
-            $bindKey = 'ZhanShopBind_Where_'.$k;
+            $bindKey = 'ZhanShopBind_Where_'.str_replace('.', '__', $k);
             $whereStr .= $k.' = :'.$bindKey;
             $query->setBind($bindKey, $v);
         }
@@ -266,7 +287,7 @@ class Mysql
         $val = [];
         foreach ($bind as $k => $v){
             $key[] = ':'.$k;
-            $val[] = $v;
+            $val[] = is_string($v) ?  '"'.addslashes($v).'"': $v;
         }
         $sql = str_replace($key, $val, $sql);
         return $sql;

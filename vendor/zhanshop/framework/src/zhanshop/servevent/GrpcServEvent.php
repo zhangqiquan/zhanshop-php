@@ -36,7 +36,7 @@ class GrpcServEvent extends ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onStart(\Swoole\Server $server) :void{
+    public function onStart($server) :void{
         // 检查grpc是否安装
         App::env()->checkExtensions(['grpc', 'protobuf']);
     }
@@ -47,7 +47,7 @@ class GrpcServEvent extends ServEvent
      * @param string $group
      * @return void
      */
-    public function onRequest(mixed $request, mixed $response, int $protocol = Server::HTTP, string $routeGroup = 'grpc') :void{
+    public function onRequest($request, $response, $protocol = Server::HTTP, $appName = 'grpc') :void{
 
         if (!in_array($request->header['content-type'] ?? '', [
             'application/grpc',

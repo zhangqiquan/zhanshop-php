@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue3 代码示例</title>
+    <script src="./../js/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="./../js/codemirror/lib/codemirror.css">
+    <script src="./../js/codemirror/mode/css/css.js"></script>
+    <script src="./../js/codemirror/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" type="text/css" href="./../js/layer/css/layui.css">
+
+    <link rel=stylesheet href="./../js/codemirror/doc/docs.css">
+    <script src="./../js/codemirror/mode/xml/xml.js"></script>
+    <script src="./../js/codemirror/mode/javascript/javascript.js"></script>
+    <script src="./../js/codemirror/mode/css/css.js"></script>
+    <script src="./../js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="./../js/codemirror/addon/edit/matchbrackets.js"></script>
+
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        .CodeMirror{
+            height: auto!important;
+            overflow: hidden;
+        }
+        h3{
+            line-height: 3em;
+            padding-left: 32px;
+        }
+        hr{
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <div>
+        <div>
+            <div style="float: left;">
+                <h3>源代码</h3>
+            </div>
+
+            <div style="float: right; padding-top: 5px; padding-right: 5px;">
+                <button type="button" class="layui-btn" onclick="ideaRun()">运行</button>
+            </div>
+
+        </div>
+
+        <hr />
+        <div id="code-demo" class="code-demo" lay-options="{}"></div>
+    </div>
+</div>
+
+<iframe style="background: #fff;border: none; width: 100%; padding: 0px; margin: 0px; height: 120px;overflow:scroll;overflow-y:hidden" src="" name="idea-run" id="idea-run" ></iframe>
+
+
+
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+    var codemirror = null;
+
+    ready(function() {
+        layui.use(['zhanshop'], function () {
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method": "exampleCode", "language": "vue3", "uri": parent.$("#api-uri").html(), "method": parent.$("#requestMethod").find('.layui-this').html()}, {}, function (res) {
+                //alert(JSON.stringify(res.data.sample_code));
+                codemirror = CodeMirror(document.getElementById('code-demo'), {
+                    value: "<!DOCTYPE html>\n" +
+                        "<html>\n" +
+                        "<head>\n" +
+                        "<meta charset=\"utf-8\">\n" +
+                        "<title>Vue 测试实例</title>\n" +
+                        "<script src=\"https://unpkg.com/axios/dist/axios.min.js\"><\/script>\n"+
+                        "</head>\n"+
+                        "<body>\n"+
+                        "<script>\n"+
+                        res.data+"\n"+
+                        "<\/script>\n</body>\n" +
+                        "</html>",
+                    lineNumbers: true,
+                    mode: 'htmlmixed', //HMTL混合模式
+                });
+                
+                window.ideaRun = function () {
+                    var blob = new Blob([codemirror.getValue()], {
+                        'type': 'text/html'
+                    });
+                    var  previewURL = URL.createObjectURL(blob);
+                    $("#idea-run").prop('src', previewURL);
+                }
+            }, function (res) {
+
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

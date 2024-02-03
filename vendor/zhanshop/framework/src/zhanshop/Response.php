@@ -19,24 +19,15 @@ use zhanshop\console\command\Server;
 class Response
 {
     /**
-     * 协议
-     * @var int
-     */
-    //protected $protocol = Server::HTTP;
-
-    /**
      * 原始请求对象
-     * @var \Swoole\Http\Response
      */
-    protected mixed $rawResponse = null;
-    /**
-     * @var \app\admin\Controller
-     */
-    protected mixed $controller = null;
+    protected mixed $response = null;
 
     protected $fd;
-
-    protected $status = 200;
+    // http响应码
+    protected $httpCode = 200;
+    // http响应消息
+    protected $msg = "OK";
 
     protected $data = [];
 
@@ -45,37 +36,10 @@ class Response
      * @param int $protocol
      * @param \Swoole\Http\Response $rawResponse
      */
-//    public function __construct(int &$protocol, mixed &$rawResponse, int $fd = 0)
-//    {
-//        $this->fd = $fd;
-//        $this->protocol = $protocol;
-//        $this->rawResponse = $rawResponse;
-//    }
-
-    /**
-     * 构造器
-     * @param int $protocol
-     * @param \Swoole\Http\Response $rawResponse
-     */
-    public function __construct(mixed &$rawResponse, int $fd = 0)
+    public function __construct(mixed &$response, int $fd = 0)
     {
         $this->fd = $fd;
-        $this->rawResponse = $rawResponse;
-    }
-
-    /**
-     * 设置控制器
-     * @param string $class
-     * @return void
-     */
-    public function setController(string $class){
-        try {
-            $this->controller = App::make($class);
-        }catch (\Throwable $e){
-            Log::errorLog(SWOOLE_LOG_ERROR, $e->getMessage().PHP_EOL.'#@ '.$e->getFile().':'.$e->getLine().PHP_EOL.$e->getTraceAsString());
-            $this->data = $e->getMessage();
-        }
-        return $this->controller;
+        $this->response = $response;
     }
 
     /**
@@ -83,13 +47,11 @@ class Response
      * @param int $code
      * @return void
      */
-    public function setStatus(int $code){
-        if($code < 200){
-            $this->status = 500;
-        }else if($code > 505){
-            $this->status = 417;
+    public function setHttpCode(int $code){
+        if($code >= 10000){
+            $this->httpCode = 417;
         }else{
-            $this->status = $code;
+            $this->httpCode = ($code < 200 || $code > 505) ? 500 : $code;
         }
     }
     /**
@@ -97,8 +59,33 @@ class Response
      * @param int $code
      * @return void
      */
-    public function getStatus(){
-        return $this->status;
+    public function getHttpCode(){
+        return $this->httpCode;
+    }
+
+    /**
+     * 设置msg
+     * @param string $msg
+     * @return void
+     */
+    public function setMsg(string $msg){
+        $this->msg = $msg;
+    }
+
+    /**
+     * 获取msg
+     * @return mixed|string
+     */
+    public function getMsg(){
+        return $this->msg;
+    }
+
+    public function setFd(int $fd){
+        $this->fd = $fd;
+    }
+
+    public function getFd(){
+        return $this->fd;
     }
 
     /**
@@ -119,58 +106,75 @@ class Response
     }
 
     /**
-     * 设置控制器成功信息
-     * @param mixed $data
-     * @return void
-     */
-    public function setSuccessData(mixed $data){
-        $this->data = $data;
-    }
-
-    /**
-     * 设置控制器错误信息
-     * @param string $controller
-     * @param \Throwable $e
-     * @return void
-     */
-    public function setErrorData(\Throwable $e){
-        try {
-            $data = [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTrace(),
-            ];
-            $this->data = $this->controller->result($data, $e->getMessage(), $e->getCode());
-        }catch (\Throwable $e){
-            Log::errorLog(SWOOLE_LOG_ERROR, $e->getMessage().PHP_EOL.'#@ '.$e->getFile().':'.$e->getLine().PHP_EOL.$e->getTraceAsString());
-            $this->data = $e->getMessage();
-        }
-    }
-
-    /**
      * 发送http响应
      * @return void
      */
     public function sendHttp(){
-        if($this->data){
+        if($this->data !== false){
             $respData = $this->data;
             if(is_array($respData)){
-                $respData['trace_id'] = uniqid().rand(10000, 99999).'.'. App::config()->get('app.serial_code', 0);
-                // 判断常量是否存在
-                if($this->status > 399 && App::config()->get('app.show_error', true) == false){
-                    $filedMsg = constant($this->controller::class.'::RESP_MSG');
-                    $filedData = constant($this->controller::class.'::RESP_DATA');
-                    if($filedMsg && $filedData){
-                        $respData[$filedData] = null;
-                        if($this->status >= 500) $respData[$filedMsg] = App::config()->get('app.error_message', 'server error');
-                    }
-                }
-                $this->rawResponse->header('Content-Type', 'application/json; charset=utf-8');
+                $respData['trace_id'] = microtime(true).rand(10000, 99999).'.'. App::config()->get('app.serial_code', 0).'.'.getmypid();
+                $this->response->header('Content-Type', 'application/json; charset=utf-8');
                 $respData = json_encode($respData);
             }
+            $this->response->status($this->httpCode);
+            $this->response->header('Server', 'zhanshop');
+            $this->response->end($respData);
+        }
+    }
 
-            $this->rawResponse->status($this->status);
-            $this->rawResponse->end($respData);
+    public function wsPush(int $fd, mixed $data)
+    {
+        if(is_array($data) || is_object($data)){
+            $data = json_encode($data, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE);
+        }
+        try{
+            return $this->response->push($fd, $data);
+        }catch (\Throwable $e){
+            return false;
+        }
+    }
+
+    /**
+     * 发送tcp数据
+     * @param int $fd
+     * @param mixed $data
+     * @return mixed
+     */
+    public function send(int $fd, mixed $data, $partition = "\r\n")
+    {
+        return $this->response->send($fd, $data.$partition);
+    }
+
+    /**
+     * 发送udp数据
+     * @param $address
+     * @param $port
+     * @param $data
+     * @return mixed
+     */
+    public function sendto($address, $port, $data)
+    {
+        return $this->response->sendto($address, $port, $data);
+    }
+    /**
+     * 发送websocket响应
+     * @return void
+     */
+    public function sendWebSocket(){
+        try{
+            if($this->data){
+                $respData = $this->data;
+                if(is_array($respData)){
+                    $respData['header']['fd'] = $this->fd;
+                    $respData['trace_id'] = microtime(true).rand(10000, 99999).'.'. App::config()->get('app.serial_code', 0).'.'.getmypid();
+                    $respData = json_encode($respData, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE);
+                }
+                return $this->response->push($this->fd, $respData);
+            }
+            return true;
+        }catch (\Throwable $e){
+            return false;
         }
     }
 
@@ -182,9 +186,18 @@ class Response
      */
     public function __call(string $name, array $args){
         try {
-            return $this->rawResponse->$name(...$args);
+            return $this->response->$name(...$args);
         }catch (\Throwable $e){
             return null;
         }
+    }
+
+    /**
+     * 原始的响应对象
+     * @return mixed|null
+     */
+    public function rawResponse()
+    {
+        return $this->response;
     }
 }

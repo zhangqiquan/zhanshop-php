@@ -42,7 +42,11 @@ class PDOConnectionPool
      * @return void
      */
     public function reconnect(){
-        $this->pool->close();
+        try{
+            $this->pool->close();
+        }catch (\Throwable $e){
+
+        }
         $this->pool = new PDOPool($this->pdoConfig, $this->maxConnections);
     }
 
@@ -109,7 +113,7 @@ class PDOConnectionPool
                 $this->recoveryPDO($pdo);
             }catch (\Throwable $e){
                 $this->recoveryPDO($pdo);
-                if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ')){
+                if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ') || strpos($e->getMessage(), 'close')){
                     $this->reconnect(); // 重连
                     $pdo = $this->getPDO();
                     $result = $this->_query($pdo, $sql, $bind);
@@ -138,7 +142,7 @@ class PDOConnectionPool
             $pdo->commit();
             $this->recoveryPDO($pdo);
         }catch (\Throwable $e){
-            if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ')){
+            if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ') || strpos($e->getMessage(), 'close')){
                 $this->recoveryPDO($pdo);
                 $this->reconnect(); // 重连
                 if($isRetry) return $this->transaction($call, false); // 重试
@@ -170,7 +174,7 @@ class PDOConnectionPool
                 $this->recoveryPDO($pdo);
             }catch (\Throwable $e){
                 $this->recoveryPDO($pdo);
-                if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ')){
+                if($e->getCode() == 2006 || strpos($e->getMessage(), '2006') || strpos($e->getMessage(), 'ackets ') || strpos($e->getMessage(), 'failed ') || strpos($e->getMessage(), 'close')){
                     $this->reconnect(); // 重连
                     $pdo = $this->getPDO();
                     $result = $this->_execute($pdo, $sql, $bind, $lastId);
@@ -189,10 +193,15 @@ class PDOConnectionPool
      * @return \PDO
      */
     public function getPDO(){
-        $pdo = $this->pool->get($this->timeoutPool);
-        if($pdo == false){
-            throw new \Exception('database连接池耗尽【服务暂时不可用】', 503);
+        try{
+            $pdo = $this->pool->get($this->timeoutPool);
+            if($pdo == false){
+                throw new \Exception('database连接池耗尽【服务暂时不可用】', 503);
+            }
+        }catch (\Throwable $err){
+            throw new \Exception($err->getMessage());
         }
+
         return $pdo;
     }
 

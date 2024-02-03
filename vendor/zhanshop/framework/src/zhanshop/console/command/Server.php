@@ -12,13 +12,17 @@ namespace zhanshop\console\command;
 
 use zhanshop\App;
 use zhanshop\console\Command;
+use zhanshop\console\command\software\ScanPorts;
 use zhanshop\console\crontab\WatchLogCronTab;
 use zhanshop\console\Input;
 use zhanshop\console\Output;
+use zhanshop\console\process\TaskScheduler;
 use zhanshop\console\ServerStatus;
+use zhanshop\console\TaskManager;
 use zhanshop\Log;
 use zhanshop\ServEvent;
 use zhanshop\console\crontab\WatchServCronTab;
+use zhanshop\ShareData;
 use zhanshop\Timer;
 use zhanshop\WebHandle;
 
@@ -48,28 +52,27 @@ class Server extends Command
         'settings' => [
             'daemonize' => true,
             'enable_coroutine' => true, // 这个只是将OnRequest 方法变成非阻塞而已而没有把mysql的操作变成非阻塞
-            'send_yield' => true,
-            'send_timeout' => 3, // 1.5秒
+            'hook_flags' => SWOOLE_HOOK_ALL,
             'log_level' => SWOOLE_LOG_NOTICE, // 仅记录错误日志以上的日志
             'log_rotation' => SWOOLE_LOG_ROTATION_DAILY, // 每日日志
             'task_worker_num' => 1,
             'task_enable_coroutine' => true,
-            'max_request' => 200000,
+            'max_request' => 0,
             'max_wait_time' => 2,
-            'enable_static_handler' => true,
+            'enable_static_handler' => false,
             'document_root' => '',
             'http_autoindex' => true,
             'http_index_files' => ['index.html'],
-            'open_eof_split' => true,
-            'package_eof' => "\r\n",
-            'stats_timer_interval' => 5000,
+            'max_connection' => 200000,
             //'ssl_cert_file' => '/ssl/swagger.crt',
             //'ssl_key_file' => '/ssl/swagger.key',
         ],
         // 定时任务是在子进程启动之后就开始执行【定时任务不受reload影响，需要restart后生效】
         'crontab' => [
-            WatchServCronTab::class,
-            WatchLogCronTab::class,
+        ],
+        // 自定义进程
+        'process' => [
+
         ]
     ];
 
@@ -209,6 +212,28 @@ class Server extends Command
     }
 
     /**
+     * 检查服务端口是否被占用
+     * @return bool
+     */
+    protected function isUsePort(){
+        foreach($this->config['servers'] as $server){
+            $host = $server['host'];
+            $port = $server['port'];
+            $servType = $server['serv_type'];
+            if($servType == 2){
+                if(ScanPorts::checkUdp($host, $port) == 1){
+                    return true; // 被占用
+                }
+            }else{
+                if(ScanPorts::checkTcp($host, $port) == 1){
+                    return true; // 被占用
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * 服务事件绑定
      * @param \Swoole\Server $server
      * @param $callbacks
@@ -302,7 +327,7 @@ class Server extends Command
                 break;
         }
 
-        if($conf['sock_type'] >= SWOOLE_SSL) $protocol .= 's';
+        if($conf['sock_type'] >= 512) $protocol .= 's';
         if($this->config['settings']['daemonize'] == false && $echoListenMsg) echo '['.date('Y-m-d H:i:s').'] ###[listen]###'." ".$protocol.'://'.$conf['host'].':'.$conf['port'].'/'.PHP_EOL;
         return $protocol;
     }
@@ -313,20 +338,23 @@ class Server extends Command
      */
     public function start(){
 
-        if($this->isRuning()){
+        // 并且检查端口是否被占用
+        if($this->isRuning() && $this->isUsePort()){
             return $this->output->output("程序已在运行...", 'info');
         }
-
-        \Co::set(['hook_flags'=> SWOOLE_HOOK_ALL]);
         $server = null;
         foreach($this->config['servers'] as $k => $v){
             if($k == 0){
-                if(!in_array($v['serv_type'], [Server::HTTP, Server::WEBSOCKET])) App::error()->setError('主server的serv_type必须为HTTP | ');
+                //if(!in_array($v['serv_type'], [Server::HTTP, Server::WEBSOCKET])) App::error()->setError('主server的serv_type必须为HTTP | ');
                 $server = $this->createServer($v);
-                //App::make(ServEvent::class)->setServer($server);
-                $server->set(array_merge($this->config['settings'], $v['settings']));
+                $settings = array_merge($this->config['settings'], $v['settings']);
+                if($v['serv_type'] != Server::HTTP){
+                    $settings['enable_static_handler'] = false; // 如果主服务不是http关闭http静态访问配置不然其他类型服务存在异常
+                }
+                $server->set($settings);
                 $this->serverEventBind($server, $v['callbacks']);
             }else if($server){
+                if($v['serv_type'] > $this->config['servers'][0]['serv_type']) App::error()->setError("第".($k+1).'个server的serv_type值不得高于首个serv_type的值');
                 $subServer = $this->addListenServer($server, $v);
                 $subServer->set($v['settings']);
                 $callbacks = $v['callbacks'] ?? [];
@@ -334,16 +362,40 @@ class Server extends Command
             }
             $this->listenProtocol($v);
         }
+
+        $customMsg = "";
+
         // 用户进程的生存周期与 Master 和 Manager 是相同的，不会受到 reload 影响 修改定时任务啥的需要重启
-        $process = new \Swoole\Process(function ($process) use ($server) {
-            $process->set(['enable_coroutine' => true]);
-            App::task($server);
-            foreach($this->config['crontab'] as $v){
-                App::make(Timer::class)->register(new $v($server)); // 根据配置执行定时任务
+        if($this->config['crontab']){
+            // 当存在定时任务的时候才会启动定时任务进程
+            $process = new \Swoole\Process(function ($process) use ($server) {
+                $process->set(['enable_coroutine' => true, 'hook_flags' => SWOOLE_HOOK_ALL]);
+                App::make(TaskManager::class, [$server]);
+                foreach($this->config['crontab'] as $v){
+                    App::make(Timer::class)->register(new $v($server)); // 根据配置执行定时任务
+                }
+                //echo PHP_EOL.'['.date('Y-m-d H:i:s').']' .' ###[info]### 定时任务启动, 进程'.getmypid().PHP_EOL.PHP_EOL;
+            }, false, 2, true);
+            $server->addProcess($process);
+            $customMsg .= "定时进程开启 ";
+        }
+
+        // 用户自定义进程
+        if($this->config['process']){
+            foreach($this->config['process'] as $v){
+                $process = new \Swoole\Process(function ($process) use ($server, $v) {
+                    $process->set(['enable_coroutine' => true]);
+                    App::make($v)->execute($server);
+                }, false, 2, true);
+                $server->addProcess($process);
             }
-            //echo PHP_EOL.'['.date('Y-m-d H:i:s').']' .' ###[info]### 定时任务启动, 进程'.getmypid().PHP_EOL.PHP_EOL;
-        }, false, 2, true);
-        $server->addProcess($process);
+            $customMsg .= "自定义进程数".count($this->config['process']).' ';
+
+        }
+
+        if($customMsg) Log::errorLog(SWOOLE_LOG_NOTICE, $customMsg);
+
+        ShareData::make(); // 构建共享内存实例
 
         $server->start();
     }
@@ -439,16 +491,59 @@ class Server extends Command
         //$this->output->output("程序尚未启动", 'info');
     }
 
+    public function poweron(){
+        if($_SERVER['USER'] != 'root'){
+            App::error()->setError('请使用root用户执行该命令');
+        }
+
+        $pwd = App::rootPath();
+        // 检查文件是否存在
+        $serviceName = basename($pwd).'-zhanshop-'.substr(md5(dirname($pwd)), -4, 4);
+        $serviceFile = '/etc/systemd/system/'.$serviceName.'.service';
+        if(file_exists($serviceFile)){
+            \Swoole\Coroutine\run(function() use ($serviceName, $serviceFile){
+                \Swoole\Coroutine\System::exec('systemctl disable '.$serviceName);
+                unlink($serviceFile);
+            });
+        }
+
+        $phpCommand = 'php';
+        if(isset($_SERVER['_'])){
+            $phpCommand = $_SERVER['_'];
+        }else if(isset($_SERVER['SUDO_COMMAND'])){
+            $phpCommand = explode(' ', $_SERVER['SUDO_COMMAND'])[0];
+        }
+
+        $serviceCode = '[Unit]
+Description='.$pwd.' - project
+[Service]
+Type=forking
+ExecStart='.$phpCommand.' '.$pwd.'/'.$_SERVER['PHP_SELF'].' server start
+ExecReload='.$phpCommand.' '.$pwd.'/'.$_SERVER['PHP_SELF'].' server reload
+ExecStop='.$phpCommand.' '.$pwd.'/'.$_SERVER['PHP_SELF'].' server stop
+Execenable='.$phpCommand.' '.$pwd.'/'.$_SERVER['PHP_SELF'].' server start
+[Install]
+WantedBy=multi-user.target
+';
+
+        \Swoole\Coroutine\run(function() use ($serviceFile, $serviceName, $serviceCode){
+
+            file_put_contents($serviceFile, $serviceCode);
+            \Swoole\Coroutine\System::exec('systemctl enable '.$serviceName);
+
+        });
+        $this->start();
+    }
+
 
     // 支持到多端口
 
     public function usage(&$argv){
         if(!$argv){
             $this->output->output("\n示例用法:\n", 'success');
-            echo 'php cmd.php server {start | stop | reload | restart | status } {true|false}'.'   // 启动Server服务'.PHP_EOL;
-            $this->output->output("\n参数说明：server 后的一个参数{启动|关闭|重载|重启|状态} {后台启动(不指定默认)|非后台启动}");
+            echo 'php cmd.php server {start | stop | reload | restart | status |  poweron } {true|false}'.'   // 启动Server服务'.PHP_EOL;
+            $this->output->output("\n参数说明：server 后的一个参数{启动|关闭|重载|重启|状态|开机启动} {后台启动(不指定默认)|非后台启动}");
             $this->output->output("关于环境：请修改全局环境变量 APP_ENV=dev或者APP_ENV=production 没有指定将会载入dev环境文件");
-            $this->output->output("开机启动: linux上将启动命令添加到 /ect/rc.local 文件中, 或参考：https://blog.csdn.net/hualinger/article/details/125321966\n");
             exit();
         }
     }

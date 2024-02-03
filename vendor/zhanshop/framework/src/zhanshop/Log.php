@@ -32,7 +32,7 @@ class Log
         $this->type = $type;
         if(strpos($type, '\\') === false) $type = '\\zhanshop\\log\\driver\\'.ucfirst($type);
 
-        $capacity = App::config()->get('log.capacity', 20000);
+        $capacity = App::config()->get('log.capacity', 2000);
         $this->channel = new Channel($capacity);
         $this->dirver = new $type;
         self::$daemonize = $daemonize;
@@ -41,18 +41,23 @@ class Log
     public function push(string $msg, $level = 'INFO'){
         $msg = '['.date('Y-m-d H:i:s').']###['.$level.']###'.$msg;
         $this->channel->push($msg);
+        if($this->channel->isFull()){
+            $this->dirver->write($this);
+        }
     }
 
     public function pop(){
-        $time = 0.01;
+        $time = 0.001;
         return $this->channel->pop($time);
     }
 
     public function execute(){
-        // 0.1秒执行一次
-        Timer::tick(100, function () {
+        // 加到2秒检查一次通道内是否有数据
+        Timer::tick(2000, function () {
             try {
-                $this->dirver->write($this);
+                if (!$this->channel->isEmpty()){
+                    $this->dirver->write($this);
+                }
             }catch (\Throwable $e){
                 Error::exceptionHandler($e);
             }
@@ -71,7 +76,7 @@ class Log
             swoole_error_log($level, $msg);
         }else{
             // 直接输出日志
-            $msg = '['.date('Y-m-d H:i:s *v').']	LOG LEVEL '.$level.'	'.$msg;
+            $msg = '['.date('Y-m-d H:i:s *v').']	'.getmypid().' LEVEL '.$level.'	'.$msg;
             $stype = 'success';
             if ($level >= 5){
                 $stype = 'error';
@@ -82,5 +87,31 @@ class Log
             }
             App::make(Output::class)->output($msg, $stype);
         }
+    }
+
+    /**
+     * 输出日志
+     * @param string $msg
+     * @return void
+     */
+    public static function echo(string $msg)
+    {
+        echo $msg."\r\n";
+    }
+
+    /**
+     * 脚本日志
+     * @param string $event
+     * @param mixed $msg
+     * @return void
+     */
+    public static function scriptLog(string $event, mixed $msg = "")
+    {
+        $body = [
+            'event' => $event,
+            'body' => $msg
+        ];
+        $body = json_encode($body, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE);
+        echo $body."\r\n";
     }
 }

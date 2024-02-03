@@ -82,7 +82,7 @@ return array (
     'type' => 'datetime',
     'key' => '',
     'null' => 'no',
-    'default' => '',
+    'default' => 'CURRENT_TIMESTAMP',
     'title' => '更新时间',
     'search' => false,
     'value' => 

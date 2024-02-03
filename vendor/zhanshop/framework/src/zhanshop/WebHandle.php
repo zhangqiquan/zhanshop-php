@@ -10,11 +10,14 @@ declare (strict_types=1);
 
 namespace zhanshop;
 
-use app\admin\v4_0_0\middleware\Test;
+use app\exception\HttpException;
+use app\exception\WebSocketException;
 use zhanshop\cache\CacheManager;
-use zhanshop\console\command\Server;
+use zhanshop\console\TaskManager;
 use zhanshop\database\DbManager;
 use zhanshop\route\Dispatch;
+use zhanshop\service\ApiDoc;
+use zhanshop\service\Git;
 
 class WebHandle
 {
@@ -33,9 +36,9 @@ class WebHandle
         $this->servEvent = $servEvent;
 
         $this->loadRoute(); // 装载路由配置
-        App::task($this->servEvent->server ?? null); // 载入task类
-        CacheManager::init(); // 缓存管理初始化
-        DbManager::init(); // 数据库管理初始化
+        App::make(TaskManager::class, [$this->servEvent->server]);  // 载入task管理类
+        App::make(CacheManager::class); // 缓存管理初始化
+        App::make(DbManager::class); // 数据库管理初始化
         App::log($this->servEvent->setting['daemonize'] ?? false)->execute(); // 日志通道运行起来
     }
 
@@ -44,63 +47,55 @@ class WebHandle
      * @return void
      */
     protected function loadRoute(){
-        $middlewares = App::config()->get('middleware', []);
+        $dispatch = App::make(Dispatch::class);
         foreach($this->servEvent->servNames ?? [] as $v){
             $routePath = App::routePath().DIRECTORY_SEPARATOR.$v;
             if(!file_exists($routePath)) continue;
             $files = scandir($routePath);
-            $appInfo = pathinfo($v);
-            $middleware = $middlewares[$appInfo['filename']] ?? [];
             foreach ($files as $kk => $vv){
                 $versionInfo = pathinfo($vv);
                 if($versionInfo['extension'] == 'php'){
-                    App::route()->getRule()->setApp($appInfo['filename'], $versionInfo['filename'], $middleware);
                     $routeFile = App::routePath() .DIRECTORY_SEPARATOR.$v.'/'. $vv;
+                    $dispatch->setApp($v);
+                    $dispatch->setVersion($versionInfo['filename']);
                     require_once $routeFile; // 事先载入路由
                 }
             }
+            $dispatch->setApp($v);
+            $dispatch->setVersion('v1');
+            App::route()->rule('GET', '/api.doc', [ApiDoc::class, 'call'])->extra([$v]);
+            App::route()->rule('POST', '/api.doc', [ApiDoc::class, 'call'])->extra([$v]);
+
+            App::route()->rule('POST', '/git.push', [Git::class, 'call'])->extra([$v]);
         }
     }
 
-    /**
-     * 执行前置中间件
-     * @param Request $request
-     * @param Response $servResponse
-     * @return void
-     */
-    public function beforeMiddleware(Request &$request, Response &$servResponse){
-        // 执行前置中间件
-        foreach ($request->getRoure()['middleware'] as $k => $v){
-            if(!property_exists($v, 'isAfter')){
-                App::make($v)->handle($request, $servResponse);
-                unset($request->getRoure()['middleware'][$k]);
-            }
-        }
+    public function middleware(Request &$request, \Closure $next){
+        return array_reduce(
+            $request->getRoure()['middleware'],
+            $this->carry(),
+            $next
+        );
     }
 
-    /**
-     * 执行后置换中间件
-     * @param Request $request
-     * @param Response $servResponse
-     * @return void
-     */
-    public function afterMiddleware(Request &$request, Response &$servResponse){
-        foreach ($request->getRoure()['middleware'] as $k => $v){
-            App::make($v)->handle($request, $servResponse);
-        }
-    }
-
-    /**
-     * 只执行全局中间件
-     * @param Request $request
-     * @param Response $servResponse
-     * @return void
-     */
-    public function globalAfterMiddleware(string &$appName, Request &$request, Response &$servResponse){
-        $middleware = App::config()->get('middleware.'.$appName, []);
-        foreach ($middleware as $v){
-            App::make($v)->handle($request, $servResponse);
-        }
+    protected function carry()
+    {
+        /**
+         * @$stack 上一次中间件对象
+         * @$pipe 当前中间件对象
+         */
+        return function ($stack, $pipe) {
+            /**
+             * @$passable request请求对象
+             */
+            return function (Request &$request) use ($stack, $pipe) {
+                try {
+                    return $pipe($request, $stack);
+                } catch (Throwable $e) {
+                    App::error()->setError($e->getMessage(), $e->getCode());
+                }
+            };
+        };
     }
 
     /**
@@ -115,43 +110,94 @@ class WebHandle
 
             $dispatch->check($appName, $request);
 
-            // 执行前置中间件
-            $this->beforeMiddleware($request, $servResponse);
+            $handler = $request->getRoure()['handler'];
+            $controller = $handler[0];
+            $action = $handler[1];
 
-            $data = $dispatch->run($appName, $request, $servResponse);
 
-            $servResponse->setData($data);
-            // 执行后置中间件
-            $this->afterMiddleware($request, $servResponse);
+            $dispatch = $this->middleware($request, function (&$request) use (&$controller, &$action, &$servResponse){
+                $data = App::make($controller)->$action($request, $servResponse);
+                $servResponse->setData($data);
+                return $servResponse;
+            });
+
+            $dispatch($request);
         }catch (\Throwable $e){
-            $servResponse->setStatus((int)$e->getCode());
-            $data = $this->getErrorData($appName, $e);
+            $servResponse->setHttpCode((int)$e->getCode());
+            //$servResponse->se
+            $data = App::make(HttpException::class)->handle($request, $servResponse, $e);
             $servResponse->setData($data); // 先执行后置中间件
-            // 执行全局的中间件全部变成了后置
-            $this->globalAfterMiddleware($appName, $request, $servResponse);
         }
-        // 设置控制器的基类
-        $servResponse->setController('\\app\\api\\'.$appName.'\\Controller');
     }
 
     /**
-     * 获取错误信息
-     * @param \Throwable $e
-     * @return string
+     * 路由调度WebSocket
+     * @param int $protocol
+     * @param Request $request
+     * @return void
      */
-    public function getErrorData(string &$appName, \Throwable &$e){
+    public function dispatchWebSocket(string $appName, Request &$request, Response &$servResponse){
         try {
-            $controller = App::make('\\app\\api\\'.$appName.'\\Controller');
-            $data = [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTrace(),
-            ];
-            $data = $controller->result($data, $e->getMessage(), $e->getCode());
+            $dispatch = App::make(Dispatch::class);
+
+            $dispatch->check($appName, $request);
+
+            $handler = $request->getRoure()['handler'];
+            $controller = $handler[0];
+            $action = $handler[1];
+
+
+            $dispatch = $this->middleware($request, function (&$request) use (&$controller, &$action, &$servResponse){
+                $data = App::make($controller)->$action($request, $servResponse);
+                $servResponse->setData($data);
+                return $servResponse;
+            });
+
+            $dispatch($request);
         }catch (\Throwable $e){
-            //Log::errorLog(SWOOLE_LOG_ERROR, $e->getMessage().PHP_EOL.'#@ '.$e->getFile().':'.$e->getLine().PHP_EOL.$e->getTraceAsString());
-            $data = $e->getMessage();
+            $servResponse->setHttpCode((int)$e->getCode());
+            $data = App::make(WebSocketException::class)->handle($request, $servResponse, $e);
+            $servResponse->setData($data); // 先执行后置中间件
         }
-        return $data;
+    }
+
+    /**
+     * 网桥控制器调度
+     * @param string $appName
+     * @param Request $request
+     * @param \Swoole\Coroutine\Channel $servResponse
+     * @return array
+     */
+    public function dispatchBridg(string $appName, Request &$request, \Swoole\Coroutine\Channel &$servResponse){
+        try {
+            $dispatch = App::make(Dispatch::class);
+
+            $dispatch->check($appName, $request);
+
+            $handler = $request->getRoure()['handler'];
+            $controller = $handler[0];
+            $action = $handler[1];
+            App::make($controller)->$action($request, $servResponse);
+            return true;
+        }catch (\Throwable $e){
+            return $e->getMessage().PHP_EOL.$e->getFile().':'.$e->getLine();
+        }
+    }
+
+    public function dispatchtTcp(string $appName, Request &$request, Response &$servResponse){
+        try {
+            $dispatch = App::make(Dispatch::class);
+
+            $dispatch->check($appName, $request);
+
+            $handler = $request->getRoure()['handler'];
+            $controller = $handler[0];
+            $action = $handler[1];
+
+            App::make($controller)->$action($request, $servResponse);
+            return true;
+        }catch (\Throwable $e){
+            return $e->getMessage() .PHP_EOL. $e->getFile().':'.$e->getLine();
+        }
     }
 }

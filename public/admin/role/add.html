@@ -120,7 +120,7 @@
         layui.use(['zhanshop'], function() {
             //window.$ = layui.$;
             window.menuId = parent.layui.zhanshop.getParam('_id');
-            layui.zhanshop.view(API_ADDRESS+"/v4.0.0/index.table?id="+menuId, '#view', function(res){
+            layui.zhanshop.view(API_ADDRESS+"/v1/index.table/"+menuId, '#view', function(res){
                 // 菜单
                 console.log(res);
                 setSidebar(res[0]['schema']['menus']['value']);
@@ -199,12 +199,12 @@
             return false;
         }
         var postData = {
-            'system_role': {
+            '0': {
                 "role_name":$('#role_name').val(),
                 "menus":JSON.stringify(menus)
             }
         };
-        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', postData, {}, function(res){
+        layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', postData, {}, function(res){
             return layui.zhanshop.alert('添加成功', 'success', function(){
                 parent.window.location.reload();
             });

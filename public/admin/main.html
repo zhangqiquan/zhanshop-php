@@ -227,7 +227,7 @@
 <script type="text/javascript">
   ready(function() {
     layui.use(['zhanshop','form', 'zhanshopFrom'], function(){
-      layui.zhanshop.view(API_ADDRESS+'/v4.0.0/index.main', '#view', function(data){
+      layui.zhanshop.view(API_ADDRESS+'/v1/index.main', '#view', function(data){
         $(document).ready(function(e) {
           var $dashChartBarsCnt  = jQuery( '.js-chartjs-bars' )[0].getContext( '2d' ),
                   $dashChartLinesCnt = jQuery( '.js-chartjs-lines' )[0].getContext( '2d' );

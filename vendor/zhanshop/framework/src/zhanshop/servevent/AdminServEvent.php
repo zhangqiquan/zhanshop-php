@@ -17,7 +17,7 @@ class AdminServEvent extends ServEvent
      * @param string $group
      * @return void
      */
-    public function onRequest(mixed $request, mixed $response, int $protocol = Server::HTTP, string $routeGroup = 'admin') :void{
-        parent::onRequest($request, $response, $protocol, $routeGroup);
+    public function onRequest($request, $response, $protocol = Server::HTTP, $appName = 'admin') :void{
+        parent::onRequest($request, $response, $protocol, $appName);
     }
 }

@@ -74,11 +74,38 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat', 'd
 
         table.on('rowContextmenu('+zhanshopTable.elem.replace('#','')+')', function(obj){
             zhanshop.table.rowObj = obj;
-            rowObj = obj;
+            var rowbars = zhanshopTable.rowbar;
+            var showMenus = [];
+            for(var i in rowbars){
+                var rowbar = rowbars[i];
+                var show = true;
+                if(rowbar.condition){
+                    if(rowbar.condition){
+                        var conditions = json_decode(rowbar.condition);
+                        for(var ii in conditions){
+                            var condition = conditions[ii];
+                            try{
+                                var evalStr = "show = ('"+obj.data[condition[0]] + "' "+condition[1]+' "'+condition[2]+'");';
+                                eval(evalStr);
+                                if(show == false){
+                                    break;
+                                }
+                            }catch (e) {
+                                //console.error(e)
+                            }
+                        }
+                    }
+                }
+                if(show){
+                    showMenus.push(rowbar);
+                }
+            }
+
             dropdown.render({
                 trigger: 'contextmenu',
+                escape: false,
                 show: true,
-                data: zhanshopTable.rowbar,
+                data: showMenus,
                 click: function(menuData, othis) {
                     layui.zhanshopTableEvent.rowClick(menuData); // 点击行级菜单
                 }
@@ -142,7 +169,7 @@ layui.define(['zhanshop','table', 'zhanshopTableEvent', 'zhanshopDataFormat', 'd
 
         var form = $("<form>");
         form.attr("style","display:none");
-        form.attr("target","_blank");
+        //form.attr("target","_blank");
         form.attr("method","post");
         form.attr("action", url);
 

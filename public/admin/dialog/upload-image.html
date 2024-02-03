@@ -329,7 +329,7 @@
     var menuId = parent.layui.zhanshop.getParam('_id');
     layui.use(['zhanshop'], function(){
       //'_method=addfrom'
-      layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
+      layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
 
         $wrap = $('#uploader'),
 
@@ -706,7 +706,7 @@
                     'original': responseDatas[i]['original']
                   });
                 }
-                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', {"system_images":reqData},{},function(){
+                layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', {"system_images":reqData},{},function(){
                     parent.layer.closeAll();
                     parent.window.location.reload();
                 },function(xhr){return layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');}, '后台数据同步中...');

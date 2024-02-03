@@ -55,7 +55,7 @@ layui.define(['laytpl'], function (exports) {
          * @param shade 遮罩透明度
          * @returns {*}
          */
-        alert: function(msg, type = 'info', endCallback = null, time = 3000, shade = false){
+        alert: function(msg, type = 'info', endCallback = null, time = 300000, shade = false){
             var icon = 0;
             var anim = 1;
             var title = '信息';
@@ -372,6 +372,29 @@ layui.define(['laytpl'], function (exports) {
                         var val = get[key] ? get[key] : '';
                         if(val) val = decodeURI(val);
                         return val;
+                    }
+                    return get;
+                } else {
+                    return {};
+                }
+            }catch (e) {
+                return {};
+            }
+        },
+        /**
+         * url解析get参数
+         * @param str
+         * @returns {{}|*|string}
+         */
+        parseStr: function (str) {
+            var u = str.split("?"); //以？为分隔符把url转换成字符串数组
+            try {
+                if (typeof(u[1]) == "string") {
+                    u = u[1].split("&"); //同上
+                    var get = {};
+                    for (var i in u) {
+                        var j = u[i].split("="); //同上
+                        get[j[0]] = j[1];
                     }
                     return get;
                 } else {

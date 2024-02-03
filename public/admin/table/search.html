@@ -179,7 +179,7 @@
                 });
             }
 
-            searchView(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, '#view', function(data){
+            searchView(API_ADDRESS+'/v1/index.table/'+menuId, '#view', function(data){
                 schmas = data;
                 layui.zhanshopFrom.render();
                 // 表单提交的处理

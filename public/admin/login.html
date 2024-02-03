@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>优药后台管理系统-登录</title>
-  <link rel="icon" href="https://admin.yyimgs.com/favicon.ico">
+  <title>设备管理系统-登录</title>
+  <link rel="icon" href="./images/logo-ico.png">
   <meta name="author" content="张启全">
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache">
@@ -36,7 +36,7 @@
       <div class="text-center">
         <a href="javascript:void(0)" style="font-size: 24px;">
 <!--          <span class="mdi mdi-newspaper"></span>&nbsp;&nbsp;-->
-          优药后台管理系统 </a>
+          设备后台管理系统 </a>
       </div>
       <p class="text-center text-muted"><small>请使用您的账号登录系统</small></p>
 
@@ -80,7 +80,7 @@
         var expiresDay = 1;
         if(data.field.expires_day) expiresDay = data.field.expires_day;
         data.field['_method'] = 'POST';
-        zhanshop.ajax(API_ADDRESS+'/v4.0.0/passport.login', 'POST', data.field, {}, function(res){
+        zhanshop.ajax(API_ADDRESS+'/v1/passport.login', 'POST', data.field, {}, function(res){
           console.info(res);
           try{
             zhanshop.setcookie('token', res.data.token, 3600*24*10000);

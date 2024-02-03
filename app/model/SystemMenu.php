@@ -22,13 +22,14 @@ class SystemMenu extends Model
     protected $connection = 'mysql';
 
     protected $targets = [
-        'table' => 'table.html?_id=',
-        'treetable' => 'treetable.html?_id=',
-        'finder' => 'table.html?_id=',
-        'audio' => 'audio.html?_id=',
-        'video' => 'video.html?_id=',
-        'image' => 'image.html?_id=',
-        'config' => 'config.html?_id='
+        'table' => 'table/',
+        'simple-list' => 'simple-list/',
+        'treetable' => 'treetable/',
+        'finder' => 'table/',
+        'audio' => 'audio/',
+        'video' => 'video/',
+        'image' => 'image/',
+        'config' => 'config/'
     ];
 
 

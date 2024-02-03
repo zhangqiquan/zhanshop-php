@@ -1,2 +1,11 @@
-runtime/*
-.idea/*
+# Object file
+*.o
+
+# Ada Library Information
+*.ali
+vendor/*
+.idea
+.env.dev
+.env.local
+/composer.lock
+/runtime/*

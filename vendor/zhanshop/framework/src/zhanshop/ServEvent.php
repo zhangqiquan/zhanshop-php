@@ -13,6 +13,7 @@ namespace zhanshop;
 use Swoole\Timer;
 use zhanshop\cache\CacheManager;
 use zhanshop\console\command\Server;
+use zhanshop\console\command\server\Accepted;
 use zhanshop\database\DbManager;
 
 class ServEvent
@@ -89,8 +90,8 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onStart(\Swoole\Server $server) :void{
-        $msg = "启动进程数".($this->config['settings']['worker_num'] ?? swoole_cpu_num()).', 线程数'.($this->config['settings']['reactor_num'] ?? swoole_cpu_num())*($this->config['settings']['worker_num'] ?? swoole_cpu_num()).', 进程'.getmypid().', swoole'.swoole_version().', 环境'.($_SERVER['APP_ENV'] ?? 'dev');
+    public function onStart($server) :void{
+        $msg = "启动工作进程数".($server->setting['worker_num']).', 任务工作进程'.($server->setting['task_worker_num']).', swoole'.swoole_version().', 环境'.($_SERVER['APP_ENV'] ?? 'dev');
         Log::errorLog(SWOOLE_LOG_NOTICE, $msg);
         App::make(Robot::class)->send($msg);
     }
@@ -101,11 +102,11 @@ class ServEvent
      * @param int $workerId
      * @return void
      */
-    public function onWorkerStart(\Swoole\Server $server, int $workerId) :void{
+    public function onWorkerStart($server, $workerId) :void{
         $msg = $workerId."号工作进程启动, 进程".getmypid();
         Log::errorLog(SWOOLE_LOG_DEBUG, $msg);
         App::make(Robot::class)->send($msg);
-        
+
         App::cleanAll(); // 清空销毁APP容器的所有对象
 
         App::webhandle($this); // webServer处理
@@ -117,7 +118,7 @@ class ServEvent
      * @param int $workerId
      * @return void
      */
-    public function onWorkerStop(\Swoole\Server $server, int $workerId) :void{
+    public function onWorkerStop($server, $workerId) :void{
     }
 
     /**
@@ -126,7 +127,7 @@ class ServEvent
      * @param int $workerId
      * @return void
      */
-    public function onWorkerExit(\Swoole\Server $server, int $workerId) :void{
+    public function onWorkerExit($server, $workerId) :void{
         Timer::clearAll();
     }
 
@@ -139,14 +140,14 @@ class ServEvent
      * @param int $signal
      * @return void
      */
-    public function onWorkerError(\Swoole\Server $server, int $worker_id, int $worker_pid, int $exit_code, int $signal) :void{
+    public function onWorkerError($server, $worker_id, $worker_pid, $exit_code, $signal) :void{
         // 使用 gdb 来跟踪 swoole 前，需要在编译时添加 --enable-debug 参数以保留更多信息
         // ulimit -c unlimited 开启核心转储文件
         // gdb php core || gdb php /tmp/core.1234 键入命令进入 gdb 调试程序
         // bt 紧接着输入 bt 并回车，就可以看到出现问题的调用栈
         // f 1 || f 0 可以通过键入 f 数字 来查看指定的调用栈帧
         // 将以上信息都贴在 issue 中
-        $msg = '工作进程'.$worker_id.',所属进程'.$worker_pid.'退出码'.$exit_code.'退出信号';
+        $msg = '工作进程'.$worker_id.',所属进程'.$worker_pid.'退出码'.$exit_code.'退出信号'.$signal;
         Log::errorLog(SWOOLE_LOG_ERROR, $msg);
         App::make(Robot::class)->send($msg);
     }
@@ -158,7 +159,7 @@ class ServEvent
      * @param mixed $message
      * @return void
      */
-    public function onPipeMessage(\Swoole\Server $server, int $src_worker_id, mixed $message) :void{
+    public function onPipeMessage($server, $src_worker_id, $message) :void{
 
     }
 
@@ -169,10 +170,10 @@ class ServEvent
      * @param string $group
      * @return void
      */
-    public function onRequest(mixed $request, mixed $response, int $protocol = Server::HTTP, string $appName = 'index') :void{
+    public function onRequest($request, $response, $protocol = Server::HTTP, $appName = 'index') :void{
         $response->header('Server', 'zhanshop');
         $response->header('Access-Control-Allow-Origin', '*');
-        // $response->header('Access-Control-Allow-Headers', ['servers']['cross']);
+        $response->header('Access-Control-Allow-Headers', '*');
         $response->header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE');
         $response->header('Access-Control-Max-Age', '3600');
         if ($request->server['path_info'] == '/favicon.ico' || $request->server['request_uri'] == '/favicon.ico' || $request->server['request_method'] == 'OPTIONS') {
@@ -191,17 +192,36 @@ class ServEvent
     }
 
     /**
-     * 收到tcp数据[可能会出现粘包]
+     * 收到tcp数据
      * @param \Swoole\Server $server
      * @param int $fd
      * @param int $reactorId
      * @param string $data
      * @return void
      */
-    public function onReceive(\Swoole\Server $server, int $fd, int $reactorId, string $data) :void{
-        if($data == 'servStatus'){
-            $server->send($fd, json_encode($server->stats()));
-            return;
+    public function onReceive($server, $fd, $reactorId, $data) :void{
+        if($data == "ping") return;
+        // 接收到的数据过长
+        $data = json_decode($data, true);
+        if($data){
+            $request = \Swoole\Http\Request::create([]);
+            $request->fd = $fd;
+            $clientInfo = $server->getClientInfo($fd);
+            $request->server['remote_addr'] = $clientInfo['remote_ip'] ?? '-1';
+            $request->server['request_uri'] = $data['uri'] ?? '/v1/index.index';
+            $request->server['request_time'] = time();
+            $request->server['request_method'] = 'TCP';
+            foreach($data['header'] ?? [] as $k => $v){
+                $request->header[$k] = $v;
+            }
+            $request->post = $data['body'] ?? [];
+            $protocol = Server::TCP;
+            $servRequest = new Request($protocol, $request);
+            $servResponse = new Response($server, $fd);
+            $result = App::webhandle()->dispatchtTcp('admin', $servRequest, $servResponse);
+            if($result !== true){
+                $server->send($fd, '{"uri":"error","header":[],"body":"'.$request->server['request_uri'].PHP_EOL.addslashes($result).'"}'."\r\n");
+            }
         }
     }
 
@@ -212,8 +232,7 @@ class ServEvent
      * @param int $reactorId
      * @return void
      */
-    public function onConnect(\Swoole\Server $server, int $fd, int $reactorId) :void{
-
+    public function onConnect($server, $fd, $reactorId) :void{
     }
 
 //    /**
@@ -232,7 +251,7 @@ class ServEvent
      * @param \Swoole\Http\Request $request
      * @return void
      */
-    public function onOpen(Swoole\WebSocket\Server $server, mixed $request) :void{
+    public function onOpen($server, $request) :void{
     }
 
     /**
@@ -241,7 +260,7 @@ class ServEvent
      * @param $frame
      * @return void
      */
-    public function onMessage(Swoole\WebSocket\Server $server, Swoole\WebSocket\Frame $frame) :void{
+    public function onMessage($server, $frame) :void{
     }
 
     /**
@@ -251,8 +270,7 @@ class ServEvent
      * @param int $reactorId
      * @return void
      */
-    public function onClose(\Swoole\Server $server, int $fd, int $reactorId) :void{
-
+    public function onClose($server, $fd, $reactorId) :void{
     }
 
     /**
@@ -261,12 +279,17 @@ class ServEvent
      * @param $task
      * @return void
      */
-    public function onTask(\Swoole\Server $server, $task) :void{
+    public function onTask($server, $task) :void{
         try{
             if($task->data == false || !is_array($task->data)){
                 Log::errorLog(SWOOLE_LOG_ERROR,'投递的task必须是一个数组');
+            }else{
+                $class = $task->data['class'];
+                $obj = new $class($task);
+                $obj->onStart();
+                $obj->execute();
+                $obj->onEnd();
             }
-            call_user_func_array($task->data['callback'], $task->data['value']);
         }catch (\Throwable $e){
             Log::errorLog(SWOOLE_LOG_ERROR,'task出错 '.$e->getMessage().PHP_EOL.'#@ '.$e->getFile().':'.$e->getLine().PHP_EOL.$e->getTraceAsString().PHP_EOL);
         }
@@ -279,7 +302,7 @@ class ServEvent
      * @param mixed $data
      * @return void
      */
-    public function onFinish(\Swoole\Server $server, int $task_id, mixed $data) :void{
+    public function onFinish($server, int $task_id, $data) :void{
 
     }
 
@@ -288,7 +311,7 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onShutdown(\Swoole\Server $server) :void{
+    public function onShutdown($server) :void{
         $pidFile = $server->setting['pid_file'] ?? '';
         if(file_exists($pidFile)) @unlink($pidFile);
         $msg = 'server触发了正常停止';
@@ -303,8 +326,8 @@ class ServEvent
      * @param array $clientInfo
      * @return void
      */
-    public function onPacket(\Swoole\Server $server, string $data, array $clientInfo) :void{
-
+    public function onPacket($server, $data, $clientInfo) :void{
+        $server->sendto($clientInfo['address'], $clientInfo['port'], "1");
     }
 
     /**
@@ -312,7 +335,7 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onManagerStart(\Swoole\Server $server) :void{
+    public function onManagerStart($server) :void{
         //echo PHP_EOL.'['.date('Y-m-d H:i:s').'] ###[info]###'." 管理进程启动, 进程".getmypid();
     }
 
@@ -321,7 +344,7 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onManagerStop(\Swoole\Server $server) :void{
+    public function onManagerStop($server) :void{
     }
 
     /**
@@ -329,7 +352,7 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onBeforeReload(\Swoole\Server $server) :void{
+    public function onBeforeReload($server) :void{
     }
 
     /**
@@ -337,7 +360,7 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onAfterReload(\Swoole\Server $server) :void{
+    public function onAfterReload($server) :void{
     }
 
     /**
@@ -345,6 +368,6 @@ class ServEvent
      * @param \Swoole\Server $server
      * @return void
      */
-    public function onBeforeShutdown(\Swoole\Server $server) :void{
+    public function onBeforeShutdown($server) :void{
     }
 }

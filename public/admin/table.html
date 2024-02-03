@@ -95,9 +95,9 @@
         layui.use(['zhanshopTable', 'zhanshop'], function() {
             zhanshop = layui.zhanshop;
             // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
-            zhanshop.view(API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id'), '#view', function(
+            zhanshop.view(API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id'), '#view', function(
                 data) {
-                layui.zhanshopTable.url = API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id');
+                layui.zhanshopTable.url = API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id');
                 layui.zhanshopTable.title = data.title;
                 layui.zhanshopTable.elem = '#laytable';
                 layui.zhanshopTable.toolbar = '#left-toolbar';

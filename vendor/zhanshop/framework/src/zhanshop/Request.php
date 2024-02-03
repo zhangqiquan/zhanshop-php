@@ -268,7 +268,9 @@ class Request
             return $this->extData ?? [];
         }
 
-        return $this->extData[$name] ?? $default;
+        $val = $this->extData[$name] ?? $default;
+        if($val === null) App::error()->setError($name.'不能为空。', Error::BAD_REQUEST);
+        return $val;
     }
 
     /**
@@ -291,12 +293,12 @@ class Request
     }
 
     /**
-     * 请求参数验证
+     * 请求参数验证规则
      * @param array $rules
      * @param array $message
      * @return Validate
      */
-    public function validate(array $rules, array $message = []){
+    public function validateRule(array $rules, array $message = []){
         $params = $this->param();
         return new Validate($params ?? [], $rules, $message);
     }

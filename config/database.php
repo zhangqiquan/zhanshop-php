@@ -27,13 +27,13 @@ return [
             // 数据库类型
             'type' => 'mysql',
             // 服务器地址
-            'hostname' => App::env()->get('DB_HOST', '127.0.0.1'),
+            'hostname' => App::env()->get('DB_HOST', 'zhanshop-mysql'),
             // 数据库名
-            'database' => App::env()->get('DB_DATABASE', ''),
+            'database' => App::env()->get('DB_DATABASE', 'zhanshop-device'),
             // 用户名
             'username' => App::env()->get('DB_USERNAME', 'root'),
             // 密码
-            'password' => App::env()->get('DB_PASSWORD', ''),
+            'password' => App::env()->get('DB_PASSWORD', '123456'),
             // 端口
             'hostport' => App::env()->get('DB_PORT', '3306'),
             // 数据库连接参数
@@ -42,16 +42,12 @@ return [
             ],
             // 数据库编码
             'charset' => App::env()->get('DB_CHARSET', 'utf8mb4'),
-            // 数据库表前缀
-            'prefix' => App::env()->get('DB_PREFIX', ''),
-            // 监听SQL
-            'trigger_sql' => App::env()->get('DB_DEBUG', false),
-            //指定查询对象
+            //指定查询对象.
             'query' => 'query',
             'pool' => [
-                'max_connections' => swoole_cpu_num() * 10,
-                'timeout' => 0.1,
+                'max_connections' => 100,
+                'timeout' => 0.001,
             ],
-        ]
+        ],
     ],
 ];

@@ -9,20 +9,26 @@
 declare (strict_types=1);
 
 namespace app\console;
-
+use app\api\admin\v1\controller\Proxy;
+use app\task\AndroidBossSearchJobTask;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use zhanshop\App;
 use zhanshop\console\Command;
 use zhanshop\console\Input;
 use zhanshop\console\Output;
+use zhanshop\console\TaskManager;
+use zhanshop\Curl;
+use zhanshop\Request;
 
 class Test extends Command
 {
 
     public function configure(){
-        $this->setTitle('test')->setDescription('测试用例');
+        $this->setTitle('test')->useDatabase()->setDescription('测试用例');
     }
 
     public function execute(Input $input, Output $output)
     {
-        // TODO: Implement execute() method.
     }
 }

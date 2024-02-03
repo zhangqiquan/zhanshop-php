@@ -16,31 +16,27 @@ use zhanshop\Response;
 
 class RequestLog
 {
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return void
-     */
-    public function handle(Request &$request, Response &$response){
-        // 不是这个问题导致的内存泄露
-        $code = $response->getStatus();
-
+    public function handle(Request &$request, \Closure &$next){
+        $response = $next($request);
+        $httpCode = $response->getHttpCode();
         $rep = [
             'time' => date('Y-m-d H:i:s'),
             'url' => $request->server('request_uri'),
             'ip' => $request->server('remote_addr'),
             'agent' => $request->header('user-agent'),
-            'status' => $code,
+            'code' => $httpCode,
+            'msg' => $response->getMsg(),
             'request' => [
                 'get' => $request->get(),
-                'post' => $request->post()
+                'post' => $request->post(),
+                'file' => $request->files()
             ]
         ];
-
-        if($code >= 417){
-            $rep['respon'] = $response->getData();
+        // 只完整记录417以上的错误错误
+        if($httpCode > 417){
+            $rep['response'] = $response->getData();
         }
-
         App::log()->push(json_encode($rep, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE), "request");
+        return $response;
     }
 }

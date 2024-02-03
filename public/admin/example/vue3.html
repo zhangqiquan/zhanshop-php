@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>vue3 代码示例</title>
+  <link href="../js/layer/css/layui.css" rel="stylesheet">
+  <script src="./../js/codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="./../js/codemirror/lib/codemirror.css">
+  <script src="./../js/codemirror/mode/javascript/javascript.js"></script>
+  <style>
+    *{
+      margin: 0px;
+      padding: 0px;
+    }
+    .CodeMirror{
+      height: auto!important;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+
+<div id="code-demo" class="code-demo" lay-options="{}"></div>
+
+
+
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+  var codemirror = null;
+  ready(function() {
+    layui.use(['zhanshop'], function () {
+      var version = parent.layui.zhanshop.getParam("version");
+      var uri = parent.layui.zhanshop.getParam("uri");
+      var method = parent.layui.$("#requestMethod").find('.layui-this').html();
+      layui.zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method": "exampleCode", "language": "vue3", "uri": parent.$("#api-uri").html(), "method": method}, {}, function (res) {
+        codemirror = CodeMirror(document.getElementById('code-demo'), {
+          value: res.data,
+          lineNumbers: true,
+          mode: "javascript",
+        });
+        // 获取当前页面的高度
+        var $ = layui.$;
+
+        if(document.body.scrollHeight > 0){
+          $('.sample-code', window.parent.document).css('height', (document.body.scrollHeight)+'px');
+        }
+
+      }, function (res) {
+
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

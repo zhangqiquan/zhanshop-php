@@ -111,9 +111,9 @@
       zhanshop = layui.zhanshop;
       var table = layui.zhanshopTable;
       // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
-      zhanshop.view(API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id'), '#view', function(
+      zhanshop.view(API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id'), '#view', function(
               data) {
-        table.url = API_ADDRESS + '/v4.0.0/index.table?id=' + zhanshop.getParam('_id');
+        table.url = API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id');
         table.title = data.title;
         table.elem = '#laytable';
         table.toolbar = '#left-toolbar';

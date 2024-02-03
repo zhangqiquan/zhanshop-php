@@ -27,7 +27,6 @@ use zhanshop\console\Output;
  * @method static Rsa rsa()
  * @method static Curl curl()
  * @method static Middleware middleware()
- * @method static Task task()
  * @method static Robot robot()
  * @method static Phar phar()
  */
@@ -91,7 +90,6 @@ class App extends Container
         'config'          => Config::class,
         'cache'           => Cache::class,
         'log'             => Log::class,
-        'task'            => Task::class,
         'route'           => Route::class,
         'webhandle'       => WebHandle::class,
         'validate'        => Validate::class,
@@ -159,5 +157,18 @@ class App extends Container
      */
     public static function routePath(){
         return self::$routePath;
+    }
+
+    /**
+     * 获取cpu个数
+     * @return int
+     */
+    public static function cpuNum(){
+        $cpuNum = 1;
+        // 检查扩展是否存在
+        if(extension_loaded('swoole')){
+            $cpuNum = swoole_cpu_num();
+        }
+        return $cpuNum;
     }
 }

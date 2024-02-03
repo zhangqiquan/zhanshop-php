@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="./css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="js/layer/css/layui.css">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <script>
+        var searchFieldNum = 0;
+    </script>
+</head>
+
+<body>
+<div class="container-fluid p-t-15" id="view">
+
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    {{#  if(d.tabs.length){ }}
+                        <ul class="layui-tab-title">
+                            {{#  arr_foreach(d.tabs, function(k1, v1){ }}
+                            {{#  if(k1 == 0){ }}
+                            <li class="layui-this" onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+                            {{# }else{ }}
+                            <li  onclick="tabsLink(this)" data-where='{{v1.where}}'>{{v1.title}}</li>
+                            {{#  } }}
+                            {{#  }); }}
+                        </ul>
+                    {{#  } }}
+
+                    <div class="layui-tab-content">
+
+                        <div class="card-toolbar d-flex flex-column flex-md-row">
+                            <div class="toolbar-btn-action"> <a style="color: #000;font-size: 18px;opacity: 0.7;line-height: 1.6em;">{{d.title}}</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table id="laytable" lay-filter="laytable"></table>
+
+                    <script id="left-toolbar" type="text/html">
+                        <div class="layui-btn-container layui-btn-group">
+                            {{#  arr_foreach(d.head_toolbar, function(k1, v1){ }}
+                            {{#  if(v1.event != 'hidden'){ }}
+                            <button data-config={{=json_encode(v1)}} class="layui-btn layui-btn-primary layui-btn-sm head-event" lay-event="header"><i class="layui-icon">{{v1.ico}}</i>{{v1.title}}</button>
+                            {{#  } }}
+                            {{#  }); }}
+                        </div>
+                    </script>
+                    <!---右击菜单--->
+<!--                    <div id="contextmenu" class="inner show" style="height: auto;min-height: 0px;position: absolute;left: 0px;top: 0px;z-index: 999999999999999;background: #f33;display: none;">-->
+<!--                        <ul class="dropdown-menu inner show" style="border: 1px solid #dddddd!important;">-->
+<!--                            {{#  arr_foreach(d.row_toolbar, function(k1, v1){ }}-->
+<!--                            {{#  if(v1.event != 'hidden'){ }}-->
+<!--                            <li><a class="dropdown-item row-event" href="javascript:void(0);" data-event="{{v1.event}}" data-method='{{v1.method}}' data-title="{{v1.title}}" data-page="{{v1.page}}"><i class="layui-icon">{{v1.ico}}</i>&nbsp;&nbsp;<span class="text">{{v1.title}}</span></a></li>-->
+<!--                            {{#  } }}-->
+
+<!--                            {{#  }); }}-->
+<!--                            <li><a class="dropdown-item row-event" data-event="source" data-event="alert" href="javascript:void(0);" ><i class="layui-icon">&#xe6b2;</i>&nbsp;&nbsp;<span class="text">查看数据源</span></a></li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script type="text/javascript" src="js/layer/layui.js"></script>
+<script>
+    var where = {};
+    var tabWhere = [];
+    window.zhanshop = null;
+    ready(function() {
+        layui.use(['zhanshopTable', 'zhanshop'], function() {
+            zhanshop = layui.zhanshop;
+            // view: function(url, elem, callback, reqMethod = 'POST', data = '', head = {}){
+            zhanshop.view(API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id'), '#view', function(
+                data) {
+                layui.zhanshopTable.url = API_ADDRESS + '/v1/index.table/' + zhanshop.getParam('_id');
+                layui.zhanshopTable.title = data.title;
+                layui.zhanshopTable.elem = '#laytable';
+                layui.zhanshopTable.toolbar = '#left-toolbar';
+                layui.zhanshopTable.rowbar = data.row_toolbar; // 配置行级别菜单
+                /**/
+                layui.zhanshopTable.width = data.width;
+                layui.zhanshopTable.height = data.height;
+                layui.zhanshopTable.even = data.even;
+                layui.zhanshopTable.skin = data.skin;
+                layui.zhanshopTable.css = data.css;
+                layui.zhanshopTable.size = data.size;
+                layui.zhanshopTable.limit = data.limit;
+                layui.zhanshopTable.limits = data.limits;
+                layui.zhanshopTable.page = data.page;
+                layui.zhanshopTable.lineStyle = data.lineStyle;
+                layui.zhanshopTable.cellMinWidth = data.cellMinWidth;
+                layui.zhanshopTable.data = data.data;
+                /**/
+                layui.zhanshopTable.idName = data.pk;
+                layui.zhanshopTable.titleName = data.title_name;
+                layui.zhanshopTable.pidName = data.pid_name;
+                layui.zhanshopTable.schma = data.cols;
+                layui.zhanshopTable.searchPage = data.searchpage;
+                window.colsData = [];
+                if(data.cols_first){
+                    colsData.push({type: data.cols_first});
+                }
+                for(var i in data.cols){
+                    if(data.cols[i]['in_list'] !== false){
+                        colsData.push(layui.zhanshopTable.laycols(data.cols[i]));
+                    }
+                }
+                layui.zhanshopTable.render(colsData);
+
+            }, 'POST', {"_method":"render"});
+        });
+    });
+</script>
+</body>
+</html>

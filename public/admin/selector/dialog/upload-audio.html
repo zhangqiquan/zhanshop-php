@@ -325,7 +325,7 @@
     ready(function() {
         layui.use(['zhanshop'], function(){
 
-            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=audio&_method=uploadToken', {}, function(data){
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', 'factory=qiniu&type=audio&_method=uploadToken', {}, function(data){
 
                 $wrap = $('#uploader'),
 
@@ -703,7 +703,7 @@
                                         'duration' : responseDatas[i]['duration'],
                                     });
                                 }
-                                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysAudio', 'POST', {"system_audios":reqData},{},function(){
+                                layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/SysAudio', 'POST', {"system_audios":reqData},{},function(){
                                     window.location.href=document.referrer;
                                 },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
 

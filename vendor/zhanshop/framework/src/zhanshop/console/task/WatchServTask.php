@@ -10,10 +10,12 @@ declare (strict_types=1);
 
 namespace zhanshop\console\task;
 use zhanshop\App;
+use zhanshop\console\TaskManager;
 use zhanshop\console\WatchCode;
 use zhanshop\Log;
+use zhanshop\Task;
 
-class WatchServTask
+class WatchServTask extends Task
 {
     protected static $init = false;
     protected static $version = '';
@@ -30,27 +32,33 @@ class WatchServTask
     }
     // 记录版本
     public static function init(){
-        if(self::$init == false){
-            self::$version = self::version();
-            WatchCode::init(App::rootPath());
-            self::$init = true;
+        if(WatchServTask::$init == false){
+            WatchServTask::$version = WatchServTask::version();
+            App::make(WatchCode::class)->init();
+            WatchServTask::$init = true;
         }
     }
 
     /**
-     * @param \Swoole\Http\Server $serv
-     * @return void
+     * 任务启动
+     * @return mixed
      */
-    public static function check(){
+    public function onStart(){}
+
+    /**
+     * 任务运行
+     * @return mixed
+     */
+    public function execute(){
         clearstatcache();
-        self::init();
-        if(WatchCode::isChange()){
-            $isReload = (self::$version == self::version());
-            self::$init = false;
-            self::init();
+        WatchServTask::init();
+        if(App::make(WatchCode::class)->isChange()){
+            $isReload = (WatchServTask::$version == WatchServTask::version());
+            WatchServTask::$init = false;
+            WatchServTask::init();
             if($isReload){
                 Log::errorLog(SWOOLE_LOG_TRACE, '重新载入和更新工作进程'.PHP_EOL);
-                App::task()->getServer()->reload();
+                App::make(TaskManager::class)->getServer()->reload();
             }else{
                 Log::errorLog(SWOOLE_LOG_TRACE, '重启更新整个项目的所有进程'.PHP_EOL);
                 $daemonize = $_SERVER['argv'][4] ?? 'true';
@@ -67,7 +75,12 @@ class WatchServTask
                     \Swoole\Coroutine\System::exec($command);
                 }
             }
-
         }
     }
+
+    /**
+     * 任务结束
+     * @return mixed
+     */
+    public function onEnd(){}
 }

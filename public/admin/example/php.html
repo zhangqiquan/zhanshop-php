@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>php 代码示例</title>
+    <link rel=stylesheet href="./../js/codemirror/doc/docs.css">
+
+    <link rel="stylesheet" href="./../js/codemirror/lib/codemirror.css">
+    <script src="./../js/codemirror/lib/codemirror.js"></script>
+    <script src="./../js/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="./../js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="./../js/codemirror/mode/xml/xml.js"></script>
+    <script src="./../js/codemirror/mode/javascript/javascript.js"></script>
+    <script src="./../js/codemirror/mode/css/css.js"></script>
+    <script src="./../js/codemirror/mode/clike/clike.js"></script>
+    <script src="./../js/codemirror/mode/php/php.js"></script>
+    <style>
+        .CodeMirror{
+            height: auto!important;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="code-demo" class="code-demo" lay-options="{}"></div>
+<script type="text/javascript" src="../js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        layui.use(['zhanshop'], function () {
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/swagger.doc', 'POST', {"_method": "samplecode", "language": "php", 'type': 'http', "version": layui.zhanshop.getParam("version"), "uri": layui.zhanshop.getParam("uri"), "method": layui.zhanshop.getParam("method")}, {'doc_id':layui.zhanshop.getcookie('doc_id')}, function (res) {
+                //alert(JSON.stringify(res.data.sample_code));
+                CodeMirror(document.getElementById('code-demo'), {
+                    value: res.data.sample_code,
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    mode: "application/x-httpd-php",
+                    indentUnit: 4,
+                    indentWithTabs: true
+                });
+                // 获取当前页面的高度
+                var $ = layui.$;
+                $('#sample-code', window.parent.document).css('height', (document.body.scrollHeight)+'px');
+                //alert(document.body.scrollHeight);
+            }, function (res) {
+
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

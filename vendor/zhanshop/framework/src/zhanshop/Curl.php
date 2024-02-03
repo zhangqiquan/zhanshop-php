@@ -16,13 +16,25 @@ class Curl
         'cookie' => '',
         'timeout' => 60000,
         'header' => [],
+        'opts' => [],
         'upload' => [], // 上传对象
         'useragent' => 'Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0',
-        'ipresolve' => 1,
+        'ipresolve' => 0,
         'referer' => '', // 请求来源
         'maxredirs' => 3, // 最大跳转次数
         'encodeng' => 'gzip', // 解压编码
     ];
+
+    /**
+     * 更新curl参数
+     * @param int $key
+     * @param mixed $val
+     * @return $this
+     */
+    public function setopt(int $key, mixed $val){
+        $this->config['opts'][$key] = $val;
+        return $this;
+    }
 
     /**
      * 设置curl请求超时时间
@@ -145,7 +157,139 @@ class Curl
      * @param array $data
      * @return bool|string
      */
-    public function request(string $url, string $method = 'GET', string|array $data = [], $contentType = '', bool $report = false, bool $again = true){
+    public function request(string $url, string $method = 'GET', string|array $data = [], bool $report = false, bool $again = true){
+        $ch = curl_init();
+        foreach ($this->config['opts'] as $k => $v){
+            curl_setopt($ch, $k, $v);
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); //设置请求方式
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+        if($data){
+            curl_setopt($ch, CURLOPT_POST, 1);
+            if(is_array($data)){
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }elseif($this->config['upload']){
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->config['upload']);
+        }
+
+        curl_setopt($ch, CURLOPT_REFERER, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); // 跟踪爬取重定向页面302 redirect
+        curl_setopt($ch, CURLOPT_MAXREDIRS, $this->config['maxredirs']);//最多重定向3次
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->config['useragent']);
+        curl_setopt($ch, CURLOPT_IPRESOLVE, $this->config['ipresolve']);//在对应域名没有IPv6的情况下，会等待IPv6 DNS解析失败 TIMEOUT 之后才按以前的正常流程去找IPv4，
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->config['timeout']);
+        curl_setopt($ch, CURLOPT_COOKIE, $this->config['cookie']);
+        curl_setopt($ch, CURLOPT_REFERER, $this->config['referer']);
+
+        curl_setopt($ch, CURLOPT_HEADER, true);
+
+        if($this->config['encodeng']) curl_setopt($ch, CURLOPT_ENCODING ,$this->config['encodeng']);
+        if($this->config['header']){
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config['header']);//设置请求头
+        }
+
+        $output = curl_exec($ch);
+        $curlInfo = curl_getinfo($ch);
+        $httpCode = $curlInfo['http_code'];
+
+        // 如果发生错误打印错误报告
+        if($httpCode != 200){
+            if($again){
+                return self::request($url,  $method, $data, $report, false); // 再次尝试
+            }
+        }
+
+        $arr = is_string($output) ? explode("\r\n\r\n", $output, 2) : [];
+
+        $outData = [
+            'code' => $httpCode,
+            'header' => $arr[0] ?? "",
+            'body' => $arr[1] ?? "",
+            'time' => $curlInfo['total_time'],
+        ];
+        $this->config['cookie'] = '';
+        $this->config['header'] = [];
+        $this->config['upload'] = [];
+        if($report) $outData['report'] = $curlInfo;
+        curl_close($ch);
+        return $outData;
+    }
+
+    public function chunkedDownload(string $url, mixed $callback, string $method = 'GET', string|array $data = [], bool $report = false, bool $again = true){
+        $ch = curl_init();
+        foreach ($this->config['opts'] as $k => $v){
+            curl_setopt($ch, $k, $v);
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); //设置请求方式
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+        if($data){
+            curl_setopt($ch, CURLOPT_POST, 1);
+            if(is_array($data)){
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }elseif($this->config['upload']){
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->config['upload']);
+        }
+
+        curl_setopt($ch, CURLOPT_REFERER, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); // 跟踪爬取重定向页面302 redirect
+        curl_setopt($ch, CURLOPT_MAXREDIRS, $this->config['maxredirs']);//最多重定向3次
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->config['useragent']);
+        curl_setopt($ch, CURLOPT_IPRESOLVE, $this->config['ipresolve']);//在对应域名没有IPv6的情况下，会等待IPv6 DNS解析失败 TIMEOUT 之后才按以前的正常流程去找IPv4，
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->config['timeout']);
+        curl_setopt($ch, CURLOPT_COOKIE, $this->config['cookie']);
+        curl_setopt($ch, CURLOPT_REFERER, $this->config['referer']);
+
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        if($this->config['encodeng']) curl_setopt($ch, CURLOPT_ENCODING ,$this->config['encodeng']);
+        if($this->config['header']){
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config['header']);//设置请求头
+        }
+
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $chunkedData) use (&$url, &$callback, $method, &$httpInfo, $data, $report, $again){
+            if($httpInfo == false){
+                $httpInfo = curl_getinfo($ch);
+                if($httpInfo['http_code'] != 200){
+                    if($again){
+                        $httpInfo = [];
+                        return $this->chunkedDownload($url, $callback,  $method, $data, $report, false); // 再次尝试
+                    }
+                    App::error()->setError($url.'请求'.$httpInfo['http_code'].'错误 '.$chunkedData);
+                }
+            }
+            $callback($ch, $chunkedData);
+            return strlen($chunkedData);
+        });
+        $output = curl_exec($ch);
+        $this->config['cookie'] = '';
+        $this->config['header'] = [];
+        $this->config['upload'] = [];
+        curl_close($ch);
+        return $output;
+    }
+    /**
+     * 分批响应下载
+     * @param string $url
+     * @param string $method
+     * @param string|array $data
+     * @param $contentType
+     * @param bool $report
+     * @param bool $again
+     * @return void
+     */
+    public function chunkedDownload123(string $url, mixed $callback, string $method = 'GET', string|array $data = [], bool $report = false, bool $again = true){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); //设置请求方式
@@ -158,12 +302,7 @@ class Curl
                 $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }elseif($this->config['upload']){
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->config['upload']);
         }
-
-        if($contentType) $this->config['header'][] = 'Content-Type'.':'.$contentType;
 
         curl_setopt($ch, CURLOPT_REFERER, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -176,30 +315,35 @@ class Curl
         curl_setopt($ch, CURLOPT_REFERER, $this->config['referer']);
 
         if($this->config['encodeng']) curl_setopt($ch, CURLOPT_ENCODING ,$this->config['encodeng']);
+
+        foreach ($this->config['opts'] as $k => $v){
+            curl_setopt($ch, $k, $v);
+        }
         if($this->config['header']){
             curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config['header']);//设置请求头
         }
-        $output = curl_exec($ch);
-        $curlInfo = curl_getinfo($ch);
-        $httpCode = $curlInfo['http_code'];
 
-        // 如果发生错误打印错误报告
-        if($httpCode != 200){
-            if($again){
-                return self::request($url,  $method, $data, $contentType, $report, false); // 再次尝试
+        $httpInfo = [];
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $chunkedData) use (&$url, &$callback, $method, &$httpInfo, $data, $report, $again){
+            if($httpInfo == false){
+                $httpInfo = curl_getinfo($ch);
+                if($httpInfo['http_code'] != 200){
+                    if($again){
+                        $httpInfo = [];
+                        return $this->chunkedDownload($url, $callback,  $method, $data, $report, false); // 再次尝试
+                    }
+                    App::error()->setError($url.'请求'.$httpInfo['http_code'].'错误 '.$chunkedData);
+                }
             }
-            App::error()->setError($url.'请求'.$httpCode.'错误'.',请求:'. "".',响应:'.$output, 500);
-        }
+            $callback($ch, $chunkedData);
+            return strlen($chunkedData);
+        });
 
-        $outData = [
-            'code' => $httpCode,
-            'body' => $output,
-            'time' => $curlInfo['total_time'],
-        ];
+
+        curl_exec($ch);
+        curl_close($ch);
         $this->config['cookie'] = '';
         $this->config['header'] = [];
         $this->config['upload'] = [];
-        if($report) $outData['report'] = $curlInfo;
-        return $outData;
     }
 }

@@ -3694,7 +3694,7 @@ button.list-group-item:hover {
 .nav-drawer > li > a > i {
     position: absolute;
     left: 21px;
-    top: 8px;
+    top: 11px;
     font-size: 1.25em;
 }
 .nav-drawer ul li ul {

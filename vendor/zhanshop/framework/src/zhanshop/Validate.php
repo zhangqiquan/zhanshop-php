@@ -76,7 +76,7 @@ class Validate
     }
 
     /**
-     * 最大长度
+     * 最大值
      * @param string $key
      * @param int $maxLength
      * @param mixed $val
@@ -89,7 +89,7 @@ class Validate
     }
 
     /**
-     * 最小长度
+     * 最小值
      * @param string $key
      * @param int $minLength
      * @param mixed $val
@@ -196,7 +196,7 @@ class Validate
      */
     protected function mobile(string $key ,mixed $val){
         $rule = '/^1[3-9]\d{9}$/';
-        if($this->regex($key, $rule, $val, true) == false) $this->errors[] = ($this->message[$key] ?? $key).'手机号码格式不正确';
+        if($this->regex($key, $val, $rule, true) == false) $this->errors[] = ($this->message[$key] ?? $key).'手机号码格式不正确';
     }
 
     /**
@@ -207,7 +207,7 @@ class Validate
      */
     protected function card(string $key ,mixed $val){
         $rule = '/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/';
-        if($this->regex($key, $rule, $val, true) == false) $this->errors[] = ($this->message[$key] ?? $key).'手机号码格式不正确';
+        if($this->regex($key, $val, $rule, true) == false) $this->errors[] = ($this->message[$key] ?? $key).'手机号码格式不正确';
     }
 
     /**
@@ -230,7 +230,10 @@ class Validate
      * @param mixed $val
      * @return void
      */
-    protected function length(string $key, mixed $val, int $minLength = 0, int $maxLength = 0){
+    protected function length(string $key, mixed $val, mixed $minLength, mixed $maxLength){
+        $val = (string) $val;
+        $minLength = (int) $minLength;
+        $maxLength = (int) $maxLength;
         if($minLength && $maxLength){
             $error = '';
             $strlen = mb_strlen($val);

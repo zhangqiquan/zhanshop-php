@@ -1,0 +1,33 @@
+<phpunit bootstrap="./boot/start.php" cacheDirectory="./boot/cache">
+
+    <testsuites>
+        <!--测试套件的名称-->
+        <testsuite name="zhanshop">
+            <!--套件测试的目录-->
+            <directory>./app</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <!--环境变量配置-->
+
+    </php>
+
+
+    <coverage includeUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="true">
+        <report>
+            <html outputFile="./report/test"/>
+        </report>
+    </coverage>
+
+    <logging>
+        <junit outputFile="./report/junit.xml"/>
+        <teamcity outputFile="./report/teamcity.txt"/>
+        <testdoxHtml outputFile="./report/testdox.html"/>
+        <testdoxText outputFile="./report/testdox.txt"/>
+    </logging>
+
+</phpunit>

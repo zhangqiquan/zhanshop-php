@@ -2,21 +2,30 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>API调试</title>
-    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=yes, user-scalable=0, minimal-ui">
+    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/admin/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/admin/css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/admin/js/layer/css/layui.css">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="cache-control" content="no-cache">
     <meta http-equiv="expires" content="0">
-    <meta name="author" content="yinqi">
-    <link href="/apiDoc/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/apiDoc/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="/apiDoc/css/animate.css" rel="stylesheet">
-    <link href="/apiDoc/css/style.min.css" rel="stylesheet">
     <style>
-        /* Syntax highlighting for JSON objects */
-        pre{
-            color: #000;
+        .btn-method-get{
+            background-color: #48b0f7;
+            border-color: #48b0f7;
+            color: #fff !important;
+        }
+
+        .btn-method-put{
+            background-color: #faa64b;
+            border-color: #faa64b;
+            color: #fff !important;
+        }
+        .btn-method-delete{
+            background-color: #f96868;
+            border-color: #f96868;
+            color: #fff !important;
         }
         ul.json-dict, ol.json-array {
             list-style-type: none;
@@ -68,254 +77,288 @@
         a{
             color: #4d5259;
         }
+        li{
+            list-style: none!important;
+            list-style-type:none!important;
+            margin: 0px!important;
+        }
     </style>
 </head>
 
 <body>
-<div class="container-fluid p-t-15">
+<div class="container-fluid p-t-15" id="view">
 
     <div class="row">
-        <div class="col-md-12">
+
+        <div class="col-lg-12">
+
             <div class="card">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
 
-                <div class="card-header">
-                    <h4 id="apiTitle" style="float: left;cursor:pointer;margin-top: 15px;"></h4>
-                    <div style="width:100%;float: left;boder:none!important;">
-                    <input style="width: 100%; border: none; text-align: left;" type="text" id="url" value="">
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h5>请求头参数</h5>
-                    <div class="tab-content" style="padding: 0px;">
-                        <table class="table table-bordered" data-type="header">
-                            <thead>
-                            <tr>
-                                <th>字段</th>
-                                <th>字段值</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="DEVICE-ID" readonly></td>
-                                <td><input placeholder="输入参数设备id值" type="text" class="header-param-val" value="zhangqiquan"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-VERSION" readonly></td>
-                                <td><input placeholder="输入参数前端app版本号" type="text" class="header-param-val" value="1.0.0"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-SIGN" readonly></td>
-                                <td><input placeholder="输入参数签名值" type="text" class="header-param-val"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="TOKEN" readonly></td>
-                                <td><input placeholder="输入参数TOKEN值" type="text" class="header-param-val"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-PAGE" readonly></td>
-                                <td><input placeholder="输入参数访问当前接口的APP页面" type="text" class="header-param-val" value="page/test"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="DEVICE-OS" readonly></td>
-                                <td><input placeholder="输入参数访问当前接口的设备操作系统" type="text" class="header-param-val" value="apidebug"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="DEVICE-BRAND" readonly></td>
-                                <td><input placeholder="输入参数访问当前接口的设备品牌" type="text" class="header-param-val" value="zhangqiquan"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-CHANNEL" readonly></td>
-                                <td><input placeholder="访问当前接口的app渠道" type="text" class="header-param-val" value="apidebug"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="DEVICE-NETTYPE" readonly></td>
-                                <td><input placeholder="输入参数访问当前接口的设备联网方式" type="text" class="header-param-val" value="wifi"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="IS-START-PAGE" readonly></td>
-                                <td><input placeholder="输入参数是否为APP启动页" type="text" class="header-param-val" value="0"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-PREPAGE" readonly></td>
-                                <td><input placeholder="输入参数上一次访问的APP页面" type="text" class="header-param-val"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" class="header-param-key" value="APP-PREPAGE-STAYTIME" readonly></td>
-                                <td><input placeholder="输入参数上一次访问的APP页面停留时长" type="text" class="header-param-val"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+                    <div class="layui-tab-content">
+                        <div class="card-toolbar d-flex flex-column flex-md-row">
+
+
+                            <div class="layui-text ws-text" id="WS-text" style="width: 100%;">
+
+                                <div style="width: 100%;float: left; font-size: 16px; border: #eeeeee 1px solid; position: relative; overflow: hidden;">
+                                    <button style="position: absolute; left: 0px; width: 80px; height: 38px;" class="btn btn-primary btn-sm" type="button" id="request-method"></button>
+                                    <input id="server-url" style="margin-left: 80px; border: none;" type="text" lay-verify="required" placeholder="请输入接口地址" autocomplete="off" class="layui-input" value="http://127.0.0.1:9501/">
+                                </div>
+                                <br>
+
+                                <br>
+                                <br>
+                                <form class="layui-form" action="">
+                                    <h2 id="header-options" lay-toc="{hot: true}">请求头参数</h2>
+                                    <div>
+                                        <table class="layui-table" >
+                                            <thead>
+                                            <tr>
+                                                <th>字段</th>
+                                                <th>参数值</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="doc-header-param">
+                                            <tr align="center"><td colspan="2">暂无参数</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <br>
+                                    <br>
+                                    <h2 id="body-options" lay-toc="{hot: true}">请求体参数</h2>
+                                    <div>
+                                        <table class="layui-table" >
+                                            <thead>
+                                            <tr>
+                                                <th>字段</th>
+                                                <th>参数值</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="doc-body-param">
+                                            <tr align="center"><td colspan="2">暂无参数</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div id="example-div" style="padding: 10px; background: #f9f8f8; margin-top: 50px; display: none;">
+                                        <div id="example-status" style="margin-bottom: 5px;">
+                                            <button onclick="responseDescription()"  class="btn btn-primary btn-w-md" type="button">请求成功 200 OK</button>
+                                        </div>
+
+                                        <pre id="example"></pre>
+                                    </div>
+
+                                    <div style="text-align: center; margin-top: 80px;">
+                                        <button type="button" class="btn btn-success" lay-submit lay-filter="debug">立即调试</button>
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
-
-                <div class="card-body">
-                    <h5>请求主体参数</h5>
-                    <div class="tab-content" style="padding: 0px;">
-                        <table class="table table-bordered" data-type="body">
-                            <thead>
-                            <tr>
-                                <th>字段</th>
-                                <th>字段值</th>
-                            </tr>
-                            </thead>
-                            <tbody id="bodyParam">
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                <!--返回示例值-->
-                <div class="card-body">
-                    <div class="tab-content" style="padding: 0px;" >
-                        <pre id="example"></pre>
-                    </div>
-                    <div class="tab-content" style="padding: 0px; text-align: center;" >
-                        <button class="btn btn-primary btn-w-md" type="button" onclick="ondebug()">立即调试<div></div></button>
-                    </div>
-
-                </div>
-
-
             </div>
         </div>
 
     </div>
 
 </div>
-
-<script type="text/javascript" src="/apiDoc/js/jquery.min.js"></script>
-<script type="text/javascript" src="/apiDoc/js/bootstrap.min.js"></script>
-<!--消息提示-->
-<script src="/apiDoc/js/bootstrap-notify.min.js"></script>
-<script type="text/javascript" src="/apiDoc/js/lightyear.js"></script>
-<script type="text/javascript" src="/apiDoc/js/main.min.js"></script>
-<script type="text/javascript" src="/apiDoc/js/jquery.json-viewer.js"></script>
-<script type="text/javascript" src="/apiDoc/js/tool.js"></script>
+<script type="text/javascript" src="js/layer/layui.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.json-viewer.js"></script>
 <script>
-    console.log(navigator.userAgent);
-    $('#apiTitle').html(opener.docData.data.title+'  '+$_GET['method']);
-    rendeParam();
-    console.log(opener.docData);
-    function rendeParam(){
-        var location = window.location.href;
-        location = location.split(window.location.pathname)[0];
-        $('#url').val(location+'/'+opener.docData.data.version+opener.docData.data.uri);
-        var paramHtml = '';
-        var method = $_GET['method'];
-        var param = opener.docData.data.param[method];
-        for(var i in param){
-            if(param[i]['type'] == '{File}'){
-                paramHtml += '<tr><td><input placeholder="输入参数名称" type="text" class="body-param-key" value="'+param[i]['field']+'"></td><td><input placeholder="输入参数值" type="file" name="'+param[i]['field']+'" class="body-param-val inputfile" value=""></td></tr>';
-            }else{
-                paramHtml += '<tr><td><input placeholder="输入参数名称" type="text" class="body-param-key" value="'+param[i]['field']+'"></td><td><input placeholder="输入参数值" type="text" class="body-param-val" value=""></td></tr>';
-            }
+    window.responseJson = {};
+    ready(function() {
+        layui.use(['zhanshop'], function () {
+            var zhanshop = layui.zhanshop;
+            var inputType = 'text';
 
-        }
-        $('#bodyParam').html(paramHtml);
-    }
+            var debug = {
+                renderTile : function (url) {
+                    $('#server-url').val(url);
+                    $('#request-method').html(zhanshop.getParam('method').toUpperCase());
+                    $('#request-method').addClass('btn-method-'+zhanshop.getParam('method'));
+                },
+                renderHeaderParam : function (header) {
+                    var docHeaderParam = '';
+                    for(var i in header){
+                        var required = '';
+                        if(header[i]['required']) required = ' lay-verify="required" ';
+                        docHeaderParam += '<tr><td width="20%">'+header[i]['name']+'</td><td><input style="border: none;" type="text" name="header['+header[i]['name']+']" placeholder="请输入'+header[i]['name']+'的值" '+required+' autocomplete="off" class="layui-input" value=""></td></tr>';
+                    }
+                    if(docHeaderParam) $('#doc-header-param').html(docHeaderParam);
+                },
+                renderBodyParam : function (body) {
+                    var docBodyParam = '';
+                    for(var i in body){
+                        var required = '';
+                        if(body[i]['verify']) verify = ' lay-verify="'+body[i]['verify']+'" ';
+                        if(body[i]['type'] == 'file') inputType = 'file';
+                        if(body[i]['type'] == 'array' || body[i]['type'] == 'object'){
+                            docBodyParam += '<tr><td  width="20%">'+body[i]['name']+'</td><td><textarea style="border: none;" type="'+inputType+'" id="zhanshop-file-'+body[i]['name']+'" name="body['+body[i]['name']+']" '+required+' placeholder="请输入格式为'+body[i]['type']+'的'+body[i]['name']+'的值'+'" autocomplete="off" class="layui-textarea" value="'+(body[i]['default'] ?? '')+'"></textarea></td></tr>';
+                        }else{
+                            docBodyParam += '<tr><td  width="20%">'+body[i]['name']+'</td><td><input style="border: none;" type="'+inputType+'" id="zhanshop-file-'+body[i]['name']+'" name="body['+body[i]['name']+']" '+required+' placeholder="请输入格式为'+body[i]['type']+'的'+body[i]['name']+'的值'+'" autocomplete="off" class="layui-input" value="'+(body[i]['default'] ?? '')+'"></td></tr>';
+                        }
 
-    function ondebug(){
-        // header是自身控制的
-        var headers = {};
-        var body = new FormData();
-        $('.header-param-key').each(function(index){
-            if(this.value){
-                headers[this.value] = $('.header-param-val').eq(index).val();
-            }
-        });
+                    }
+                    if(docBodyParam) $('#doc-body-param').html(docBodyParam);
+                },
 
-        $('.body-param-key').each(function(index){
-            if(this.value){
-                body.append(this.value, $('.body-param-val').eq(index).val());
-            }
-        });
-        var inputFile = document.getElementsByClassName('inputfile');
-        for(i in inputFile){
-            var mythis = inputFile[i];
-            if(inputFile[i]['files']){
-                body.append(mythis['name'],mythis.files[0]);
-            }
-        }
-        // 使用表单上传
+                requestDebugFile: function (url, method, body, header) {
+                    var formData = new FormData();
+                    var names = {};
+                    $("input[type=file]").each(function () {
+                        var name = $(this).attr('name');
+                        if(name){
+                            var keys = name.split('[');
+                            if(keys.length == 2){
+                                name = keys[1].split(']')[0];
+                                names[name] = 1;
+                                formData.append(name, $(this)[0]['files'][0]);
+                            }
+                        }
+                    });
 
-        lightyear.loading('show');
-        var processData = false;
-        var contentType = false;
+                    for(var i in body){
+                        if(names[i] == undefined){
+                            formData.append(i, body[i]);
+                            names[i] = 1;
+                        }
+                    }
 
-        var apiUrl = $("#url").val();
+                    var request = $.ajax({
+                        dataType:'json',
+                        cache:false,//上传文件不要缓存
+                        processData:false,//告诉JQuery不要去处理发送的数据
+                        contentType:false,//告诉JQuery不要去设置Content-Type请求头
+                        type: "POST",
+                        url: url,
+                        method: method,
+                        timeout: 30000, // 超时时间设置，单位毫秒
+                        data: formData,
+                        headers: header,
+                    });
+                    request.done(function(res) {
+                        window.responseJson = res.data;
+                        $('#example').jsonViewer(res);
+                        $("#example-div").css('display', '');
+                        $("#example-status").html('<button onclick="responseDescription()" class="btn btn-primary" type="button">请求成功 200 OK</button>');
+                        $('html,body').animate({
+                            scrollTop : $('#example-status').offset().top
+                        }, 300);
+                        zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method":"success", 'uri': zhanshop.getParam('uri'), 'version': zhanshop.getParam('version'), 'method' : zhanshop.getParam('method'), 'protocol': 'http', 'success': res}, {}, function(res){}, function (xhr) {
 
-        if($_GET['method'] == 'GET' || $_GET['method'] == 'PUT' || $_GET['method'] == 'DELETE'){
-            apiUrl += '?';
-            $('.body-param-key').each(function(index){
-                if(this.value){
-                    apiUrl += this.value+'='+$('.body-param-val').eq(index).val()+'&';
+                        }, false);
+                    });
+                    request.fail(function(xhr) {
+                        $('#example').jsonViewer(xhr.responseJSON ? xhr.responseJSON : xhr.responseText);
+                        $("#example-div").css('display', '');
+                        $("#example-status").html('<button class="btn btn-danger" type="button">请求失败 '+xhr.status+' '+xhr.statusText+' </button>');
+                        $('html,body').animate({
+                            scrollTop : $('#example-status').offset().top
+                        }, 300);
+                        zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method":"failure", 'uri': zhanshop.getParam('uri'), 'version': zhanshop.getParam('version'), 'method' : zhanshop.getParam('method'), 'protocol': 'http', 'failure': res}, {}, function(res){}, function (xhr) {
+
+                        }, false);
+                    });
+                    return false;
+
+                },
+                requestDebug: function (url, data, method) {
+                    var header = {};
+                    var body = {};
+                    for(var i in data){
+                        if(data[i] == '') continue;
+                        var keys = i.split('[');
+                        if(keys.length < 2){
+                            alert(i);
+                        }
+                        if(keys[0] == 'header'){
+                            header[keys[1].split(']')[0]] = data[i];
+                        }else{
+                            var jsonData = null;
+                            try{
+                                jsonData = JSON.parse(data[i]);
+                                console.log(jsonData);
+                            }catch (e) {
+                                jsonData = data[i];
+                            }
+                            body[keys[1].split(']')[0]] = jsonData;
+                        }
+                    }
+                    if(inputType == 'file'){
+                        return debug.requestDebugFile(url, method, body, header);
+                    }
+                    // 这种请求适用于非json的请求
+                    zhanshop.ajax(url, method, body, header, function(res){
+                        window.responseJson = res.data;
+                        // 请求成功
+                        $('#example').jsonViewer(res);
+                        $("#example-div").css('display', '');
+                        $("#example-status").html('<button onclick="responseDescription()" class="btn btn-primary" type="button">请求成功 200 OK</button>');
+                        $('html,body').animate({
+                            scrollTop : $('#example-status').offset().top
+                        }, 300);
+                        zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method":"success", 'uri': zhanshop.getParam('uri'), 'version': zhanshop.getParam('version'), 'method' : zhanshop.getParam('method'), 'protocol': 'http', 'body': res}, {"doc_id":zhanshop.getcookie('doc_id')}, function(res){}, function (xhr) {
+
+                        }, false);
+                        //$(document).animate({scrollTop:$('#example-status').offset().top}, 300);
+                    }, function (xhr) {
+                        if(xhr.responseJSON){
+                            zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method":"failure", 'uri': zhanshop.getParam('uri'), 'version': zhanshop.getParam('version'), 'method' : zhanshop.getParam('method'), 'protocol': 'http', 'body': xhr.responseJSON}, {"doc_id":zhanshop.getcookie('doc_id')}, function(res){}, function (xhr) {
+
+                            }, false);
+                        }
+
+                        $('#example').jsonViewer(xhr.responseJSON ? xhr.responseJSON : xhr.responseText);
+                        $("#example-div").css('display', '');
+                        $("#example-status").html('<button class="btn btn-danger" type="button">请求失败 '+xhr.status+' '+xhr.statusText+' </button>');
+                        $('html,body').animate({
+                            scrollTop : $('#example-status').offset().top
+                        }, 300);
+                    });
                 }
-            });
-            body = {};
-            processData = true;
-            contentType = true;
-        }
-        console.log(headers);
-        var request = $.ajax({
-            url: apiUrl,
-            method: $_GET['method'],
-            timeout: 30000, // 超时时间设置，单位毫秒
-            headers: headers,
-            data: body,
-            processData: processData,
-            contentType: contentType,
-            //headers: headers
-        });
 
-        request.done(function(res) {
-            lightyear.loading('hide');
-            $('#example').css('display', '');
-            if(res.errorcode == undefined){
-                notifyError(res);
-            }else if(res.errorcode != 0){
-                notifyError(res.errormsg);
-            }
-            $('#example').jsonViewer(res);
-
-            // 更新成功文档
-            var requestData = {
-                'method' : 'updateDoc',
-                'uri' : opener.docData.data.uri,
-                'version' : opener.docData.data.version,
-                'http_code' : '200',
-                'result' : JSON.stringify(res),
-                'request_method' : $_GET['method'],
-            };
-            ajax_request('./index.php', 'POST', requestData, function(res){
-            });
-        });
-
-        request.fail(function(jqXHR) {
-            console.log(jqXHR);
-            lightyear.loading('hide');
-            $('#example').css('display', '');
-            if(jqXHR.responseJSON){
-                notifyError(jqXHR.responseJSON.errormsg);
-                $('#example').jsonViewer(jqXHR.responseJSON);
-            }else{
-                notifyError(jqXHR.responseText);
-            }
-            var requestData = {
-                'method' : 'updateDoc',
-                'uri' : opener.docData.data.uri,
-                'version' : opener.docData.data.version,
-                'http_code' : '500',
-                'result' : jqXHR.responseText,
-                'request_method' : $_GET['method'],
             };
 
-            // 更新错误文档
-            ajax_request('./index.php', 'POST', requestData, function(res){
+            zhanshop.ajax(API_ADDRESS+'/v1/api.doc', 'POST', {"_method":"api", 'uri': zhanshop.getParam('uri'), 'method' : zhanshop.getParam('method')}, {}, function(res){
+                var APIHOST = zhanshop.getcookie('APIHOST') ? zhanshop.getCookie('APIHOST') : API_ADDRESS;
+                debug.renderTile(APIHOST+res.data.uri);
+                debug.renderHeaderParam(res.data.header);
+                debug.renderBodyParam(res.data.param);
+
+                var form = layui.form;
+                // 提交事件
+                form.on('submit(debug)', function(data){
+                    var field = data.field; // 获取表单字段值
+                    debug.requestDebug($('#server-url').val(), field, zhanshop.getParam('method')); // 请求调试
+                    return false;
+                });
+
+            },function(xhr){
+                return zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             });
+
+            window.responseDescription = function (){
+                layer.open({
+                    skin: 'layer-zhanshop',
+                    type: 2, // page 层类型
+                    area: ['100%', '100%'],
+                    title: '响应描述',
+                    shade: 0.3, // 遮罩透明度
+                    shadeClose: true, // 点击遮罩区域，关闭弹层
+                    maxmin: true, // 允许全屏最小化
+                    anim: 0, // 0-6 的动画形式，-1 不开启
+                    content: './http-response.html'
+                });
+            };
         });
-    }
+    });
 </script>
 </body>
 </html>

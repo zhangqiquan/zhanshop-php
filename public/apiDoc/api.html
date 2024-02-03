@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API详情</title>
+    <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+    <link href="/admin/js/layer/css/layui.css" rel="stylesheet">
+    <link href="/admin/css/apiDoc.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="view">
+    <!---api地址 标题 多版本切换-->
+    <div class="apidoc-title">
+        <h4 class="uri-title"><button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="api-method">{{d.method}}</button>&nbsp; <span id="api-uri">{{d.uri}}</span> &nbsp;&nbsp;(<span id="api-title">{{d.title}}</span>)</h4>
+    </div>
+
+    <div class="apidoc-description">
+        <div class="description" id="description">{{d.description}}</div>
+        <div class="debug">
+            <button onclick="onlineDebug()" style="float: right;display: block;width: 100px;" class="layui-btn" type="button">在线调试</button>
+        </div>
+    </div>
+
+    <!---api请求方式tab-->
+    <div class="layui-tab layui-tab-brief request-method">
+        <div class="layui-tab-content"  id="requestContent">
+            <div class="layui-tab-item layui-show">
+                <h2 class="request-param-title">请求头参数</h2>
+                <!---api请求头参数表格-->
+                <table class="layui-hide" data-type="tree-table" id="{{d.method}}-request-head" data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"required","title":"必填","width":170},{"field":"default","title":"默认值","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(d.header)}}' data-nodata="无请求参数"></table>
+
+                <h2 class="request-param-title">请求参数</h2>
+                <!---api请求参数表格-->
+                <table class="layui-hide" data-type="tree-table" id="{{d.method}}-request-param" data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"required","title":"必填","width":170},{"field":"default","title":"默认值","width":250},{"field":"description","title":"描述"}]' data-item='{{json_encode(d.param)}}' data-nodata="无请求参数"></table>
+
+                <h2 class="request-param-title">响应参数</h2>
+                <table class="layui-hide" data-type="tree-table" id="{{d.method}}-response-param"  data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(d.success)}}' data-nodata="无响应参数"></table>
+
+
+                <h2 class="request-param-title">错误说明</h2>
+                <table class="layui-hide" data-type="tree-table" id="{{d.method}}-error"  data-field='[{"field":"code","title":"错误代码","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(d.error)}}' data-nodata="无错误说明"></table>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!---api响应示例json格式化-->
+
+<!---api异常示例json格式化-->
+
+<!---api错误码解释表格-->
+<div class="flow-demo" id="ID-flow-demo-manual"></div>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<script type="text/javascript" src="./js/layer/layui.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.json-viewer.js"></script>
+<script>
+    window.viewData = null;
+    window.selectVersion = null;
+    window.selectMethod = null;
+    ready(function() {
+        layui.use(['zhanshop', 'table'], function(){
+            // 无法重新渲染了 因为它已经被替换了一回
+            layui.zhanshop.view(API_ADDRESS + '/v1/api.doc', '#view', function(res){
+                 viewData = res;
+
+                $(".layui-hide").each(function (index) {
+                    var item = $(this).data('item');
+                    var type = $(this).data('type');
+                    var field = $(this).data('field');
+                    if(type == 'tree-table'){
+                        layui.treeTable.render({
+                            elem: '#'+this.id,
+                            data: item,
+
+                            // [
+                            //     {
+                            //         "name":"000000",
+                            //         "type":4,
+                            //         "default":2,
+                            //         "description":28,
+                            //         "children":[]
+                            //     },
+                            //     {
+                            //         "name":"1111",
+                            //         "type":4,
+                            //         "default":2,
+                            //         "description":28,
+                            //         "children":[
+                            //             {"name":"2222","type":4,"default":2,"description":28, "children":[]}
+                            //         ]
+                            //     }
+                            // ],
+                            text: {none: $(this).data('nodata')},
+                            tree: {
+                                view: {
+                                    icon: ' ',
+                                    expandAllDefault: true
+                                },
+                            },
+                            cols: [field],
+                        });
+                    }else{
+                        var inst = table.render({
+                            elem: '#'+this.id,
+                            cols: [field],
+                            data: item,
+                            text: {none: $(this).data('nodata')}
+                            //skin: 'line', // 表格风格
+                            //even: true
+                        });
+                    }
+                });
+                $('.example-success').each(function () {
+                    var json = $(this).html();
+                    if(json != "" && json != "[]"){
+                        $(this).parent().parent().css('display', '');
+                        $(this).jsonViewer(JSON.parse(json));
+                    }
+                });
+
+
+            }, 'POST', {"_method":"api",  "uri" : layui.zhanshop.getParam('uri'), 'method': layui.zhanshop.getParam('method')}, {"auth": layui.zhanshop.getcookie('_auth')});
+
+            window.onlineDebug = function (){
+                // 屏幕的一半
+                open('debug.html?uri=/'+$('#api-uri').html()+'&method='+$('#api-method').html(), '接口调试', 'top=120,left=120,width='+($(window).width() * 0.9)+'px,height='+$(window).height()+'px');
+            }
+
+        });
+
+
+    });
+</script>
+</body>
+</html>

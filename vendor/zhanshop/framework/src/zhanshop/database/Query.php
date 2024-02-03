@@ -11,6 +11,7 @@ declare (strict_types=1);
 namespace zhanshop\database;
 
 use zhanshop\App;
+use zhanshop\Error;
 
 class Query
 {
@@ -53,9 +54,10 @@ class Query
         return '('.$this->builder->buildSql($this).')';
     }
 
-    public function fetchSql(string $field = "*"){
-        $this->options['field'] = $field;
-        return $this->builder->buildSql($this);
+    public function fetchSql(){
+        $this->options['field'] = '*';
+        $this->options['fetch_sql'] = true;
+        return $this;
     }
 
     /**
@@ -141,11 +143,21 @@ class Query
     }
 
     public function whereIn(string $key, array $array){
+        foreach($array as $k => $v){
+            if(is_string($v)){
+                $array[$k] = addslashes($v);
+            }
+        }
         $this->options['where']['In'][$key] = $array;
         return $this;
     }
 
     public function whereNotIn(string $key, array $array){
+        foreach($array as $k => $v){
+            if(is_string($v)){
+                $array[$k] = addslashes($v);
+            }
+        }
         $this->options['where']['NotIn'][$key] = $array;
         return $this;
     }
@@ -155,7 +167,7 @@ class Query
         return $this;
     }
 
-    public function insert(array $data, mixed $pdo = null) :float{
+    public function insert(array $data, mixed $pdo = null){
         if (!empty($data)) {
             $this->options['data'][] = $data;
             $sql = $this->builder->insert($this);
@@ -246,11 +258,21 @@ class Query
         return $data[0] ?? null;
     }
 
+    public function findOrFail(mixed $pdo = null){
+        $data = $this->find($pdo);
+        return $data ?? App::error()->setError("您所查询的数据不存在", Error::NOT_FOUND);
+    }
+
     public function select(mixed $pdo = null){
         if($this->deleteTime) $this->where([$this->deleteTime => 0]);
         $sql = $this->builder->select($this);
         $data = $this->query($sql, $this->getBind(), $pdo);
         return $data;
+    }
+
+    public function selectOrFail(mixed $pdo = null){
+        $data = $this->select($pdo);
+        return $data ? $data : App::error()->setError("您所查询的数据不存在", Error::NOT_FOUND);
     }
 
     public function finder(int $page, int $limit = 20, mixed $pdo = null){
@@ -287,17 +309,42 @@ class Query
 
 
     public function query(string $sql, array $bind = [], mixed $pdo = null){
-        $pdoPoll = DbManager::get($this->connection);
+        // // 如果是fetchSql
+        if(isset($this->options['fetch_sql'])){
+            $keys = [];
+            $vals = [];
+            foreach($bind as $k => $v){
+                $keys[] = ':'.$k;
+                $vals[] = is_string($v) ? '"'.addslashes($v).'"' : $v;
+            }
+            $sql = str_replace($keys, $vals, $sql);
+            unset($this->options['fetch_sql']);
+            return $sql;
+        }
+        $pdoPoll = App::make(DbManager::class)->get($this->connection);
         return $pdoPoll->query($sql, $bind, $pdo);
     }
 
     public function execute(string $sql, array $bind = [], bool $lastID = false, mixed $pdo = null){
-        $pdoPoll = DbManager::get($this->connection);
+        if(isset($this->options['fetch_sql'])){
+            $keys = [];
+            $vals = [];
+            foreach($bind as $k => $v){
+                $keys[] = ':'.$k;
+                $vals[] = is_string($v) ? '"'.addslashes($v).'"' : $v;
+            }
+            $sql = str_replace($keys, $vals, $sql);
+            unset($this->options['fetch_sql']);
+            return $sql;
+        }
+        // 如果是fetchSql
+
+        $pdoPoll = App::make(DbManager::class)->get($this->connection);
         return (float) $pdoPoll->execute($sql, $bind, $lastID, $pdo);
     }
 
     public function transaction($call){
-        $pdoPoll = DbManager::get($this->connection);
+        $pdoPoll = App::make(DbManager::class)->get($this->connection);
         $pdoPoll->transaction($call);
     }
 

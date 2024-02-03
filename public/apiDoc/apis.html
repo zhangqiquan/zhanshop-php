@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API组</title>
+    <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+    <link href="/admin/js/layer/css/layui.css" rel="stylesheet">
+    <link href="/admin/css/apiDoc.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="view">
+    <!---api地址 标题 多版本切换-->
+    <div class="apidoc-title">
+        <h4 class="uri-title"><span id="api-uri">{{d[0]['uri']}}</span> &nbsp;&nbsp;(<span id="api-title">{{d[0]['title']}}</span>)</h4>
+        <select id="example-version" class="layui-form versions" name="example-select" size="1">
+            {{#  arr_foreach(d[0].versions, function(k1, v1){ }}
+            {{#  if(v1 == d[0].version){ }}
+            <option selected value="{{v1}}">{{v1}}</option>
+            {{# }else{ }}
+            <option value="{{v1}}">{{v1}}</option>
+            {{#  } }}
+            {{#  }); }}
+        </select>
+    </div>
+
+    <div class="apidoc-description">
+        <div class="description" id="description">{{d[0]['description']}}</div>
+        <div class="debug">
+            <button onclick="onlineDebug()" style="float: right;display: block;width: 100px;" class="layui-btn" type="button">在线调试</button>
+        </div>
+    </div>
+
+    <!---api请求方式tab-->
+    <div class="layui-tab layui-tab-brief request-method">
+        <ul class="layui-tab-title" id="requestMethod">
+            {{#  arr_foreach(d, function(k1, v1){ }}
+            {{#  if(k1 == 0){ }}
+            <li class="layui-this" id="requestMethod-{{v1.method}}" onclick="switchMethod({{k1}})">{{v1.method}}</li>
+            {{# }else{ }}
+            <li id="requestMethod-{{v1.method}}" onclick="switchMethod({{k1}})">{{v1.method}}</li>
+            {{#  } }}
+            {{#  }); }}
+        </ul>
+        <div class="layui-tab-content"  id="requestContent">
+            {{#  arr_foreach(d, function(k1, v1){ }}
+            <div class="layui-tab-item">
+                <h2 class="request-param-title">请求头参数</h2>
+                <!---api请求头参数表格-->
+                <table class="layui-hide" data-type="tree-table" id="{{v1.method}}-request-head" data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"required","title":"必填","width":170},{"field":"default","title":"默认值","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(v1.header)}}' data-nodata="无请求参数"></table>
+
+                <h2 class="request-param-title">请求参数</h2>
+                <!---api请求参数表格-->
+                <table class="layui-hide" data-type="tree-table" id="{{v1.method}}-request-param" data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"required","title":"必填","width":170},{"field":"default","title":"默认值","width":250},{"field":"description","title":"描述"}]' data-item='{{json_encode(v1.param)}}' data-nodata="无请求参数"></table>
+
+                <div>
+                    {{v1.detail}}
+                </div>
+
+                <h2 class="request-param-title">响应参数</h2>
+                <table class="layui-hide" data-type="tree-table" id="{{v1.method}}-response-param"  data-field='[{"field":"name","title":"字段","width":170},{"field":"type","title":"类型","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(v1.success)}}' data-nodata="无响应参数"></table>
+
+                <!---api请求示例-->
+                <h2 class="request-param-title ">请求示例</h2>
+                <div class="layui-tab layui-tab-card request-example">
+                    <button class="layui-btn layui-btn-primary layui-border onlineCodeDebug" onclick="onlineCodeDebug()">运行代码</button>
+                    <!--                    <button class onclick="onlineCodeDebug()" style="z-index:999;position: absolute; right:0px;display: block; width: 120px;" class="btn btn btn-default btn-w-md" type="button">运行代码</button>-->
+                    <ul class="layui-tab-title" id="sample-language-code">
+                        <li class="layui-this">vue3</li>
+                        <li>jquery</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <iframe src="" class="sample-code" id="sample-code"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="request-param-title">错误说明</h2>
+                <table class="layui-hide" data-type="tree-table" id="{{v1.method}}-error"  data-field='[{"field":"code","title":"错误代码","width":170},{"field":"description","title":"描述"}]' data-item='{{json_encode(v1.error)}}' data-nodata="无错误说明"></table>
+
+                <div style="display: none">
+                    <!---api响应示例json-->
+                    <h2 class="request-param-title" style="margin-top: 55px;">响应示例</h2>
+                    <div>
+                        <pre class="layui-code example-success">{{json_encode(v1.response)}}</pre>
+                    </div>
+                </div>
+
+            </div>
+            {{#  }); }}
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!---api响应示例json格式化-->
+
+<!---api异常示例json格式化-->
+
+<!---api错误码解释表格-->
+<div class="flow-demo" id="ID-flow-demo-manual"></div>
+
+<!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+<script type="text/javascript" src="./js/layer/layui.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="/admin/js/jquery.json-viewer.js"></script>
+<!--<script type="text/javascript" src="/admin/js/apidoc.js"></script>-->
+<script>
+    window.viewData = null;
+    window.selectVersion = null;
+    window.indexMethod = 0;
+    ready(function() {
+        layui.use(['zhanshop', 'table'], function(){
+            // 无法重新渲染了 因为它已经被替换了一回
+            layui.zhanshop.view(API_ADDRESS + '/v1/api.doc', '#view', function(res){
+                viewData = res;
+                $("#sample-code").attr('src', '/admin/example/vue3.html');
+                $("#requestContent").find('.layui-tab-item').eq(0).addClass('layui-show');
+
+                $("#sample-language-code li").click(function () {
+                    $("#sample-code").prop('src', '/admin/example/'+$(this).html()+'.html');
+                });
+
+                $(".layui-hide").each(function (index) {
+                    var item = $(this).data('item');
+                    var type = $(this).data('type');
+                    var field = $(this).data('field');
+                    if(type == 'tree-table'){
+                        layui.treeTable.render({
+                            elem: '#'+this.id,
+                            data: item,
+                            text: {none: $(this).data('nodata')},
+                            tree: {
+                                view: {
+                                    icon: ' ',
+                                    expandAllDefault: true
+                                },
+                            },
+                            cols: [field],
+                        });
+                    }else{
+                        var inst = table.render({
+                            elem: '#'+this.id,
+                            cols: [field],
+                            data: item,
+                            text: {none: $(this).data('nodata')}
+                            //skin: 'line', // 表格风格
+                            //even: true
+                        });
+                    }
+                });
+                $('.example-success').each(function () {
+                    var json = $(this).html();
+                    if(json != "" && json != "[]"){
+                        $(this).parent().parent().css('display', '');
+                        $(this).jsonViewer(JSON.parse(json));
+                    }
+                });
+
+                $("#example-version").change(function () {
+                    var urlSuffix = 'method='+$("#requestMethod").find('.layui-this').html()+'&';
+                    urlSuffix += 'version='+$(this).val();
+                    var baseUrls = parent.window.location.href.split("/#/");
+                    var paths = baseUrls[1].split("?");
+                    var url = baseUrls[0]+'/#/'+paths[0]+'?'+urlSuffix;
+                    parent.window.history.pushState({}, this.outerText, url);
+                    layer.open({
+                        type: 2,
+                        title: "历史版本", // 不显示标题栏
+                        area: ['100%', '100%'],
+                        content: './api.html?uri='+$(this).val()+'/'+layui.zhanshop.getParam('_id')+'&method='+$("#requestMethod").find('.layui-this').html()
+                    });
+                    $(this).val(viewData[indexMethod]['version']);
+                });
+
+            }, 'POST', {"_method":"apis",  "uri" : layui.zhanshop.getParam('_id')}, {"auth": layui.zhanshop.getcookie('_auth')});
+
+
+
+            var table = layui.table;
+
+            window.onlineDebug = function (){
+                // 屏幕的一半
+                open('debug.html?uri='+$('#api-uri').html()+'&method='+$('#requestMethod .layui-this').html(), '接口调试', 'top=120,left=120,width='+($(window).width() * 0.9)+'px,height='+$(window).height()+'px');
+            }
+
+            window.onlineCodeDebug = function () {
+                layer.open({
+                    skin: 'layer-zhanshop',
+                    type: 2, // page 层类型
+                    area: ['100%', '100%'],
+                    title: '运行代码',
+                    shade: 0.3, // 遮罩透明度
+                    shadeClose: true, // 点击遮罩区域，关闭弹层
+                    maxmin: true, // 允许全屏最小化
+                    anim: 0, // 0-6 的动画形式，-1 不开启
+                    content: '/admin/example/idea.html'
+                });
+            }
+
+            window.switchMethod = function (key){
+                //<h4 className="uri-title"><span id="api-uri">{{d[0]['uri']}}</span> &nbsp;&nbsp;(<span id="api-title">{{d[0]['title']}}</span>)</h4>
+                $("#api-uri").html(viewData[key]['uri']);
+                $("#api-title").html(viewData[key]['title']);
+                $('#description').html(viewData[key]['description']);
+                var versions = viewData[key]['versions'];
+                var versionsHtml = '';
+                for(var i in versions){
+                    var select = '';
+                    if(versions[i] == viewData[key]['version']) select = ' selected ';
+                    versionsHtml += '<option value="'+versions[i]+'"'+select+'>'+versions[i]+'</option>';
+                }
+                $('#example-version').html(versionsHtml);
+
+                var baseUrls = parent.window.location.href.split("/#/");
+                var paths = baseUrls[1].split("?");
+                var url = baseUrls[0]+'/#/'+paths[0]+'?method='+$("#requestMethod").find('li').eq(key).html();
+                if(selectVersion){
+                    url += '&version='+selectVersion;
+                }
+                parent.window.history.pushState({}, this.outerText, url);
+                indexMethod = key;
+            }
+
+            // 带入访问入口参数
+            var urlSuffix = '';
+            var urlVersion = layui.zhanshop.getParam('version');
+            if(urlVersion && typeof urlVersion !== 'string'){
+                urlVersion = '';
+            }
+            var urlMethod = layui.zhanshop.getParam('method');
+            if(urlMethod && typeof urlMethod !== 'string'){
+                urlMethod = '';
+            }
+
+            if(urlMethod){
+                urlSuffix += 'method='+urlMethod+'&';
+            }
+            if(urlVersion){
+                urlSuffix += 'version='+urlVersion+'&';
+            }
+
+            urlSuffix = urlSuffix.substring(0, urlSuffix.length-1)
+            if(urlSuffix){
+                var baseUrls = parent.window.location.href.split("/#/");
+                var paths = baseUrls[1].split("?");
+                var url = baseUrls[0]+'/#/'+paths[0]+'?'+urlSuffix;
+                parent.window.history.pushState({}, this.outerText, url);
+            }
+        });
+
+
+    });
+</script>
+</body>
+</html>

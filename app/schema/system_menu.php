@@ -73,6 +73,7 @@ return array (
       'table' => '数据表格',
       'treetable' => '树形表格',
       'config' => '配置页面',
+      'simple-list' => '简单列表',
       'custom' => '自定义页',
     ),
     'in_list' => true,

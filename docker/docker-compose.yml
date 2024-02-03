@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  zhanshop-device:
+    container_name: zhanshop-php
+    hostname: zhanshop-php
+    image: zhanshop/php:8.3-ubuntu
+    privileged: true
+    volumes:
+      - ../:/var/www
+    ports:
+      - "6201:6201/tcp"
+    environment:
+      MODE: standalone
+      APP_ENV: dev
+    command: ["php", "/var/www/cmd.php", "server", "start", "false"]
+    restart: always
+    networks:
+      - zhanshop-network
+
+  zhanshop-mysql:
+    container_name: zhanshop-mysql
+    hostname: zhanshop-mysql
+    image: mysql
+    ports:
+      - "3306:3306/tcp"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    restart: always
+    networks:
+      - zhanshop-network
+
+  zhanshop-redis:
+    container_name: zhanshop-redis
+    hostname: zhanshop-redis
+    image: redis
+    ports:
+      - "6379:6379/tcp"
+    restart: always
+    networks:
+      - zhanshop-network
+
+networks:
+  zhanshop-network:
+    driver: bridge

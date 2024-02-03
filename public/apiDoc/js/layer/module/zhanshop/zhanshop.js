@@ -2,6 +2,35 @@ layui.define(['laytpl'], function (exports) {
     window.$ = layui.$;
     window.laytpl=layui.laytpl;
 
+    window.previewPic = function (obj) {
+        layer.photos({
+            "shade": 0.2,
+            photos: {
+                "title": "图片预览",
+                "start": 0,
+                "data": [
+                    {
+                        "alt": $(obj).attr('alt'),
+                        "pid": $(obj).data('id'),
+                        "src": obj.src,
+                    }
+                ]
+            },
+            //hideFooter: true // 是否隐藏底部栏 --- 2.8+
+        });
+    }
+
+    window.previewPics = function (objs) {
+        layer.photos({
+            "shade": 0.2,
+            photos: {
+                "title": "图片预览",
+                "start": 0,
+                "data": objs
+            },
+        });
+    }
+
     var zhanshop = {
         /**
          * 加载层
@@ -50,6 +79,7 @@ layui.define(['laytpl'], function (exports) {
             return layer.alert(msg, {
                 title: title,
                 icon: icon,
+                zIndex: 999999999,
                 skin: 'lyear-skin-'+type,
                 time: time,
                 anim: anim,
@@ -91,7 +121,7 @@ layui.define(['laytpl'], function (exports) {
          * @param offset 坐标支持auto,r,b,l,t,lt,rt
          * @param area
          */
-        iframe: function(title, page, skin = 'layui-layer-molv', offset = 'auto', area = ['99.2%', '98%']){
+        iframe: function(title, page, skin = 'layui-layer-molv', offset = 'auto', area = ['98.2%', '96%']){
             layer.open({
                 skin: skin,
                 type: 2,
@@ -115,7 +145,8 @@ layui.define(['laytpl'], function (exports) {
                     }
                 });
             }, function(xhr){
-                zhanshop.alert('模板渲染失败:'+(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText), 'danger', function(){
+                //if(xhr.status == 404) return window.location = 'about:blank';
+                zhanshop.alert('页面渲染失败: '+(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText), 'danger', function(){
                     window.location.reload();
                 });
             });
@@ -179,19 +210,20 @@ layui.define(['laytpl'], function (exports) {
          * @param errorCallback 失败回调
          * @param load 是否显示load状态
          */
-        ajax: function (url, method, data, header, successCallback, errorCallback, isAuth = true){
-            var load = true;
+        ajax: function (url, method, data, header, successCallback, errorCallback, load = true, jsonRequest = true){
             var index;
             if(load != false){
                 if(load == true) load = '正在请求后端数据...';
                 index = this.loadding(load, 0.3);
             }
-            if(isAuth && data['_auth'] == undefined) data['_auth'] = this.getcookie('_auth');
+            //header['token'] = this.getcookie('token');
             var reqdata = data;
-            var contentType = '';
-            if(method != 'GET'){
+            var contentType = 'application/x-www-form-urlencoded;charset:utf-8';
+            var dataType = '';
+            if(method == 'POST' && jsonRequest){
                 reqdata = JSON.stringify(data);
                 contentType = 'application/json';
+                dataType = 'json';
             }
             var request = $.ajax({
                 url: url,
@@ -199,7 +231,7 @@ layui.define(['laytpl'], function (exports) {
                 timeout: 30000, // 超时时间设置，单位毫秒
                 data: reqdata,
                 contentType: contentType,
-                dataType:"json",
+                dataType: dataType,
                 headers: header,
             });
             request.done(function(res) {
@@ -209,12 +241,7 @@ layui.define(['laytpl'], function (exports) {
             request.fail(function(jqXHR) {
                 layer.close(index);
                 console.error(jqXHR);
-                if(jqXHR.readyState < 4){
-                    return zhanshop.alert('网络异常,请刷新重新加载', 'danger', function(){window.location.reload();});
-                }else if(jqXHR.statusText == 'timeout' || jqXHR.status == 0){
-                    return zhanshop.alert('请求超时,请刷新重新加载', 'danger', function(){window.location.reload();});
-                }
-                errorCallback(jqXHR);
+                return errorCallback(jqXHR);
             });
         },
         /**
@@ -272,12 +299,19 @@ layui.define(['laytpl'], function (exports) {
             skin: 'line',
             size: 'sm',
             limits: [10,20,50,100,200],
+            page: {
+                groups : 5,
+                first : false,
+                last : false,
+                layout: ['prev', 'page', 'next', 'limit', 'count']
+            },
             lineStyle: '',
             data: null,
             cellMinWidth: '60',
             height: 'full-150', // 高度
             elem: '#laytable', // 表格载体dom
             toolbar: null, // 头部左侧工具栏
+            rowbar: null, // 行级菜单
             defaultToolbar: ['filter', 'print', 'exports',{
                 title: '刷新页面'
                 ,layEvent: 'reload'
@@ -291,12 +325,19 @@ layui.define(['laytpl'], function (exports) {
             titleName: null,
             pidName: null,
             searchPage: null,
+            treeCustomName: {
+                'id': 'id',
+                'name': 'title',
+                'pid': 'parent_id',
+                'isParent': 'is_parent',
+                'children': 'children',
+            },
             search: function(){
                 console.log(111);
             },
             render: function(){
             },
-            laycols: function(){
+            laycols: function(cols){
             },
             formatData: function(){
             },
@@ -333,7 +374,31 @@ layui.define(['laytpl'], function (exports) {
             }catch (e) {
                 return {};
             }
+        },
+        /**
+         * url解析get参数
+         * @param str
+         * @returns {{}|*|string}
+         */
+        parseStr: function (str) {
+            var u = str.split("?"); //以？为分隔符把url转换成字符串数组
+            try {
+                if (typeof(u[1]) == "string") {
+                    u = u[1].split("&"); //同上
+                    var get = {};
+                    for (var i in u) {
+                        var j = u[i].split("="); //同上
+                        get[j[0]] = j[1];
+                    }
+                    return get;
+                } else {
+                    return {};
+                }
+            }catch (e) {
+                return {};
+            }
         }
+
     };
     exports('zhanshop', zhanshop);//导出
 });

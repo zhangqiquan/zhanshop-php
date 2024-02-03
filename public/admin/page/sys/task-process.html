@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<pre id="prelog"></pre>
+<script></script>
+<script type="text/javascript" src="../../js/layer/layui.js"></script>
+<script>
+    ready(function() {
+        layui.use(['zhanshop'], function(){
+            var menuId = parent.layui.zhanshop.getParam('_id');
+            var id = layui.zhanshop.getParam('id');
+            var submitData = {"id": id, "sline" :0};
+            submitData['_method'] = 'process';
+            layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', submitData, {}, function(res){
+                $("#prelog").append(res.data.body);
+                window.startLine = res.data.end;
+                window.scrollTo(0, document.body.scrollHeight);
+            },function(xhr){
+                layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
+            }, false, false);
+
+        });
+
+    });
+</script>
+</body>
+</html>

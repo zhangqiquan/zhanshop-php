@@ -547,7 +547,7 @@ layui.define(['zhanshop', 'laydate', 'inputTag', 'layCascader', 'xmSelect'], fun
                     remoteMethod: function(val, cb, show, pageIndex){
                         //val: 搜索框的内容, 不开启搜索默认为空, cb: 回调函数, show: 当前下拉框是否展开, pageIndex: 当前第几页
                         if(val == undefined) val = '';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+parent.layui.zhanshop.getParam('_id')+'&value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":20, '_method': 'xmselect'}, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+parent.layui.zhanshop.getParam('_id')+'?value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":20, '_method': 'xmselect'}, {}, function(res){
                             //console.log(res.data.data);
                             cb(res.data.list, Math.ceil(res.data.total / 10))
                         },function(xhr){
@@ -622,7 +622,7 @@ layui.define(['zhanshop', 'laydate', 'inputTag', 'layCascader', 'xmSelect'], fun
                         }
 
                         var level = node.level;
-                            layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+parent.layui.zhanshop.getParam('_id')+'&value_menu='+menuid, 'post', {"_method":'cascader', 'pid': pid},{}, function(res){
+                            layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+parent.layui.zhanshop.getParam('_id')+'?value_menu='+menuid, 'post', {"_method":'cascader', 'pid': pid},{}, function(res){
 
                                 // var nodes = Array.from({length: level + 2})
                                 //     .map(function (item) {
@@ -680,7 +680,7 @@ layui.define(['zhanshop', 'laydate', 'inputTag', 'layCascader', 'xmSelect'], fun
                     });
                 }else{
                     // 一次渲染所有
-                    layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+parent.layui.zhanshop.getParam('_id')+'&value_menu='+menuid, 'post', {"_method":'cascader'},{}, function(res){
+                    layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+parent.layui.zhanshop.getParam('_id')+'?value_menu='+menuid, 'post', {"_method":'cascader'},{}, function(res){
                         layui.layCascader({
                             elem: '#'+thisId,
                             value: thisVal,
@@ -724,7 +724,7 @@ layui.define(['zhanshop', 'laydate', 'inputTag', 'layCascader', 'xmSelect'], fun
                     remoteMethod: function(val, cb, show, pageIndex){
                         //val: 搜索框的内容, 不开启搜索默认为空, cb: 回调函数, show: 当前下拉框是否展开, pageIndex: 当前第几页
                         if(val == undefined) val = '';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+parent.layui.zhanshop.getParam('_id')+'&value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":10, '_method': 'xmselect'}, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+parent.layui.zhanshop.getParam('_id')+'?value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":10, '_method': 'xmselect'}, {}, function(res){
                             //console.log(res.data.data);
                             cb(res.data.list, Math.ceil(res.data.total / 10))
                         },function(xhr){
@@ -775,7 +775,7 @@ layui.define(['zhanshop', 'laydate', 'inputTag', 'layCascader', 'xmSelect'], fun
                     remoteMethod: function(val, cb, show, pageIndex){
                         //val: 搜索框的内容, 不开启搜索默认为空, cb: 回调函数, show: 当前下拉框是否展开, pageIndex: 当前第几页
                         if(val == undefined) val = '';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+parent.layui.zhanshop.getParam('_id')+'&value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":10, '_method': 'xmselect'}, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+parent.layui.zhanshop.getParam('_id')+'?value_menu='+menuid, 'POST', {"keyword":val, "page": pageIndex, "limit":10, '_method': 'xmselect'}, {}, function(res){
                             //console.log(res.data.data);
                             cb(res.data.list, Math.ceil(res.data.total / 10))
                         },function(xhr){

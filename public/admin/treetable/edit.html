@@ -269,6 +269,12 @@
                                             <input type="checkbox" class="inputSwitch" name="{{item.step}}[{{v.field}}]" lay-skin="switch" lay-text="开启|关闭" value="1">
                                         </div>
                                     </div>
+                                    {{#  }else if(v.input_type == 'readonly'){ }}
+                                    <div class="form-group">
+                                        <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.title}}</label>
+                                        <input type="{{v.input_type}}" readonly class="form-control" placeholder="请输入{{v.title}}" name="{{item.step}}[{{v.field}}]" id="step{{item.step}}--{{v.field}}" value="{{=v.default}}">
+
+                                    </div>
                                     {{# }else{ }}
                                     <div class="form-group">
                                         <label for="step{{item.step}}--{{v.field}}"><b class="text-pink">{{#  if(v.null == 'no'){ }}*{{#  } }}</b>{{v.label}}</label>
@@ -312,7 +318,7 @@
             window.schmas = null;
             var postData = {'_method': 'PUT'};
             postData[IDNAME] = layui.zhanshop.getParam(IDNAME);
-            layui.zhanshop.view(API_ADDRESS+'/v4.0.0/table.formfield?_id='+menuId, '#view', function(data){
+            layui.zhanshop.view(API_ADDRESS+'/v1/table.formfield?_id='+menuId, '#view', function(data){
                 schmas = data;
                 layui.zhanshopFrom.render();
                 // 表单提交的处理
@@ -322,7 +328,7 @@
                     delete submitData['select'];
                     layui.zhanshopFrom.verification(submitData, function(){
                         submitData['_method'] = 'PUT';
-                        layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/table.data?_id='+menuId+'&'+IDNAME+'='+postData[IDNAME], 'POST', submitData, {}, function(res){
+                        layui.zhanshop.ajax(API_ADDRESS+'/v1/table.data?_id='+menuId+'&'+IDNAME+'='+postData[IDNAME], 'POST', submitData, {}, function(res){
                             return layui.zhanshop.alert('编辑成功', 'success', function(){
                                 // 编辑成功更新行值
                                 // var updateData = res.data.data;

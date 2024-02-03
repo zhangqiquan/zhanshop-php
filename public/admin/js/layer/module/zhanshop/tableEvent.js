@@ -36,7 +36,7 @@ layui.define(['zhanshop'], function (exports) {
                     layui.zhanshop.table.rowObj.del();
                     // 删除当前行
                 }, function(xhr){
-                    layui.zhanshop.alert(xhr.responseText, 'danger');
+                    layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
                 });
             });
 
@@ -80,13 +80,16 @@ layui.define(['zhanshop'], function (exports) {
             };
             req[idName] = rowData[idName];
             layui.zhanshop.ajax(layui.zhanshop.table.url, 'POST', req, {}, function(data){
-
+                // 需要刷新数据
+                if(data.data){
+                    layui.zhanshop.table.rowObj.update(data.data);
+                }
             }, function(xhr){
                 layui.zhanshop.alert(xhr.responseJSON.msg ? xhr.responseJSON.msg : xhr.statusText, 'danger');
             });
         },
         open: function(obj){
-            layui.zhanshop.iframe(obj.title, obj.page+'?t='+(Date.parse(new Date()) / 1000));
+            layui.zhanshop.iframe(obj.title, obj.page+'?'+idName+'='+rowData[idName]+'&t='+(Date.parse(new Date()) / 1000));
         },
         submit: function(obj){
             this.ajax(obj);

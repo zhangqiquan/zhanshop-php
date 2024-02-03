@@ -11,6 +11,7 @@ declare (strict_types=1);
 namespace zhanshop\console;
 
 use Swoole\Coroutine;
+use zhanshop\App;
 use zhanshop\cache\CacheManager;
 use zhanshop\database\DbManager;
 
@@ -33,6 +34,8 @@ abstract class Command
      * @var bool
      */
     protected $isCoroutine = false;
+
+    protected $useLog = false;
     /**
      * 配置信息
      * @return mixed
@@ -80,13 +83,22 @@ abstract class Command
     }
 
     /**
+     * 使用到日志
+     * @return void
+     */
+    protected function useLog(){
+        $this->useLog = true;
+    }
+
+    /**
      * 是否有使用到数据库
      * @param bool $use
      * @return $this
      */
     protected function useDatabase(){
         $this->isCoroutine = true;
-        DbManager::init();
+        App::make(DbManager::class);
+        $this->useLog();
         return $this;
     }
 
@@ -97,7 +109,8 @@ abstract class Command
      */
     protected function useCache(){
         $this->isCoroutine = true;
-        CacheManager::init();
+        App::make(CacheManager::class);
+        $this->useLog();
         return $this;
     }
 
@@ -129,6 +142,8 @@ abstract class Command
      * @return void
      */
     public function initialize(){
-
+        if($this->useLog){
+            App::log(false)->execute();
+        }
     }
 }

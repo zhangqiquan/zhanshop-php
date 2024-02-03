@@ -325,7 +325,7 @@
   ready(function() {
     layui.use(['zhanshop'], function(){
 
-      layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=video&_method=uploadToken', {}, function(data){
+      layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', 'factory=qiniu&type=video&_method=uploadToken', {}, function(data){
 
         $wrap = $('#uploader'),
 
@@ -727,7 +727,7 @@
                     'thumbnail' : data.data.domain+'/'+responseDatas[i]['key']+'?vframe/jpg/offset/3',
                   });
                 }
-                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', {"system_videos":reqData},{},function(){
+                layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', {"system_videos":reqData},{},function(){
                   window.location.href=document.referrer;
                 },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
 

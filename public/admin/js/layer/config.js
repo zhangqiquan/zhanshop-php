@@ -176,6 +176,17 @@ window.laydate = function(val){
     return date(val, 'Y-m-d');
 }
 
+window.previewStrPic = function (src, height = 40){
+    try{
+        if(src){
+            return '<img onclick="previewPic(this)" src="'+src+'" height="'+height+'px" />&nbsp;';
+        }
+    }catch (e) {
+
+    }
+    return '';
+}
+
 window.previewJsonPics = function (str, height = 40){
     try{
         var imgs = JSON.parse(str);

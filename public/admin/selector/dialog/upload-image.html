@@ -329,7 +329,7 @@
     var menuId = 'SysImage';
     layui.use(['zhanshop'], function(){
 
-      layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id='+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
+      layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/'+menuId, 'POST', 'factory=qiniu&type=img&_method=uploadToken', {}, function(data){
 
 
         $wrap = $('#uploader'),
@@ -707,7 +707,7 @@
                     'original': responseDatas[i]['original']
                   });
                 }
-                layui.zhanshop.ajax(API_ADDRESS+'/v4.0.0/index.table?id=SysImage', 'POST', {"system_images":reqData},{},function(){
+                layui.zhanshop.ajax(API_ADDRESS+'/v1/index.table/SysImage', 'POST', {"system_images":reqData},{},function(){
                     window.location = document.referrer;
                 },function(xhr){return layui.zhanshop.alert(xhr.responseText, 'danger');}, '后台数据同步中...');
                 console.log(reqData);
