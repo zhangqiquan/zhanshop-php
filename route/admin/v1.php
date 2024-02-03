@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | admin/v1【系统生成】   [ 2024-01-31 15:30:02 ]
+// | admin/v1【系统生成】   [ 2024-02-03 20:30:17 ]
 // +----------------------------------------------------------------------
 // | Copyright (c) 2011~2024 zhangqiquan All rights reserved.
 // +----------------------------------------------------------------------
@@ -25,16 +25,5 @@ App::route()->group("/index", function (){
 App::route()->group("/passport", function (){
       App::route()->rule("POST", "login", [\app\api\admin\v1\controller\Passport::class, "postLogin"]);
       App::route()->rule("GET", "test", [\app\api\admin\v1\controller\Passport::class, "getTest"]);
-});
-
-App::route()->group("/proxy", function (){
-      App::route()->rule("TCP", "socks5Message", [\app\api\admin\v1\controller\Proxy::class, "socks5Message"])->extra(["tofd"]);
-      App::route()->rule("TCP", "socks5Close", [\app\api\admin\v1\controller\Proxy::class, "socks5Close"])->extra(["tofd"]);
-      App::route()->rule("TCP", "httpMessage", [\app\api\admin\v1\controller\Proxy::class, "httpMessage"])->extra(["tofd"]);
-      App::route()->rule("TCP", "httpClose", [\app\api\admin\v1\controller\Proxy::class, "httpClose"])->extra(["tofd"]);
-});
-
-App::route()->group("/ssh", function (){
-      App::route()->rule("TCP", "open", [\app\api\admin\v1\controller\Ssh::class, "open"])->extra(["tofd"]);
 });
 

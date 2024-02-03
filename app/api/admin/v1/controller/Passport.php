@@ -23,7 +23,13 @@ class Passport extends Controller
 {
     /**
      * @api POST login 后台登陆
+     * @apiParam string user_name 用户名
+     * @apiParam string password 密码
+     * @apiSuccess string user_name 用户名
+     * @apiSuccess string avatar 用户头像
+     * @apiSuccess string token 用户token
      * @apiGroup 后台管理
+     * @apiDescription 登录到后台的接口
      */
     public function postLogin(Request &$request, Response &$response){
         $data = $request->validateRule([
