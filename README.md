@@ -14,6 +14,8 @@ cd 项目根目录/docker
 
 ./start.bat #windows环境下执行启动
 ./start.sh  #linux/mac环境下执行启动
+
+更多ZHANSHOP 镜像 详情关注：https://hub.docker.com/search?q=zhanshop
 ~~~
 
 ## server组成
@@ -32,12 +34,12 @@ type 目前支持3种收集类型
 
 1：File 写入到本地,再结合阿里云/腾讯云日志收集工具将日志收集到阿里云/腾讯云日志服务 （推荐）
 
-2：Es 将日志批量写入到Elasticsearch 依赖 composer require elasticsearch/elasticsearch 需要手动安装
+2：Es 将日志批量写入到Elasticsearch 内置单独封装了es库
 
 3： 写入到数据库中
 
 ## 关于附件
-目前附件是只传七牛云的 依赖 composer require qiniu/php-sdk  并修改 config/sns.php 相应配置
+目前附件是只传七牛云的 依赖 app/library/qiniu.phar  并修改 config/sns.php 相应配置
 
 ## 环境要求
 php8.2 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，swoole5 以上的扩展支持
@@ -290,3 +292,5 @@ App::cache()->set(...);
 
 微信号： eee7798
 ![](http://test-cdn.zhanshop.cn/2023313/167870337640814238.jpg)
+
+注：文档整理得目前并不全面，有意学习研究或者外包项目着请添加微信
