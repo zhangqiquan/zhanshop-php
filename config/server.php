@@ -15,7 +15,7 @@ return [
     'servers' => [
         [
             'name'      => 'admin',
-            'mode'      => 1,
+            'mode'      => SWOOLE_BASE,
             'host'      => App::env()->get("DEVICE_HOST", "0.0.0.0"),
             'port'      => (int)App::env()->get("DEVICE_PORT", "6201"),
             'sock_type' => (int)App::env()->get("DEVICE_SOCK", "1"),

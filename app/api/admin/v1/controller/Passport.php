@@ -45,11 +45,4 @@ class Passport extends Controller
         $ret = App::make(PassportService::class)->postLogin($data);
         return $this->result($ret);
     }
-    /**
-     * @api GET test 后台登陆
-     * @apiGroup 后台管理
-     */
-    public function getTest(Request &$request, Response &$response){
-        App::make(TaskManager::class)->callback(AndroidBossExpectJobTask::class, "e8547c10", "10");
-    }
 }

@@ -3,8 +3,18 @@
 ## 简介
 zhanshop-php 是一个基于swoole高性能轻量级框架、全程非阻塞、凭借swoole底层将php阻塞函数重写进行协程非阻塞化和php自身低开销特点爆发强劲的性能，性能较传统基于 PHP-FPM 的框架有质的提升，提供超高性能的同时，也保持着极其灵活的可扩展性， 一键快速生成业务逻辑层代码骨架，只需要编写业务逻辑代码即可，根据注释配置即可生成api文档，对PDO 和 redis连接池进行了封装，同一连接内事务支持，不同连接和不同数据库服务器之前的分布式事务等功能，全程APP容器化管理，数据库操作类和缓存操作类和thinkphp类似，简单易用。
 
-## 完整项目
-https://github.com/zhangqiquan/zhanshop-php
+## 项目启动
+~~~
+cd 项目根目录/docker
+完整安装容器镜像环境：
+./composeStart.sh  #linux/mac环境下执行
+./composeStart.bat #windows环境下执行
+
+单一项目启动容器：
+
+./start.bat #windows环境下执行启动
+./start.sh  #linux/mac环境下执行启动
+~~~
 
 ## server组成
 1. 业务层(包含控制器、service、model)
@@ -50,6 +60,7 @@ php8.2 以上版本，需要redis扩展的支持， pdo mysql 扩展的支持，
 4. 对比PHP-FPM 进程池 仅输出一个 echo 1; 在我的（本机12核，32G ubuntu22 设备上）使用ab压力测试工具吞吐量最多能达到2.8万/s
 5. 对比其他框架 thinkphp 控制器上简单返回 在我的（本机12核，32G ubuntu22 设备上）使用ab压力测试工具吞吐量最多能达到2千多/s， laravel就会更差。
 
+压测性能秒杀go、java、python一众语言和框架
 
 ## 目录结构
 ~~~
@@ -185,6 +196,27 @@ http://demo.qiyawang.com:6201/apiDoc
 
 ~~~
 
+
+## api文档以及路由生成
+~~~
+借鉴了nodejs的apidoc api注释定义语法同其一致 
+
+参考：
+/**
+ * @api POST login 后台登陆
+ * @apiHeader string token 用户token
+ * @apiParam string user_name 用户名
+ * @apiParam string password 密码
+ * @apiSuccess string user_name 用户名
+ * @apiSuccess string avatar 用户头像
+ * @apiSuccess string token 用户token
+ * @apiGroup 后台管理
+ * @apiDescription 登录到后台的接口
+ */
+注释位于控制器代码上
+
+~~~
+php cmd.php api:route 执行后生成注释apiDoc文档和路由 
 
 ## 使用方法
 
