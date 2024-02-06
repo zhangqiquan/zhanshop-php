@@ -13,7 +13,6 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
 use zhanshop\App;
-use zhanshop\ShareData;
 use zhanshop\console\command\Server;
 
 class WebsocketEvent extends \zhanshop\servevent\WebsocketEvent {
@@ -69,10 +68,6 @@ class WebsocketEvent extends \zhanshop\servevent\WebsocketEvent {
      * @return void
      */
     public function onClose($server, $fd, $reactorId) :void{
-        $sfd = (string)$fd;
-        if(ShareData::exist($sfd)){
-            ShareData::del($sfd);
-        }
     }
 
     /**
