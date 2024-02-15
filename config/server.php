@@ -9,8 +9,9 @@
 
 use zhanshop\App;
 use zhanshop\ServEvent;
+use zhanshop\servevent\AdminServEvent;
 use zhanshop\console\command\Server;
-use app\api\admin\WebsocketEvent;
+
 return [
     'servers' => [
         [
@@ -19,21 +20,18 @@ return [
             'host'      => App::env()->get("DEVICE_HOST", "0.0.0.0"),
             'port'      => (int)App::env()->get("DEVICE_PORT", "6201"),
             'sock_type' => (int)App::env()->get("DEVICE_SOCK", "1"),
-            'serv_type' => Server::WEBSOCKET,
+            'serv_type' => Server::HTTP,
             'callbacks' => [
-                ServEvent::ON_WORKER_START => [WebsocketEvent::class, 'onWorkerStart'],
-                ServEvent::ON_REQUEST => [WebsocketEvent::class, 'onRequest'],
-                ServEvent::ON_OPEN => [WebsocketEvent::class, 'onOpen'],
-                ServEvent::ON_MESSAGE => [WebsocketEvent::class, 'onMessage'],
-                ServEvent::ON_CLOSE => [WebsocketEvent::class, 'onClose'],
+                ServEvent::ON_REQUEST => [AdminServEvent::class, 'onRequest'],
+                ServEvent::ON_CLOSE => [AdminServEvent::class, 'onClose'],
             ]
         ],
     ],
     'settings' => [
-        'worker_num' => 1,
-        'reactor_num' => 1,
+        'worker_num' => App::cpuNum(),
+        'reactor_num' => App::cpuNum(),
         'task_worker_num' => 1,
-        'enable_static_handler' => false,
+        'enable_static_handler' => true,
         'document_root' => '',
         'http_autoindex' => true,
         'http_index_files' => ['index.html'],

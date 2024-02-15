@@ -12,6 +12,6 @@ use app\middleware\RequestLog;
 
 return [
     'admin' => [
-        RequestLog::class
+        //RequestLog::class
     ],
 ];
